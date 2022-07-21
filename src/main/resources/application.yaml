@@ -7,3 +7,5 @@ spring:
 
 mybatis-plus:
   type-aliases-package: com.xx.pojo
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
