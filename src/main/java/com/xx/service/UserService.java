@@ -1,7 +1,9 @@
 package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.xx.mapper.BlogMapper;
 import com.xx.mapper.UserMapper;
+import com.xx.pojo.Blog;
 import com.xx.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +36,9 @@ public class UserService {
     }
 
     public int register(String username, String password) {
-        User user = new User(username, password, null, null, null);
+        User user = new User(username, password, "null", "null", null);
 
         return userMapper.insert(user);
     }
+
 }
