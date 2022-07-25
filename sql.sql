@@ -18,15 +18,18 @@ values ('xx', 'xx', 'xx', 'logo.png', 1);
 
 create table `blog`
 (
-    `id`              int auto_increment primary key not null comment 'id',
-    `title`           varchar(20)                    not null comment '标题',
-    `content`         text                           not null comment '内容',
-    `star`            int default 0                  not null comment '点赞数',
-    `views`           int default 0                  not null comment '浏览量',
-    `author_username` varchar(10)                    not null comment '作者用户名',
-    `time`            datetime                       not null comment '发布时间',
-    `comments_id`     int                            not null comment '评论id'
+    `id`              int auto_increment primary key     not null comment 'id',
+    `title`           varchar(20)                        not null comment '标题',
+    `content`         text                               not null comment '内容',
+    `star`            int      default 0                 not null comment '点赞数',
+    `views`           int      default 0                 not null comment '浏览量',
+    `author_username` varchar(10)                        not null comment '作者用户名',
+    `time`            datetime default current_timestamp not null comment '发布时间',
+    `comments_id`     int comment '评论id'
 ) comment '博客信息';
+
+insert into `blog`(`title`, `content`, `author_username`)
+values ('xx', 'xxxxxxxxxxxxxxxxxxx', 'xx');
 
 create table `star`
 (

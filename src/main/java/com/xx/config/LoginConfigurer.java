@@ -7,9 +7,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public interface LoginConfigurer extends WebMvcConfigurer {
+public class LoginConfigurer implements WebMvcConfigurer {
     @Override
-    default void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration interceptor = registry.addInterceptor(new LoginFilter());
         interceptor.addPathPatterns("/pushBlog", "/removeBlog", "/updateBlog", "/myBlog", "/myStar", "/star", "/pushComments")
                 .excludePathPatterns("/login", "/register", "/getAllBlog", "/getBlogByKeywords", "/getBlogByUsername");
