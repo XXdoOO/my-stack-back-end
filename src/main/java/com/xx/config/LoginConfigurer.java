@@ -11,7 +11,7 @@ public class LoginConfigurer implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration interceptor = registry.addInterceptor(new LoginFilter());
-        interceptor.addPathPatterns("/pushBlog", "/removeBlog", "/updateBlog", "/myBlog", "/myStar", "/star", "/pushComments")
+        interceptor.addPathPatterns("/postBlog", "/deleteBlog", "/updateBlog", "/myBlog", "/myStar", "/star", "/pushComments")
                 .excludePathPatterns("/login", "/register", "/getAllBlog", "/getBlogByKeywords", "/getBlogByUsername");
     }
 }

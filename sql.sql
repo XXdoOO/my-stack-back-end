@@ -18,23 +18,33 @@ values ('xx', 'xx', 'xx', 'logo.png', 1);
 
 create table `blog`
 (
-    `id`              int auto_increment primary key     not null comment 'id',
-    `title`           varchar(20)                        not null comment '标题',
-    `content`         text                               not null comment '内容',
-    `star`            int      default 0                 not null comment '点赞数',
-    `views`           int      default 0                 not null comment '浏览量',
-    `author_username` varchar(10)                        not null comment '作者用户名',
-    `time`            datetime default current_timestamp not null comment '发布时间',
-    `comments_id`     int comment '评论id'
+    `id`              int auto_increment primary key       not null comment 'id',
+    `title`           varchar(20)                          not null comment '标题',
+    `content`         text                                 not null comment '内容',
+    `star`            int        default 0                 not null comment '点赞数',
+    `views`           int        default 0                 not null comment '浏览量',
+    `author_username` varchar(10)                          not null comment '作者用户名',
+    `time`            datetime   default current_timestamp not null comment '发布时间',
+    `comments_id`     int comment '评论id',
+    `logic_post`      tinyint(1) comment '逻辑发布，null为审核中，0为未通过审核，1为通过审核',
+    `logic_delete`    tinyint(1) default 0                 not null comment '逻辑删除，1为删除，即审核不通过'
 ) comment '博客信息';
+# 审核中               logic_post = null and logic_delete = 0;
+# 审核通过              logic_post = 1 and logic_delete = 0;
+# 审核不通过            logic_post = 0 and logic_delete = 0;
+# 删除审核中的博客       logic_post = null and logic_delete = 1;
+# 删除审核通过的博客     logic_post = 1 and logic_delete = 1;
+# 删除未审核通过的博客    logic_post = 0 and logic_delete = 1;
+
 
 insert into `blog`(`title`, `content`, `author_username`)
 values ('xx', 'xxxxxxxxxxxxxxxxxxx', 'xx');
 
 create table `star`
 (
-    `username` varchar(10) not null comment '用户名',
-    `blog_id`  int         not null comment '博客id',
+    `username`     varchar(10) not null comment '用户名',
+    `blog_id`      int         not null comment '博客id',
+    `logic_delete` tinyint(1)  not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
     foreign key (`blog_id`) references `blog` (`id`)
 ) comment '收藏关系';
@@ -45,5 +55,6 @@ create table `comments`
     `sender_username`   varchar(10)                    not null comment '发送方username',
     `acceptor_username` varchar(10)                    not null comment '接受方username',
     `content`           varchar(100)                   not null comment '评论内容',
-    `time`              datetime                       not null comment '发送时间'
+    `time`              datetime                       not null comment '发送时间',
+    `logic_delete`      tinyint(1)                     not null comment '逻辑删除，1为删除'
 ) comment '评论信息';

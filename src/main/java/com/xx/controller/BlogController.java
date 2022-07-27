@@ -7,10 +7,7 @@ import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -21,33 +18,61 @@ public class BlogController {
     private BlogService blogService;
 
     @ResponseBody
-    @PostMapping("/pushBlog")
-    public MyResponse pushBlog(String title, String content) {
-        MyResponse response = new MyResponse();
+    @PostMapping("/postBlog")
+    public MyResponse postBlog(@RequestBody Blog blog) {
+        MyResponse myResponse = new MyResponse();
 
-        int result = blogService.pushBlog(title, content);
+        int result = blogService.postBlog(blog);
 
         if (result == 1) {
-            response.setMsg("发布失败！");
+            myResponse.setMsg("发布成功！");
         } else {
-            response.setMsg("发布成功！");
+            myResponse.setMsg("发布失败！");
         }
 
-        return response;
+        return myResponse;
+    }
+
+    @ResponseBody
+    @DeleteMapping("/deleteBlog")
+    public MyResponse deleteBlog(int id) {
+        MyResponse myResponse = new MyResponse();
+
+        if (blogService.deleteBlog(id) == 1) {
+            myResponse.setMsg("删除成功！");
+        } else {
+            myResponse.setMsg("删除失败！");
+        }
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @PutMapping("/updateBlog")
+    public MyResponse updateBlog(@RequestBody Blog blog) {
+        MyResponse myResponse = new MyResponse();
+
+        if (blogService.updateBlog(blog) == 1) {
+            myResponse.setMsg("更新成功！");
+        } else {
+            myResponse.setMsg("更新失败！");
+        }
+
+        return myResponse;
     }
 
     @ResponseBody
     @GetMapping("/getBlogList")
     public MyResponse getBlogList(int startIndex, int pageSize) {
-        MyResponse response = new MyResponse();
+        MyResponse myResponse = new MyResponse();
         List<Blog> blogs = blogService.getBlogList(startIndex, pageSize);
         if (blogs.size() != 0) {
-            response.setMsg("获取成功！");
-            response.setData(blogs);
+            myResponse.setMsg("获取成功！");
+            myResponse.setData(blogs);
         } else {
-            response.setMsg("获取失败！");
+            myResponse.setMsg("获取失败！");
         }
-        return response;
+        return myResponse;
     }
 
 }

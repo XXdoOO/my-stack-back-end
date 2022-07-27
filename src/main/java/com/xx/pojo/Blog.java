@@ -1,5 +1,6 @@
 package com.xx.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,12 +11,16 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @TableName
 public class Blog {
-    private int id;
+    private Integer id;
     private String title;
     private String content;
-    private int star;
-    private int views;
+    private Integer star;
+    private Integer views;
     private String authorUsername;
     private Timestamp time;
-    private int commentsId;
+    private Integer commentsId;
+    private Boolean logicPost;
+
+    @TableLogic
+    private Boolean logicDelete;
 }
