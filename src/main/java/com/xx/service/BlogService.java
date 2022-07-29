@@ -68,29 +68,13 @@ public class BlogService {
                 eq("logic_delete", 0));
     }
 
-    // 获取审核中的博客
-    public List<Blog> getPassingList(int startIndex, int pageSize) {
+    // 获取用户的博客
+    public List<Blog> getBlogList(Integer flag, String username, int startIndex, int pageSize) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
-        return blogMapper.selectList(wrapper.
-                eq("logic_post", null).
-                eq("logic_delete", 0).
-                last("limit " + startIndex + ", " + pageSize));
-    }
 
-    // 获取审核通过的博客
-    public List<Blog> getPassedList(int startIndex, int pageSize) {
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         return blogMapper.selectList(wrapper.
-                eq("logic_post", 1).
-                eq("logic_delete", 0).
-                last("limit " + startIndex + ", " + pageSize));
-    }
-
-    // 获取审核不通过的博客
-    public List<Blog> getNotPassList(int startIndex, int pageSize) {
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
-        return blogMapper.selectList(wrapper.
-                eq("logic_post", 0).
+                eq("author_username", username).
+                eq("logic_post", flag).
                 eq("logic_delete", 0).
                 last("limit " + startIndex + ", " + pageSize));
     }

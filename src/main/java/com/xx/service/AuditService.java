@@ -8,10 +8,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PutMapping;
 
+import java.util.List;
+
 @Service
 public class AuditService {
     @Autowired
     private BlogMapper blogMapper;
+
+    // 获取全部需要审核的博客
+    public List<Blog> getPassingList() {
+        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+
+        return blogMapper.selectList(wrapper.
+                eq("logic_post", null).
+                eq("logic_delete", 0));
+    }
+
+    // 获取全部通过的博客
+    public List<Blog> getPassedList() {
+        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+
+        return blogMapper.selectList(wrapper.
+                eq("logic_post", null).
+                eq("logic_delete", 0));
+    }
+
+    // 获取全部未通过的博客
+    public List<Blog> getNotPassList() {
+        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+
+        return blogMapper.selectList(wrapper.
+                eq("logic_post", null).
+                eq("logic_delete", 0));
+    }
 
     // 审核发布的博客
     public int auditBlog(int id, boolean isPass) {
@@ -23,7 +52,7 @@ public class AuditService {
                 set("logic_post", isPass));
     }
 
-    // 删除发布的博客
+    // 删除审核中、审核通过、审核不通过的博客
     public int deleteBlog(int id) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         return blogMapper.update(null, wrapper.

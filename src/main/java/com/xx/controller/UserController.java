@@ -61,4 +61,10 @@ public class UserController {
     public MyResponse handleNotLogin() {
         return new MyResponse(200, "请登录后操作！", null);
     }
+
+    @ResponseBody
+    @RequestMapping("/handleNotPermission")
+    public MyResponse handleNotPermission() {
+        return new MyResponse(200, "您无权访问该接口！", null);
+    }
 }

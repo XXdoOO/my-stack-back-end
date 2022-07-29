@@ -2,23 +2,22 @@ package com.xx.filter;
 
 import com.xx.pojo.User;
 import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public class LoginFilter implements HandlerInterceptor {
+public class IdentityFilter implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         try {
             HttpSession session = request.getSession();
 
-            User user = (User) session.getAttribute("USER_SESSION");
-            if (user != null) {
+            Boolean identity = ((User) session.getAttribute("USER_SESSION")).getIdentity();
+            if (identity) {
                 return true;
             }
-            response.sendRedirect("/handleNotLogin");
+            response.sendRedirect("/handleNotPermission");
         } catch (Exception e) {
             e.printStackTrace();
         }

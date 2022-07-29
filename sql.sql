@@ -32,9 +32,10 @@ create table `blog`
 # 审核中               logic_post = null and logic_delete = 0;
 # 审核通过              logic_post = 1 and logic_delete = 0;
 # 审核不通过            logic_post = 0 and logic_delete = 0;
-# 删除审核中的博客       logic_post = null and logic_delete = 1;
-# 删除审核通过的博客     logic_post = 1 and logic_delete = 1;
-# 删除未审核通过的博客    logic_post = 0 and logic_delete = 1;
+# 删除的审核中的博客       logic_post = null and logic_delete = 1;
+# 删除的审核通过的博客     logic_post = 1 and logic_delete = 1;
+# 删除的未审核通过的博客    logic_post = 0 and logic_delete = 1;
+
 
 
 insert into `blog`(`title`, `content`, `author_username`)

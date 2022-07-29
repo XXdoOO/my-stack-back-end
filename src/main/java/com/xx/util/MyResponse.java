@@ -2,7 +2,7 @@ package com.xx.util;
 
 public class MyResponse {
     private int statusCode = 200;
-    private String msg;
+    private String msg = "操作成功！";
     private Object data;
 
     public MyResponse() {

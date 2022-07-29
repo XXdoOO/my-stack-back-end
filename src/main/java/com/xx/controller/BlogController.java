@@ -63,16 +63,12 @@ public class BlogController {
 
     @ResponseBody
     @GetMapping("/getBlogList")
-    public MyResponse getBlogList(int startIndex, int pageSize) {
+    public MyResponse getBlogList(Integer flag, String username, int startIndex, int pageSize) {
         MyResponse myResponse = new MyResponse();
-        List<Blog> blogs = blogService.getBlogList(startIndex, pageSize);
-        if (blogs.size() != 0) {
-            myResponse.setMsg("获取成功！");
-            myResponse.setData(blogs);
-        } else {
-            myResponse.setMsg("获取失败！");
-        }
+        List<Blog> blogs = blogService.getBlogList(flag, username, startIndex, pageSize);
+
+        myResponse.setData(blogs);
+
         return myResponse;
     }
-
 }
