@@ -1,70 +1,72 @@
 package com.xx.controller;
 
-import com.xx.pojo.User;
-import com.xx.service.UserService;
+import com.xx.pojo.Blog;
+import com.xx.service.BlogService;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
 
 @Controller
+@RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private BlogService blogService;
 
     @ResponseBody
-    @PostMapping("/login")
-    public MyResponse login(String username, String password) {
-        MyResponse response = new MyResponse();
+    @PostMapping("/postBlog")
+    public MyResponse postBlog(@RequestBody Blog blog) {
+        MyResponse myResponse = new MyResponse();
 
-        if (username == null || username.length() == 0 || password == null || password.length() == 0) {
-            response.setMsg("用户名或密码格式错误！");
+        int result = blogService.postBlog(blog);
+
+        if (result == 1) {
+            myResponse.setMsg("发布成功！");
         } else {
-            Map<String, String> result = userService.login(username, password);
-
-            if (result.size() != 0) {
-                response.setMsg("登录成功！");
-                response.setData(result);
-            } else {
-                response.setMsg("用户名或密码错误！");
-            }
-        }
-        return response;
-    }
-
-    @ResponseBody
-    @PostMapping("/register")
-    public MyResponse register(String username, String password) {
-        MyResponse response = new MyResponse();
-
-        if (username == null || username.length() == 0 || password == null || password.length() == 0) {
-            response.setMsg("用户名或密码格式错误！");
-        } else {
-            int result = userService.register(username, password);
-
-            if (result == 1) {
-                response.setMsg("注册成功！");
-            } else {
-                response.setMsg("注册失败！");
-            }
+            myResponse.setMsg("发布失败！");
         }
 
-        return response;
+        return myResponse;
     }
 
     @ResponseBody
-    @RequestMapping("/handleNotLogin")
-    public MyResponse handleNotLogin() {
-        return new MyResponse(200, "请登录后操作！", null);
+    @DeleteMapping("/deleteBlog")
+    public MyResponse deleteBlog(int id) {
+        MyResponse myResponse = new MyResponse();
+
+        if (blogService.deleteBlog(id) == 1) {
+            myResponse.setMsg("删除成功！");
+        } else {
+            myResponse.setMsg("删除失败！");
+        }
+
+        return myResponse;
     }
 
     @ResponseBody
-    @RequestMapping("/handleNotPermission")
-    public MyResponse handleNotPermission() {
-        return new MyResponse(200, "您无权访问该接口！", null);
+    @PutMapping("/updateBlog")
+    public MyResponse updateBlog(@RequestBody Blog blog) {
+        MyResponse myResponse = new MyResponse();
+
+        if (blogService.updateBlog(blog) == 1) {
+            myResponse.setMsg("更新成功！");
+        } else {
+            myResponse.setMsg("更新失败！");
+        }
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("/getBlogList")
+    public MyResponse getBlogList(Integer flag, String username, int startIndex, int pageSize) {
+        MyResponse myResponse = new MyResponse();
+        List<Blog> blogs = blogService.getBlogList(flag, username, startIndex, pageSize);
+
+        myResponse.setData(blogs);
+
+        return myResponse;
     }
 }

@@ -37,7 +37,6 @@ create table `blog`
 # 删除的未审核通过的博客    logic_post = 0 and logic_delete = 1;
 
 
-
 insert into `blog`(`title`, `content`, `author_username`)
 values ('xx', 'xxxxxxxxxxxxxxxxxxx', 'xx');
 
@@ -52,10 +51,11 @@ create table `star`
 
 create table `comments`
 (
-    `id`                int auto_increment primary key not null comment 'id',
-    `sender_username`   varchar(10)                    not null comment '发送方username',
-    `acceptor_username` varchar(10)                    not null comment '接受方username',
-    `content`           varchar(100)                   not null comment '评论内容',
-    `time`              datetime                       not null comment '发送时间',
-    `logic_delete`      tinyint(1)                     not null comment '逻辑删除，1为删除'
+    `id`                int auto_increment primary key       not null comment 'id',
+    `parent_comments`   int comment '所属父级评论，null则为一级评论，!null则为二级评论',
+    `sender_username`   varchar(10)                          not null comment '发送方username',
+    `acceptor_username` varchar(10)                          not null comment '接受方username',
+    `content`           varchar(100)                         not null comment '评论内容',
+    `time`              datetime   default current_timestamp not null comment '发送时间',
+    `logic_delete`      tinyint(1) default 0                 not null comment '逻辑删除，1为删除'
 ) comment '评论信息';
