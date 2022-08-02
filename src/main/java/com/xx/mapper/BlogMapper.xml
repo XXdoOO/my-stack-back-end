@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xx.mapper.BlogMapper">
+    <select id="getMyStar" parameterType="map" resultType="Blog">
+        select `id`, `title`, `star`, `views`, `author_username`, `time`
+        from `blog`
+        where `id` in (select `blog_id` from `star` where `logic_delete` = 0 and `username` = #{username})
+        limit #{startIndex}, #{pageSize};
+    </select>
+</mapper>

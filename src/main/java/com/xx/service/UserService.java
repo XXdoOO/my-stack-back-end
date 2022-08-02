@@ -41,4 +41,8 @@ public class UserService {
         return userMapper.insert(user);
     }
 
+    public void logout() {
+        session.removeAttribute("USER_SESSION");
+    }
+
 }

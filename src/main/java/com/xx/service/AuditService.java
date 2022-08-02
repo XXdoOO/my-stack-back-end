@@ -15,33 +15,6 @@ public class AuditService {
     @Autowired
     private BlogMapper blogMapper;
 
-    // 获取全部需要审核的博客
-    public List<Blog> getPassingList() {
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
-
-        return blogMapper.selectList(wrapper.
-                eq("logic_post", null).
-                eq("logic_delete", 0));
-    }
-
-    // 获取全部通过的博客
-    public List<Blog> getPassedList() {
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
-
-        return blogMapper.selectList(wrapper.
-                eq("logic_post", null).
-                eq("logic_delete", 0));
-    }
-
-    // 获取全部未通过的博客
-    public List<Blog> getNotPassList() {
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
-
-        return blogMapper.selectList(wrapper.
-                eq("logic_post", null).
-                eq("logic_delete", 0));
-    }
-
     // 审核发布的博客
     public int auditBlog(int id, boolean isPass) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();

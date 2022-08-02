@@ -12,15 +12,16 @@
 
 普通用户：/user/
 
-| 接口地址         | 参数                                         | SQL                                                          | 参数默认值描述   |
-| ---------------- | -------------------------------------------- | ------------------------------------------------------------ | ---------------- |
-| logout           |                                              |                                                              | 登出             |
-| postBlog         | Blog blog                                    | insert into blog(title, content, author_username) value (blog.title, blog.content, session.username); | 发布blog         |
-| deleteMyBlog     | int id                                       | update blog set logic_delete = 1 where author_username = session.username and logic_delete = 0 and id = id; | 删除我的blog     |
-| updateMyBlog     | Blog blog                                    | update blog set title = blog.title, content = blog.content, star = blog.star, views = blog.views where author_username = session.username and logic_delete = 0 and id = blog.id; | 更新我的blog     |
-| starBlog         | int id                                       | update blog set star = star + 1 where blog = id;             | 收藏指定blog     |
-| postComments     | int id、int parent_comments、String comments | insert into comments(parent_comments, sender_username, acceptor_username, content ) value(comments.parent_comments, session.username, comments.acceptor_username, comments.content); | 在指定blog下评论 |
-| deleteMyComments | int id                                       | update comments set logic_delete = 1 where sender_username = session.username and id = id and logic_delete = 0; | 删除我的评论     |
+| 接口地址         | 参数                                         | SQL                                                          | 参数默认值描述        |
+| ---------------- | -------------------------------------------- | ------------------------------------------------------------ | --------------------- |
+| logout           |                                              |                                                              | 登出                  |
+| postBlog         | Blog blog                                    | insert into blog(title, content, author_username) value (blog.title, blog.content, session.username); | 发布blog              |
+| deleteMyBlog     | int id                                       | update blog set logic_delete = 1 where author_username = session.username and logic_delete = 0 and id = id; | 删除我的blog          |
+| updateMyBlog     | Blog blog                                    | update blog set title = blog.title, content = blog.content, star = blog.star, views = blog.views, logic_post = 0 where author_username = session.username and logic_delete = 0 and id = blog.id; | 更新我的blog          |
+| starBlog         | int id, boolean option                       | update blog set star = star + 1 where blog_id = id;          | 收藏/取消收藏指定blog |
+| getMyStar        | int startIndex、 int pageSize                | select id, title, star, views, author_username, time from blog where id in (select blog_id from star where logic_delete = 0 and username = session.username) limit startIndex, pageSize; | 获取收藏的blog        |
+| postComments     | int id、int parent_comments、String comments | insert into comments(parent_comments, sender_username, content ) value(comments.parent_comments, session.username, comments.acceptor_username, comments.content); | 在指定blog下评论      |
+| deleteMyComments | int id                                       | update comments set logic_delete = 1 where sender_username = session.username and id = id and logic_delete = 0; | 删除我的评论          |
 
 管理员：/admin/
 

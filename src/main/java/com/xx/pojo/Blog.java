@@ -22,5 +22,5 @@ public class Blog {
     private Boolean logicPost;
 
     @TableLogic
-    private Boolean logicDelete;
+    private boolean logicDelete;
 }

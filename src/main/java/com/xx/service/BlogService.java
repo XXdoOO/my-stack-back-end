@@ -34,8 +34,7 @@ public class BlogService {
                 last("limit " + startIndex + ", " + pageSize));
     }
 
-    // 获取用户的博客
-    public List<Blog> getUserBlogList(String username, int flag, int startIndex, int pageSize) {
+    public List<Blog> getUserBlogList(String username, Integer flag, int startIndex, int pageSize) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
 
         return blogMapper.selectList(wrapper.
@@ -46,7 +45,6 @@ public class BlogService {
                 last("limit " + startIndex + ", " + pageSize));
     }
 
-    // 获取博客详情
     public Blog getBlogDetails(int id) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         return blogMapper.selectOne(wrapper.
@@ -56,21 +54,17 @@ public class BlogService {
                 eq("id", id));
     }
 
-    // 发布博客
     public int postBlog(Blog blog) {
         User user = (User) session.getAttribute("USER_SESSION");
         Blog blog1 = new Blog();
         blog1.setTitle(blog.getTitle());
         blog1.setContent(blog.getContent());
         blog1.setAuthorUsername(user.getUsername());
-        blog1.setLogicPost(null);
-        blog1.setLogicDelete(false);
 
         return blogMapper.insert(blog1);
     }
 
-    // 删除审核中、审核通过、审核不通过的博客
-    public int deleteBlog(int id) {
+    public int deleteMyBlog(int id) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
@@ -81,9 +75,8 @@ public class BlogService {
                 set("logic_delete", 1));
     }
 
-    // 更新审核中、审核通过、审核不通过的博客
-    public int updateBlog(Blog blog) {
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+    public int updateMyBlog(Blog blog) {
+        UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
         Blog blog1 = new Blog();
@@ -91,12 +84,27 @@ public class BlogService {
         blog1.setContent(blog.getContent());
         blog1.setStar(blog.getStar());
         blog1.setViews(blog.getViews());
-        blog1.setViews(blog.getViews());
         blog1.setLogicPost(false);
 
         return blogMapper.update(blog1, wrapper.
                 eq("id", blog.getId()).
                 eq("author_username", username).
                 eq("logic_delete", 0));
+    }
+
+    public int starBlog(int id, boolean option) {
+        UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+        return blogMapper.update(null, wrapper.setSql("'star' = 'star' +" + (option ? 1 : -1)).eq("blog_id", id));
+    }
+
+    public List<Blog> getMyStar(int startIndex, int pageSize) {
+        HashMap<String, Object> map = new HashMap<>();
+        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+
+        map.put("username", username);
+        map.put("startIndex", startIndex);
+        map.put("pageSize", pageSize);
+
+        return blogMapper.getMyStar(map);
     }
 }
