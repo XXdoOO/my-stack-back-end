@@ -19,7 +19,7 @@ public class Blog {
     private String authorUsername;
     private Timestamp time;
     private Integer commentsId;
-    private Boolean logicPost;
+    private Boolean status;
 
     @TableLogic
     private boolean logicDelete;

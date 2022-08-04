@@ -82,15 +82,11 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getUserBlogList")
-    public MyResponse getUserBlogList(String username, Integer flag, Integer startIndex, Integer pageSize) {
+    public MyResponse getUserBlogList(String username, Integer status, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        if (username == null || username.length() == 0) {
-            myResponse.setMsg("请传入有效用户名！");
-        } else {
-            List<Blog> blogs = blogService.getUserBlogList(username, flag, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
-            myResponse.setData(blogs);
-        }
+        List<Blog> blogs = blogService.getUserBlogList(username, status, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        myResponse.setData(blogs);
 
         return myResponse;
     }
@@ -108,10 +104,10 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getCommentsList")
-    public MyResponse getCommentsList(int id) {
+    public MyResponse getCommentsList(int id, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<Comments> commentsList = commentsService.getCommentsList(id);
+        List<Comments> commentsList = commentsService.getCommentsList(id, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(commentsList);
         return myResponse;
     }

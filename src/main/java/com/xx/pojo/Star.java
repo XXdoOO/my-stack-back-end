@@ -2,22 +2,18 @@ package com.xx.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @TableName
-public class Comments {
+public class Star {
+    private String username;
     private Integer id;
-    private Integer blogId;
-    private Integer parentComments;
-    private String senderUsername;
-    private String content;
-    private Timestamp time;
 
     @TableLogic
-    private boolean logicDelete;
+    private Boolean logicDelete;
 }

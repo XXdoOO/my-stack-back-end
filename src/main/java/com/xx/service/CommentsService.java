@@ -20,12 +20,11 @@ public class CommentsService {
     @Autowired
     private HttpSession session;
 
-    public List<Comments> getCommentsList(int id) {
+    public List<Comments> getCommentsList(int id, int startIndex, int pageSize) {
         QueryWrapper<Comments> wrapper = new QueryWrapper<>();
         return commentsMapper.selectList(wrapper.
-                select("id", "parent_comments", "sender_username", "acceptor_username", "content", "time").
-                eq("logic_delete", 0).
-                eq("id", id));
+                select("blog_id", "parent_comments", "sender_username", "acceptor_username", "content", "time").
+                eq("blog_id", id).last("limit " + startIndex + ", " + pageSize));
     }
 
     public int postComments(Comments comments) {
@@ -45,7 +44,6 @@ public class CommentsService {
         return commentsMapper.update(null, wrapper.
                 set("logic_delete", 1).
                 eq("sender_username", username).
-                eq("logic_delete", 0).
-                eq("id", id));
+                eq("blog_id", id));
     }
 }

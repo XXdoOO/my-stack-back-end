@@ -10,4 +10,5 @@ import java.util.Map;
 @Repository
 public interface BlogMapper extends BaseMapper<Blog> {
     List<Blog> getMyStar(Map<String, Object> map);
+    int starBlog(Map<String, Object> map);
 }

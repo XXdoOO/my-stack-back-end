@@ -5,9 +5,7 @@ import com.xx.service.AuditService;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -18,23 +16,11 @@ public class AdminController {
     private AuditService auditService;
 
     @ResponseBody
-    @GetMapping("/getAuditBlog")
-    public MyResponse getAuditBlog() {
+    @PutMapping("/auditBlog")
+    public MyResponse auditBlog(int id, boolean status) {
         MyResponse myResponse = new MyResponse();
 
-        List<Blog> blogList = auditService.getAuditBlog();
-
-        myResponse.setData(blogList);
-
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("/auditBlog")
-    public MyResponse auditBlog(int id, boolean isPass) {
-        MyResponse myResponse = new MyResponse();
-
-        int result = auditService.auditBlog(id, isPass);
+        int result = auditService.auditBlog(id, status);
 
         if (result == 1) {
             myResponse.setMsg("审核成功！");
@@ -46,7 +32,7 @@ public class AdminController {
     }
 
     @ResponseBody
-    @GetMapping("/deleteBlog")
+    @DeleteMapping("/deleteBlog")
     public MyResponse deleteBlog(int id) {
         MyResponse myResponse = new MyResponse();
 

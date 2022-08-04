@@ -26,7 +26,7 @@ public class UserController {
     private CommentsService commentsService;
 
     @ResponseBody
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public MyResponse logout() {
         MyResponse myResponse = new MyResponse();
 
@@ -80,11 +80,11 @@ public class UserController {
     }
 
     @ResponseBody
-    @GetMapping("/starBlog")
+    @PutMapping("/starBlog")
     public MyResponse starBlog(int id, boolean option) {
         MyResponse myResponse = new MyResponse();
 
-        if (blogService.starBlog(id, option) == 1) {
+        if (blogService.starBlog(id, option)) {
             myResponse.setMsg("收藏成功！");
         } else {
             myResponse.setMsg("收藏失败！");
@@ -94,17 +94,17 @@ public class UserController {
     }
 
     @ResponseBody
-    @GetMapping("/getMyStar")
-    public MyResponse getMyStar(Integer startIndex, Integer pageSize) {
+    @GetMapping("/getMyStarList")
+    public MyResponse getMyStarList(Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<Blog> myStar = blogService.getMyStar(startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        List<Blog> myStar = blogService.getMyStarList(startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(myStar);
         return myResponse;
     }
 
     @ResponseBody
-    @GetMapping("/postComments")
+    @PostMapping("/postComments")
     public MyResponse postComments(@RequestBody Comments comments) {
         MyResponse myResponse = new MyResponse();
 
@@ -117,7 +117,7 @@ public class UserController {
     }
 
     @ResponseBody
-    @GetMapping("/deleteMyComments")
+    @DeleteMapping("/deleteMyComments")
     public MyResponse deleteMyComments(int id) {
         MyResponse myResponse = new MyResponse();
 

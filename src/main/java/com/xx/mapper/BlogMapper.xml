@@ -10,4 +10,6 @@
         where `id` in (select `blog_id` from `star` where `logic_delete` = 0 and `username` = #{username})
         limit #{startIndex}, #{pageSize};
     </select>
+
+
 </mapper>

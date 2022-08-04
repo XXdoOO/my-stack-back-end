@@ -15,14 +15,12 @@ public class AuditService {
     @Autowired
     private BlogMapper blogMapper;
 
-    // 审核发布的博客
-    public int auditBlog(int id, boolean isPass) {
+    public int auditBlog(int id, boolean status) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         return blogMapper.update(null, wrapper.
                 eq("id", id).
                 eq("logic_post", null).
-                eq("logic_delete", 0).
-                set("logic_post", isPass));
+                set("status", status));
     }
 
     // 删除审核中、审核通过、审核不通过的博客
@@ -30,7 +28,6 @@ public class AuditService {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         return blogMapper.update(null, wrapper.
                 eq("id", id).
-                eq("logic_delete", 0).
                 set("logic_delete", 1));
     }
 }
