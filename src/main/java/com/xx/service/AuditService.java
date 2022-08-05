@@ -19,7 +19,7 @@ public class AuditService {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         return blogMapper.update(null, wrapper.
                 eq("id", id).
-                eq("logic_post", null).
+                isNull("status").
                 set("status", status));
     }
 

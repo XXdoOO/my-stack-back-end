@@ -36,9 +36,9 @@ create table `blog`
 
 create table `star`
 (
-    `username`     varchar(10) not null comment '用户名',
-    `blog_id`      int         not null comment '博客id',
-    `logic_delete` tinyint(1)  not null comment '逻辑删除，1为删除',
+    `username`     varchar(10)          not null comment '用户名',
+    `blog_id`      int                  not null comment '博客id',
+    `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
     foreign key (`blog_id`) references `blog` (`id`)
 ) comment '收藏关系';

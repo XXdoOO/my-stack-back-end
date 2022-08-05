@@ -73,6 +73,12 @@ public class BlogService {
 
     public Blog getBlogDetails(int id) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+        UpdateWrapper<Blog> updateWrapper = new UpdateWrapper<>();
+        blogMapper.update(null, updateWrapper.
+                setSql("views = views + 1").
+                eq("status", 1).
+                eq("id", id));
+
         return blogMapper.selectOne(wrapper.
                 select("id", "title", "content", "star", "views", "author_username", "time", "comments_id").
                 eq("status", 1).
@@ -117,9 +123,9 @@ public class BlogService {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
-        int update = blogMapper.update(null, wrapper.setSql("'star' = 'star' +" + (option ? 1 : -1)).eq("blog_id", id));
+        int update = blogMapper.update(null, wrapper.setSql("star = star +" + (option ? 1 : -1)).eq("id", id));
 
-        Star star = new Star(username, id, option);
+        Star star = new Star(id, username, null);
         int insert = starMapper.insert(star);
         return update == 1 && insert == 1;
     }

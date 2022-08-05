@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @TableName
 public class Star {
+    private Integer BlogId;
     private String username;
-    private Integer id;
 
     @TableLogic
     private Boolean logicDelete;

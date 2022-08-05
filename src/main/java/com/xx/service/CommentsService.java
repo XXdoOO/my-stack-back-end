@@ -23,15 +23,17 @@ public class CommentsService {
     public List<Comments> getCommentsList(int id, int startIndex, int pageSize) {
         QueryWrapper<Comments> wrapper = new QueryWrapper<>();
         return commentsMapper.selectList(wrapper.
-                select("blog_id", "parent_comments", "sender_username", "acceptor_username", "content", "time").
+                select("id", "blog_id", "parent_comments", "sender_username", "content", "time").
                 eq("blog_id", id).last("limit " + startIndex + ", " + pageSize));
     }
 
     public int postComments(Comments comments) {
+        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
         Comments comments1 = new Comments();
 
+        comments1.setBlogId(comments.getBlogId());
         comments1.setParentComments(comments.getParentComments());
-        comments1.setSenderUsername(comments.getSenderUsername());
+        comments1.setSenderUsername(username);
         comments1.setContent(comments.getContent());
 
         return commentsMapper.insert(comments1);
