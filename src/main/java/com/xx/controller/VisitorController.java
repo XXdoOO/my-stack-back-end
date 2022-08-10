@@ -33,41 +33,45 @@ public class VisitorController {
     @ResponseBody
     @PostMapping("login")
     public MyResponse login(String username, String password) {
-        MyResponse response = new MyResponse();
+        MyResponse myResponse = new MyResponse();
 
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
-            response.setMsg("用户名或密码格式错误！");
+            myResponse.setMsg("用户名或密码格式错误！");
+            myResponse.setStatusCode(400);
         } else {
             Map<String, String> result = userService.login(username, password);
 
             if (result.size() != 0) {
-                response.setMsg("登录成功！");
-                response.setData(result);
+                myResponse.setMsg("登录成功！");
+                myResponse.setData(result);
             } else {
-                response.setMsg("用户名或密码错误！");
+                myResponse.setMsg("用户名或密码错误！");
+                myResponse.setStatusCode(400);
             }
         }
-        return response;
+        return myResponse;
     }
 
     @ResponseBody
     @PostMapping("register")
     public MyResponse register(String username, String password) {
-        MyResponse response = new MyResponse();
+        MyResponse myResponse = new MyResponse();
 
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
-            response.setMsg("用户名或密码格式错误！");
+            myResponse.setMsg("用户名或密码格式错误！");
+            myResponse.setStatusCode(400);
         } else {
             int result = userService.register(username, password);
 
             if (result == 1) {
-                response.setMsg("注册成功！");
+                myResponse.setMsg("注册成功！");
             } else {
-                response.setMsg("注册失败！");
+                myResponse.setMsg("用户已存在！");
+                myResponse.setStatusCode(400);
             }
         }
 
-        return response;
+        return myResponse;
     }
 
     @ResponseBody

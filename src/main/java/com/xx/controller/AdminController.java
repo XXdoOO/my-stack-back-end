@@ -26,6 +26,7 @@ public class AdminController {
             myResponse.setMsg("审核成功！");
         } else {
             myResponse.setMsg("审核失败！");
+            myResponse.setStatusCode(400);
         }
 
         return myResponse;
@@ -42,6 +43,7 @@ public class AdminController {
             myResponse.setMsg("删除成功！");
         } else {
             myResponse.setMsg("删除失败！");
+            myResponse.setStatusCode(400);
         }
 
         return myResponse;
