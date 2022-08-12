@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -16,6 +17,8 @@ public class Blog {
     private Integer id;
     private String title;
     private String content;
+    private Integer up;
+    private Integer down;
     private Integer star;
     private Integer views;
     private String authorUsername;
@@ -23,10 +26,12 @@ public class Blog {
     private Integer commentsId;
     private Boolean status;
 
+    @TableLogic
+    private boolean logicDelete;
+
+    private List<String> categories;
+
     public void setTime(Timestamp time) throws ParseException {
         this.time = FormatTime.timestampToLong(time);
     }
-
-    @TableLogic
-    private boolean logicDelete;
 }

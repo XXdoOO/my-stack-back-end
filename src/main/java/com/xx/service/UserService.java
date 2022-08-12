@@ -36,7 +36,9 @@ public class UserService {
     }
 
     public int register(String username, String password) {
-        User user = new User(username, password, "null", "null", null);
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(password);
 
         return userMapper.insert(user);
     }

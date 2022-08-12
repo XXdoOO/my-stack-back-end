@@ -20,11 +20,14 @@ public class CommentsService {
     @Autowired
     private HttpSession session;
 
-    public List<Comments> getCommentsList(int id, int startIndex, int pageSize) {
+    public List<Comments> getCommentsList(int id, String orderBy, int startIndex, int pageSize) {
         QueryWrapper<Comments> wrapper = new QueryWrapper<>();
         return commentsMapper.selectList(wrapper.
                 select("id", "blog_id", "parent_comments", "sender_username", "content", "time").
-                eq("blog_id", id).last("limit " + startIndex + ", " + pageSize));
+                eq("blog_id", id).
+                orderByAsc(orderBy).
+                last("limit " + startIndex + ", " + pageSize).
+                orderByAsc("up"));
     }
 
     public int postComments(Comments comments) {

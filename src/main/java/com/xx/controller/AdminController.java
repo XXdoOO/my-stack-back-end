@@ -17,10 +17,10 @@ public class AdminController {
 
     @ResponseBody
     @PutMapping("/auditBlog")
-    public MyResponse auditBlog(int id, boolean status) {
+    public MyResponse auditBlog(int id) {
         MyResponse myResponse = new MyResponse();
 
-        int result = auditService.auditBlog(id, status);
+        int result = auditService.auditBlog(id);
 
         if (result == 1) {
             myResponse.setMsg("审核成功！");
@@ -45,6 +45,14 @@ public class AdminController {
             myResponse.setMsg("删除失败！");
             myResponse.setStatusCode(400);
         }
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @PostMapping("/postCategory")
+    public MyResponse postCategory() {
+        MyResponse myResponse = new MyResponse();
 
         return myResponse;
     }

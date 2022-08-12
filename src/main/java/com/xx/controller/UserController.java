@@ -84,10 +84,10 @@ public class UserController {
 
     @ResponseBody
     @PutMapping("/starBlog")
-    public MyResponse starBlog(int id, boolean option) {
+    public MyResponse starBlog(int id) {
         MyResponse myResponse = new MyResponse();
 
-        if (blogService.starBlog(id, option)) {
+        if (blogService.starBlog(id)) {
             myResponse.setMsg("收藏成功！");
         } else {
             myResponse.setMsg("收藏失败！");

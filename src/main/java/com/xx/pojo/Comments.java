@@ -19,6 +19,8 @@ public class Comments {
     private Integer parentComments;
     private String senderUsername;
     private String content;
+    private Integer up;
+    private Integer down;
     private Long time;
 
     public void setTime(Timestamp time) throws ParseException {

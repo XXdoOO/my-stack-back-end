@@ -31,44 +31,30 @@ public class BlogService {
     @Autowired
     private HttpSession session;
 
-    public List<Blog> getBlogListByKeywords(String keywords, int startIndex, int pageSize) {
+    public List<Blog> getBlogListByKeywords(String keywords, String orderBy, int startIndex, int pageSize) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         return blogMapper.selectList(wrapper.
                 select("id", "title", "star", "views", "author_username", "time").
                 eq("status", 1).
                 and(i -> i.like("title", keywords).or().like("content", keywords)).
+                orderByAsc(orderBy).
                 last("limit " + startIndex + ", " + pageSize));
     }
 
-    public List<Blog> getUserBlogList(String username, Integer status, int startIndex, int pageSize) {
+    public List<Blog> getUserBlogList(String username, int startIndex, int pageSize) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
 
         if (username == null || username.length() == 0) {
-            if (status == null) {
-                return blogMapper.selectList(wrapper.
-                        select("id", "title", "star", "views", "author_username", "time").
-                        isNull("status").
-                        last("limit " + startIndex + ", " + pageSize));
-            }
             return blogMapper.selectList(wrapper.
                     select("id", "title", "star", "views", "author_username", "time").
-                    eq("status", status).
-                    last("limit " + startIndex + ", " + pageSize));
-        } else {
-            if (status == null) {
-                return blogMapper.selectList(wrapper.
-                        select("id", "title", "star", "views", "author_username", "time").
-                        isNull("status").
-                        eq("author_username", username).
-                        last("limit " + startIndex + ", " + pageSize));
-            }
-
-            return blogMapper.selectList(wrapper.
-                    select("id", "title", "star", "views", "author_username", "time").
-                    eq("status", status).
-                    eq("author_username", username).
+                    orderByAsc("time").
                     last("limit " + startIndex + ", " + pageSize));
         }
+        return blogMapper.selectList(wrapper.
+                select("id", "title", "star", "views", "author_username", "time").
+                eq("author_username", username).
+                orderByAsc("time").
+                last("limit " + startIndex + ", " + pageSize));
     }
 
     public Blog getBlogDetails(int id) {
@@ -119,15 +105,32 @@ public class BlogService {
                 eq("author_username", username));
     }
 
-    public boolean starBlog(int id, boolean option) {
+//    public boolean upBlog(int id) {
+//
+//        blogMapper.update()
+//    }
+
+    public boolean starBlog(int id) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+        QueryWrapper<Star> queryWrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
-        int update = blogMapper.update(null, wrapper.setSql("star = star +" + (option ? 1 : -1)).eq("id", id));
+        Long count = starMapper.selectCount(queryWrapper.
+                select("status").
+                eq("username", username).
+                eq("blog_id", id));
 
-        Star star = new Star(id, username, null);
-        int insert = starMapper.insert(star);
-        return update == 1 && insert == 1;
+        if (count > 0) {
+            Star star = new Star(id, username, null);
+            int update = blogMapper.update(null, wrapper.setSql("star = star -1").eq("id", id));
+            int insert = starMapper.insert(star);
+            return update == 1 && insert == 1;
+        }
+
+        UpdateWrapper<Star> wrapper2 = new UpdateWrapper<>();
+        int update = blogMapper.update(null, wrapper.setSql("star = star + 1").eq("id", id));
+        int update1 = starMapper.update(null, wrapper2.set("logic_delete", 1));
+        return update == 1 && update1 == 1;
     }
 
     public List<Blog> getMyStarList(int startIndex, int pageSize) {

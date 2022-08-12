@@ -76,20 +76,20 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getBlogByKeywords")
-    public MyResponse getBlogByKeywords(String keywords, Integer startIndex, Integer pageSize) {
+    public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<Blog> blogList = blogService.getBlogListByKeywords(keywords == null ? "" : keywords, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        List<Blog> blogList = blogService.getBlogListByKeywords(keywords == null ? "" : keywords, (orderBy == null || !orderBy) ? "up" : "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(blogList);
         return myResponse;
     }
 
     @ResponseBody
     @GetMapping("getUserBlogList")
-    public MyResponse getUserBlogList(String username, Integer status, Integer startIndex, Integer pageSize) {
+    public MyResponse getUserBlogList(String username, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<Blog> blogs = blogService.getUserBlogList(username, status, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        List<Blog> blogs = blogService.getUserBlogList(username, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(blogs);
 
         return myResponse;
@@ -108,10 +108,10 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getCommentsList")
-    public MyResponse getCommentsList(int id, Integer startIndex, Integer pageSize) {
+    public MyResponse getCommentsList(int id, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<Comments> commentsList = commentsService.getCommentsList(id, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" : "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(commentsList);
         return myResponse;
     }
