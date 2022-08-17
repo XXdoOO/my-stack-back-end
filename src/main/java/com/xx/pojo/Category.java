@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class Category {
     private String name;
     private String description;
-    private String img;
+    private String cover;
 }

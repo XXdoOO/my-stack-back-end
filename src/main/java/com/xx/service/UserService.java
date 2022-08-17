@@ -36,6 +36,11 @@ public class UserService {
     }
 
     public int register(String username, String password) {
+        User result = userMapper.selectById(username);
+        if(result != null){
+            return -1;
+        }
+
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);

@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 @Data
 @NoArgsConstructor
@@ -17,14 +16,14 @@ public class Comments {
     private Integer id;
     private Integer blogId;
     private Integer parentComments;
-    private String senderUsername;
+    private String authorUsername;
     private String content;
     private Integer up;
     private Integer down;
-    private Long time;
+    private Long postTime;
 
-    public void setTime(Timestamp time) throws ParseException {
-        this.time = FormatTime.timestampToLong(time);
+    public void setPostTime(Timestamp postTime) throws ParseException {
+        this.postTime = FormatTime.timestampToLong(postTime);
     }
 
     @TableLogic

@@ -46,7 +46,7 @@ public class UserController {
             myResponse.setMsg("发布成功！");
         } else {
             myResponse.setMsg("发布失败！");
-            myResponse.setStatusCode(400);
+            myResponse.setCode(400);
         }
 
         return myResponse;
@@ -61,7 +61,7 @@ public class UserController {
             myResponse.setMsg("删除成功！");
         } else {
             myResponse.setMsg("删除失败！");
-            myResponse.setStatusCode(400);
+            myResponse.setCode(400);
         }
 
         return myResponse;
@@ -76,7 +76,7 @@ public class UserController {
             myResponse.setMsg("更新成功！");
         } else {
             myResponse.setMsg("更新失败！");
-            myResponse.setStatusCode(400);
+            myResponse.setCode(400);
         }
 
         return myResponse;
@@ -91,7 +91,7 @@ public class UserController {
             myResponse.setMsg("收藏成功！");
         } else {
             myResponse.setMsg("收藏失败！");
-            myResponse.setStatusCode(400);
+            myResponse.setCode(400);
         }
 
         return myResponse;
@@ -116,7 +116,7 @@ public class UserController {
             myResponse.setMsg("发布成功！");
         } else {
             myResponse.setMsg("发布失败！");
-            myResponse.setStatusCode(400);
+            myResponse.setCode(400);
         }
         return myResponse;
     }
@@ -130,7 +130,7 @@ public class UserController {
             myResponse.setMsg("删除成功！");
         } else {
             myResponse.setMsg("删除失败！");
-            myResponse.setStatusCode(400);
+            myResponse.setCode(400);
         }
         return myResponse;
     }

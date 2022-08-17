@@ -1,6 +1,7 @@
 package com.xx.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.xx.util.FormatTime;
 import lombok.AllArgsConstructor;
@@ -20,16 +21,19 @@ public class User {
     private String password;
     private String nickname;
     private String avatar;
-    private Long time;
+    private Long registerTime;
     private Long disableTime;
     private Boolean identity;
 
-    public void setTime(Timestamp time) throws ParseException {
-        this.time = FormatTime.timestampToLong(time);
+    @TableLogic
+    private boolean logicDelete;
+
+    public void setRegisterTime(Timestamp registerTime) throws ParseException {
+        this.registerTime = FormatTime.timestampToLong(registerTime);
     }
 
-    public void setDisableTime(Timestamp time) throws ParseException {
-        this.disableTime = FormatTime.timestampToLong(time);
+    public void setDisableTime(Timestamp disableTime) throws ParseException {
+        this.disableTime = FormatTime.timestampToLong(disableTime);
     }
 
 }

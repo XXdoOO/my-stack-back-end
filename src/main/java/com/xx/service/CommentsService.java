@@ -36,7 +36,7 @@ public class CommentsService {
 
         comments1.setBlogId(comments.getBlogId());
         comments1.setParentComments(comments.getParentComments());
-        comments1.setSenderUsername(username);
+        comments1.setAuthorUsername(username);
         comments1.setContent(comments.getContent());
 
         return commentsMapper.insert(comments1);

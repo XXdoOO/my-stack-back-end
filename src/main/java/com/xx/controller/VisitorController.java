@@ -37,7 +37,7 @@ public class VisitorController {
 
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
             myResponse.setMsg("用户名或密码格式错误！");
-            myResponse.setStatusCode(400);
+            myResponse.setCode(400);
         } else {
             Map<String, String> result = userService.login(username, password);
 
@@ -46,7 +46,7 @@ public class VisitorController {
                 myResponse.setData(result);
             } else {
                 myResponse.setMsg("用户名或密码错误！");
-                myResponse.setStatusCode(400);
+                myResponse.setCode(400);
             }
         }
         return myResponse;
@@ -59,7 +59,7 @@ public class VisitorController {
 
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
             myResponse.setMsg("用户名或密码格式错误！");
-            myResponse.setStatusCode(400);
+            myResponse.setCode(400);
         } else {
             int result = userService.register(username, password);
 
@@ -67,7 +67,7 @@ public class VisitorController {
                 myResponse.setMsg("注册成功！");
             } else {
                 myResponse.setMsg("用户已存在！");
-                myResponse.setStatusCode(400);
+                myResponse.setCode(400);
             }
         }
 

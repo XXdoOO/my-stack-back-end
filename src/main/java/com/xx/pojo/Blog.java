@@ -16,13 +16,14 @@ import java.util.List;
 public class Blog {
     private Integer id;
     private String title;
+    private String description;
     private String content;
     private Integer up;
     private Integer down;
     private Integer star;
     private Integer views;
     private String authorUsername;
-    private Long time;
+    private Long postTime;
     private Integer commentsId;
     private Boolean status;
 
@@ -31,7 +32,7 @@ public class Blog {
 
     private List<String> categories;
 
-    public void setTime(Timestamp time) throws ParseException {
-        this.time = FormatTime.timestampToLong(time);
+    public void setPostTime(Timestamp postTime) throws ParseException {
+        this.postTime = FormatTime.timestampToLong(postTime);
     }
 }
