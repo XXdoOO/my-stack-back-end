@@ -3,8 +3,11 @@ package com.xx.controller;
 import com.xx.mapper.BlogMapper;
 import com.xx.mapper.CommentsMapper;
 import com.xx.pojo.Blog;
+import com.xx.pojo.BlogView;
+import com.xx.pojo.Category;
 import com.xx.pojo.Comments;
 import com.xx.service.BlogService;
+import com.xx.service.CategoryService;
 import com.xx.service.CommentsService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
@@ -29,6 +32,9 @@ public class VisitorController {
 
     @Autowired
     private CommentsService commentsService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @ResponseBody
     @PostMapping("login")
@@ -79,7 +85,7 @@ public class VisitorController {
     public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<Blog> blogList = blogService.getBlogListByKeywords(keywords == null ? "" : keywords, (orderBy == null || !orderBy) ? "up" : "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        List<BlogView> blogList = blogService.getBlogListByKeywords(keywords == null ? "" : keywords, (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(blogList);
         return myResponse;
     }
@@ -89,9 +95,13 @@ public class VisitorController {
     public MyResponse getUserBlogList(String username, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<Blog> blogs = blogService.getUserBlogList(username, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
-        myResponse.setData(blogs);
-
+        if (username == null || username.length() == 0) {
+            myResponse.setCode(400);
+            myResponse.setMsg("请传入用户名！");
+        } else {
+            List<BlogView> blogs = blogService.getUserBlogList(username, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+            myResponse.setData(blogs);
+        }
         return myResponse;
     }
 
@@ -113,6 +123,26 @@ public class VisitorController {
 
         List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" : "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(commentsList);
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("getCategories")
+    public MyResponse getCategories() {
+        MyResponse myResponse = new MyResponse();
+
+        List<Category> categories = categoryService.getCategories();
+        myResponse.setData(categories);
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("getCategories")
+    public MyResponse getCategory(String name) {
+        MyResponse myResponse = new MyResponse();
+
+        Category category = categoryService.getCategory(name);
+        myResponse.setData(category);
         return myResponse;
     }
 }

@@ -25,9 +25,6 @@ public class User {
     private Long disableTime;
     private Boolean identity;
 
-    @TableLogic
-    private boolean logicDelete;
-
     public void setRegisterTime(Timestamp registerTime) throws ParseException {
         this.registerTime = FormatTime.timestampToLong(registerTime);
     }

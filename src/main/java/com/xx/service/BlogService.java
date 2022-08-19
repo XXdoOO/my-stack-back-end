@@ -3,18 +3,14 @@ package com.xx.service;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.xx.mapper.BlogMapper;
-import com.xx.mapper.CommentsMapper;
-import com.xx.mapper.StarMapper;
-import com.xx.mapper.UserMapper;
-import com.xx.pojo.Blog;
-import com.xx.pojo.Star;
-import com.xx.pojo.User;
+import com.xx.mapper.*;
+import com.xx.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,34 +22,33 @@ public class BlogService {
     private BlogMapper blogMapper;
 
     @Autowired
+    private BlogViewMapper blogViewMapper;
+
+    @Autowired
     private StarMapper starMapper;
+
+    @Autowired
+    private CommentsService commentsService;
 
     @Autowired
     private HttpSession session;
 
-    public List<Blog> getBlogListByKeywords(String keywords, String orderBy, int startIndex, int pageSize) {
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
-        return blogMapper.selectList(wrapper.
-                select("id", "title", "star", "views", "author_username", "time").
+    public List<BlogView> getBlogListByKeywords(String keywords, String orderBy, int startIndex, int pageSize) {
+        QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
+        return blogViewMapper.selectList(wrapper.
                 eq("status", 1).
                 and(i -> i.like("title", keywords).or().like("content", keywords)).
                 orderByAsc(orderBy).
                 last("limit " + startIndex + ", " + pageSize));
     }
 
-    public List<Blog> getUserBlogList(String username, int startIndex, int pageSize) {
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+    public List<BlogView> getUserBlogList(String username, int startIndex, int pageSize) {
+        QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
-        if (username == null || username.length() == 0) {
-            return blogMapper.selectList(wrapper.
-                    select("id", "title", "star", "views", "author_username", "time").
-                    orderByAsc("time").
-                    last("limit " + startIndex + ", " + pageSize));
-        }
-        return blogMapper.selectList(wrapper.
-                select("id", "title", "star", "views", "author_username", "time").
+        return blogViewMapper.selectList(wrapper.
+                select("id", "title", "star", "views", "author_username", "post_time").
                 eq("author_username", username).
-                orderByAsc("time").
+                orderByAsc("post_time").
                 last("limit " + startIndex + ", " + pageSize));
     }
 
@@ -65,10 +60,16 @@ public class BlogService {
                 eq("status", 1).
                 eq("id", id));
 
-        return blogMapper.selectOne(wrapper.
-                select("id", "title", "content", "star", "views", "author_username", "time", "comments_id").
+        Blog blog = blogMapper.selectOne(wrapper.
                 eq("status", 1).
                 eq("id", id));
+
+        // 默认获取十条热评，十条新评
+        List<Comments> comments = commentsService.getCommentsList(blog.getId(), "up", 0, 10);
+        comments.addAll(commentsService.getCommentsList(blog.getId(), "time", 0, 10));
+        blog.setCommentsList(comments);
+
+        return blog;
     }
 
     public int postBlog(Blog blog) {
@@ -121,7 +122,7 @@ public class BlogService {
                 eq("blog_id", id));
 
         if (count > 0) {
-            Star star = new Star(id, username, null);
+            Star star = new Star(id, username);
             int update = blogMapper.update(null, wrapper.setSql("star = star -1").eq("id", id));
             int insert = starMapper.insert(star);
             return update == 1 && insert == 1;

@@ -15,7 +15,7 @@ import java.text.ParseException;
 public class Comments {
     private Integer id;
     private Integer blogId;
-    private Integer parentComments;
+    private Integer parent;
     private String authorUsername;
     private String content;
     private Integer up;
@@ -25,7 +25,4 @@ public class Comments {
     public void setPostTime(Timestamp postTime) throws ParseException {
         this.postTime = FormatTime.timestampToLong(postTime);
     }
-
-    @TableLogic
-    private boolean logicDelete;
 }

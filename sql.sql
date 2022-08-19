@@ -108,7 +108,7 @@ create table `comments`
 (
     `id`              int auto_increment primary key       not null comment 'id',
     `blog_id`         int                                  not null comment '所属博客id',
-    `parent_comments` int comment '所属父级评论，null则为一级评论，!null则为二级评论',
+    `parent` int comment '父级评论，null则为一级评论，!null则为二级评论',
     `author_username` varchar(10)                          not null comment '评论者的username',
     `content`         varchar(100)                         not null comment '评论内容',
     `up`              int        default 0                 not null comment '顶',
@@ -119,10 +119,15 @@ create table `comments`
     foreign key (`author_username`) references `user` (`username`)
 ) comment '评论信息';
 
-insert into `comments` (`blog_id`, `author_username`, `content`)
-values (1, 'xx', '写的真不错！'),
-       (1, 'xx', '写的真不错2！'),
-       (2, 'xx', '写的真不错3！');
+insert into `comments` (`blog_id`, `parent_comments`, `author_username`, `content`)
+values (1, null, 'xx', '写的真不错！'),
+       (1, 1, 'xx', '写的真不错22！'),
+       (1, null, 'xx', '写的真不错23！'),
+       (1, 1, 'xx', '写的真不错24！'),
+       (1, 1, 'xx', '写的真不错25！'),
+       (1, null, 'xx', '写的真不错26！'),
+       (1, null, 'xx', '写的真不错27！'),
+       (2, null, 'xx', '写的真不错3！');
 
 create table `comments_up`
 (
@@ -161,6 +166,7 @@ create table `category`
     `name`         varchar(10) primary key not null comment '名称',
     `description`  varchar(100) comment '描述',
     `cover`        text comment '特色图片',
+    `parent`       varchar(10) comment '父分类',
     `logic_delete` tinyint(1) default 0    not null comment '逻辑删除，1为删除'
 ) comment '分类信息';
 

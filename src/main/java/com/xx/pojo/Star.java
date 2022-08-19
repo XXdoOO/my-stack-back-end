@@ -13,7 +13,4 @@ import lombok.NoArgsConstructor;
 public class Star {
     private Integer BlogId;
     private String username;
-
-    @TableLogic
-    private Boolean logicDelete;
 }
