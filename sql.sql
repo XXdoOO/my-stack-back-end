@@ -43,17 +43,21 @@ create table `blog`
 # 删除的审核通过的博客     status = 1 and logic_delete = 1;
 # 删除的未审核通过的博客    status = 0 and logic_delete = 1;
 
-insert into `blog`(`title`, `content`, `author_username`)
-values ('我的博客1', 'my blog', 'xx'),
-       ('我的博客2', 'my blog', 'xx'),
-       ('我的博客3', 'my blog', 'xx'),
-       ('我的博客4', 'my blog', 'xx'),
-       ('我的博客5', 'my blog', 'xx'),
-       ('我的博客6', 'my blog', 'xx'),
-       ('我的博客7', 'my blog', 'xx'),
-       ('我的博客8', 'my blog', 'xx'),
-       ('我的博客9', 'my blog', 'xx'),
-       ('我的博客10', 'my blog', 'xx');
+insert into `blog`(`title`, `content`, `author_username`, `status`)
+values ('我的博客1', 'my blog', 'xx', 1),
+       ('我的博客2', 'my blog', 'xx', 1),
+       ('我的博客3', 'my blog', 'xx', 1),
+       ('我的博客4', 'my blog', 'xx', 1),
+       ('我的博客5', 'my blog', 'xx', 1),
+       ('我的博客6', 'my blog', 'xx', 1),
+       ('我的博客7', 'my blog', 'xx', 1),
+       ('我的博客8', 'my blog', 'xx', 1),
+       ('我的博客9', 'my blog', 'xx', 1),
+       ('我的博客11', 'my blog', 'xx', 1),
+       ('我的博客12', 'my blog', 'xx', 1),
+       ('我的博客13', 'my blog', 'xx', 1),
+       ('我的博客14', 'my blog', 'xx', 1),
+       ('我的博客15', 'my blog', 'xx', 1);
 
 
 
@@ -69,6 +73,10 @@ create table `blog_star`
 insert into `blog_star` (username, blog_id)
 values ('xx', 1),
        ('xx', 2),
+       ('xx', 5),
+       ('xx', 6),
+       ('xx', 4),
+       ('xx', 10),
        ('xx', 3);
 
 
@@ -108,7 +116,7 @@ create table `comments`
 (
     `id`              int auto_increment primary key       not null comment 'id',
     `blog_id`         int                                  not null comment '所属博客id',
-    `parent` int comment '父级评论，null则为一级评论，!null则为二级评论',
+    `parent`          int comment '父级评论，null则为一级评论，!null则为二级评论',
     `author_username` varchar(10)                          not null comment '评论者的username',
     `content`         varchar(100)                         not null comment '评论内容',
     `up`              int        default 0                 not null comment '顶',
@@ -119,15 +127,22 @@ create table `comments`
     foreign key (`author_username`) references `user` (`username`)
 ) comment '评论信息';
 
-insert into `comments` (`blog_id`, `parent_comments`, `author_username`, `content`)
-values (1, null, 'xx', '写的真不错！'),
-       (1, 1, 'xx', '写的真不错22！'),
-       (1, null, 'xx', '写的真不错23！'),
-       (1, 1, 'xx', '写的真不错24！'),
-       (1, 1, 'xx', '写的真不错25！'),
-       (1, null, 'xx', '写的真不错26！'),
-       (1, null, 'xx', '写的真不错27！'),
-       (2, null, 'xx', '写的真不错3！');
+insert into `comments` (`blog_id`, `parent`, `author_username`, `content`, `up`)
+values (1, null, 'xx', '写的真不错！', 2),
+       (1, 1, 'xx', '写的真不错22！', 10),
+       (1, null, 'xx', '写的真不错23！', 9),
+       (1, 1, 'xx', '写的真不错24！', 22),
+       (1, 1, 'xx', '写的真不错25！', 0),
+       (1, null, 'xx', '写的真不错26！', 0),
+       (1, null, 'xx', '写的真不错26！', 0),
+       (1, 1, 'xx', '写的真不错26！', 0),
+       (1, 1, 'xx', '写的真不错26！', 11),
+       (1, null, 'xx', '写的真不错26！', 0),
+       (1, 1, 'xx', '写的真不错26！', 0),
+       (1, null, 'xx', '写的真不错26！', 0),
+       (1, 1, 'xx', '写的真不错26！', 0),
+       (1, null, 'xx', '写的真不错27！', 23),
+       (2, null, 'xx', '写的真不错3！', 0);
 
 create table `comments_up`
 (

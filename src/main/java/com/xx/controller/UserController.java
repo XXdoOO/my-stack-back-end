@@ -40,9 +40,7 @@ public class UserController {
     public MyResponse postBlog(@RequestBody Blog blog) {
         MyResponse myResponse = new MyResponse();
 
-        int result = blogService.postBlog(blog);
-
-        if (result == 1) {
+        if (blogService.postBlog(blog)) {
             myResponse.setMsg("发布成功！");
         } else {
             myResponse.setMsg("发布失败！");
@@ -57,7 +55,7 @@ public class UserController {
     public MyResponse deleteMyBlog(int id) {
         MyResponse myResponse = new MyResponse();
 
-        if (blogService.deleteMyBlog(id) == 1) {
+        if (blogService.deleteMyBlog(id)) {
             myResponse.setMsg("删除成功！");
         } else {
             myResponse.setMsg("删除失败！");

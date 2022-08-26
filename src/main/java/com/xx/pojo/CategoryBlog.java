@@ -14,14 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName
-public class Category {
+public class CategoryBlog {
     @TableId
-    private String name;
-    private String description;
-    private String cover;
-
-    @TableField(exist = false)
-    private List<Category> child;
+    private String categoryName;
+    private int blogId;
 
     @TableLogic
     private Boolean logicDelete;

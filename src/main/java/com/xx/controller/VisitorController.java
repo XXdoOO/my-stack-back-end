@@ -13,10 +13,7 @@ import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -137,12 +134,26 @@ public class VisitorController {
     }
 
     @ResponseBody
-    @GetMapping("getCategories")
+    @GetMapping("getCategory")
     public MyResponse getCategory(String name) {
         MyResponse myResponse = new MyResponse();
 
         Category category = categoryService.getCategory(name);
         myResponse.setData(category);
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("getBlogByCategories")
+    public MyResponse getBlogListByCategories(@RequestParam("categories") List<String> categories, Boolean orderBy, Integer startIndex, Integer pageSize) {
+        MyResponse myResponse = new MyResponse();
+
+        for (String category : categories) {
+            System.out.println(category);
+        }
+
+        List<BlogView> blogViewList = blogService.getBlogListByCategories(categories, (orderBy == null || !orderBy) ? "up" : "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        myResponse.setData(blogViewList);
         return myResponse;
     }
 }

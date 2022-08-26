@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xx.mapper.BlogViewMapper">
+    <select id="getBlogListByCategories" parameterType="map" resultType="BlogView">
+        select distinct `blog`.*
+        from `blog`,
+        `category_blog`
+        where `category_blog`.`category_name` in
+        <foreach collection="categories" item="category" index="index" open="(" close=")" separator=",">
+            #{category}
+        </foreach>
+        order by #{orderby}
+        limit #{startIndex}, #{pageSize};
+    </select>
+</mapper>

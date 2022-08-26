@@ -22,11 +22,32 @@ public class CommentsService {
 
     public List<Comments> getCommentsList(int id, String orderBy, int startIndex, int pageSize) {
         QueryWrapper<Comments> wrapper = new QueryWrapper<>();
-        return commentsMapper.selectList(wrapper.
+
+        commentsMapper.selectList(wrapper.
                 eq("blog_id", id).
-                orderByAsc(orderBy).
-                last("limit " + startIndex + ", " + pageSize).
-                orderByAsc("up"));
+                gt("up", 0).
+                isNull("parent").
+                orderByDesc(orderBy).
+                last("limit " + startIndex + ", " + pageSize));
+
+        if ("up".equals(orderBy)) {
+            List<Comments> comments = commentsMapper.selectList(wrapper.
+                    eq("blog_id", id).
+                    gt("up", 0).
+                    orderByDesc(orderBy).
+                    last("limit " + startIndex + ", " + pageSize));
+
+
+            return comments;
+        } else if ("post_time".equals(orderBy)) {
+            return commentsMapper.selectList(wrapper.
+                    eq("blog_id", id).
+                    eq("up", 0).
+                    isNull("parent").
+                    orderByDesc(orderBy).
+                    last("limit " + startIndex + ", " + pageSize));
+        }
+        return null;
     }
 
     public int postComments(Comments comments) {
@@ -34,7 +55,7 @@ public class CommentsService {
         Comments comments1 = new Comments();
 
         comments1.setBlogId(comments.getBlogId());
-        comments1.setParentComments(comments.getParentComments());
+        comments1.setParent(comments.getParent());
         comments1.setAuthorUsername(username);
         comments1.setContent(comments.getContent());
 

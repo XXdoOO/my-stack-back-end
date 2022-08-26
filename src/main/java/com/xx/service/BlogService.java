@@ -25,10 +25,13 @@ public class BlogService {
     private BlogViewMapper blogViewMapper;
 
     @Autowired
-    private StarMapper starMapper;
+    private BlogStarMapper starMapper;
 
     @Autowired
     private CommentsService commentsService;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @Autowired
     private HttpSession session;
@@ -64,32 +67,40 @@ public class BlogService {
                 eq("status", 1).
                 eq("id", id));
 
-        // 默认获取十条热评，十条新评
-        List<Comments> comments = commentsService.getCommentsList(blog.getId(), "up", 0, 10);
-        comments.addAll(commentsService.getCommentsList(blog.getId(), "time", 0, 10));
+        // 默认获取最多五条热评，最多十条新评
+        List<Comments> comments = commentsService.getCommentsList(blog.getId(), "up", 0, 5);
+
+        comments.addAll(commentsService.getCommentsList(blog.getId(), "post_time", 0, 10));
         blog.setCommentsList(comments);
 
         return blog;
     }
 
-    public int postBlog(Blog blog) {
+    public boolean postBlog(Blog blog) {
         User user = (User) session.getAttribute("USER_SESSION");
         Blog blog1 = new Blog();
         blog1.setTitle(blog.getTitle());
         blog1.setContent(blog.getContent());
         blog1.setAuthorUsername(user.getUsername());
 
-        return blogMapper.insert(blog1);
+        int insert = blogMapper.insert(blog1);
+
+        boolean result = categoryService.addCategoryBlog(blog1.getId(), blog.getCategories());
+
+        return insert > 0 && result;
     }
 
-    public int deleteMyBlog(int id) {
-        UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+    public boolean deleteMyBlog(int id) {
+        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
-        return blogMapper.update(null, wrapper.
+        int delete = blogMapper.delete(wrapper.
                 eq("id", id).
-                eq("author_username", username).
-                set("logic_delete", 1));
+                eq("author_username", username));
+
+        int i = categoryService.deleteCategoryBlog(id);
+
+        return i > 0 && delete > 0;
     }
 
     public int updateMyBlog(Blog blog) {
@@ -100,6 +111,8 @@ public class BlogService {
         blog1.setTitle(blog.getTitle());
         blog1.setContent(blog.getContent());
         blog1.setStatus(null);
+
+        categoryService.updateCategoryBlog(blog.getId(), blog.getCategories());
 
         return blogMapper.update(blog1, wrapper.
                 eq("id", blog.getId()).
@@ -113,7 +126,7 @@ public class BlogService {
 
     public boolean starBlog(int id) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
-        QueryWrapper<Star> queryWrapper = new QueryWrapper<>();
+        QueryWrapper<BlogStar> queryWrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
         Long count = starMapper.selectCount(queryWrapper.
@@ -122,13 +135,13 @@ public class BlogService {
                 eq("blog_id", id));
 
         if (count > 0) {
-            Star star = new Star(id, username);
+            BlogStar star = new BlogStar(id, username, null);
             int update = blogMapper.update(null, wrapper.setSql("star = star -1").eq("id", id));
             int insert = starMapper.insert(star);
             return update == 1 && insert == 1;
         }
 
-        UpdateWrapper<Star> wrapper2 = new UpdateWrapper<>();
+        UpdateWrapper<BlogStar> wrapper2 = new UpdateWrapper<>();
         int update = blogMapper.update(null, wrapper.setSql("star = star + 1").eq("id", id));
         int update1 = starMapper.update(null, wrapper2.set("logic_delete", 1));
         return update == 1 && update1 == 1;
@@ -142,6 +155,18 @@ public class BlogService {
         map.put("startIndex", startIndex);
         map.put("pageSize", pageSize);
 
-        return blogMapper.getMyStar(map);
+        return blogMapper.getMyStarList(map);
+    }
+
+    public List<BlogView> getBlogListByCategories(List<String> categories, String orderBy, int startIndex, int pageSize) {
+        QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("categories", categories);
+        map.put("orderBy", orderBy);
+        map.put("startIndex", startIndex);
+        map.put("pageSize", pageSize);
+
+        return blogViewMapper.getBlogListByCategories(map);
     }
 }

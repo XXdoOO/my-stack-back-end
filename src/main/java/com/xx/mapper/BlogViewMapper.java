@@ -10,4 +10,5 @@ import java.util.Map;
 
 @Repository
 public interface BlogViewMapper extends BaseMapper<BlogView> {
+    List<BlogView> getBlogListByCategories(Map<String, Object> map);
 }

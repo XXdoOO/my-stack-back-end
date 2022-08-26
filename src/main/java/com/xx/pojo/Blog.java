@@ -1,5 +1,6 @@
 package com.xx.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.xx.util.FormatTime;
@@ -26,8 +27,13 @@ public class Blog {
     private Long postTime;
     private Boolean status;
 
+    @TableField(exist = false)
     private List<String> categories;
+    @TableField(exist = false)
     private List<Comments> commentsList;
+
+    @TableLogic
+    private Boolean logicDelete;
 
     public void setPostTime(Timestamp postTime) throws ParseException {
         this.postTime = FormatTime.timestampToLong(postTime);

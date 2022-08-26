@@ -22,7 +22,8 @@ public class BlogView {
     private Integer views;
     private String authorUsername;
     private Long postTime;
-
+    @TableLogic
+    private Boolean logicDelete;
     public void setPostTime(Timestamp postTime) throws ParseException {
         this.postTime = FormatTime.timestampToLong(postTime);
     }
