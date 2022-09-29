@@ -58,22 +58,28 @@ public class BlogService {
     public Blog getBlogDetails(int id) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         UpdateWrapper<Blog> updateWrapper = new UpdateWrapper<>();
-        blogMapper.update(null, updateWrapper.
+        int update = blogMapper.update(null, updateWrapper.
                 setSql("views = views + 1").
                 eq("status", 1).
                 eq("id", id));
 
-        Blog blog = blogMapper.selectOne(wrapper.
-                eq("status", 1).
-                eq("id", id));
+        if (update != 0) {
+            Blog blog = blogMapper.selectOne(wrapper.
+                    eq("status", 1).
+                    eq("id", id));
 
-        // 默认获取最多五条热评，最多十条新评
-        List<Comments> comments = commentsService.getCommentsList(blog.getId(), "up", 0, 5);
+            // 默认获取最多五条热评，最多十条新评
+            List<Comments> comments = commentsService.getCommentsList(blog.getId(), "up", 0, 5);
 
-        comments.addAll(commentsService.getCommentsList(blog.getId(), "post_time", 0, 10));
-        blog.setCommentsList(comments);
+            comments.addAll(commentsService.getCommentsList(blog.getId(), "post_time", 0, 10));
+            blog.setCommentsList(comments);
 
-        return blog;
+            // categoryService
+
+            return blog;
+        }
+        return null;
+
     }
 
     public boolean postBlog(Blog blog) {
@@ -158,7 +164,8 @@ public class BlogService {
         return blogMapper.getMyStarList(map);
     }
 
-    public List<BlogView> getBlogListByCategories(List<String> categories, String orderBy, int startIndex, int pageSize) {
+    public List<BlogView> getBlogListByCategories(List<String> categories, String orderBy, int startIndex,
+                                                  int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
         Map<String, Object> map = new HashMap<>();
