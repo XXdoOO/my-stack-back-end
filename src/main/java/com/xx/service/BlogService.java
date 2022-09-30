@@ -34,15 +34,26 @@ public class BlogService {
     private CategoryService categoryService;
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
     private HttpSession session;
 
     public List<BlogView> getBlogListByKeywords(String keywords, String orderBy, int startIndex, int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
-        return blogViewMapper.selectList(wrapper.
+
+        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
                 eq("status", 1).
                 and(i -> i.like("title", keywords).or().like("content", keywords)).
                 orderByAsc(orderBy).
                 last("limit " + startIndex + ", " + pageSize));
+
+        for (BlogView blogView : blogViews) {
+            User user = userMapper.selectById(blogView.getAuthorUsername());
+            blogView.setAuthorNickname(user.getNickname());
+        }
+
+        return blogViews;
     }
 
     public List<BlogView> getUserBlogList(String username, int startIndex, int pageSize) {

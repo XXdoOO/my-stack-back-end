@@ -18,6 +18,7 @@ public class Blog {
     private Integer id;
     private String title;
     private String description;
+    private String cover;
     private String content;
     private Integer up;
     private Integer down;
