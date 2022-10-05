@@ -14,6 +14,8 @@ public class AdminFilter implements HandlerInterceptor {
             HttpSession session = request.getSession();
 
             Boolean identity = ((User) session.getAttribute("USER_SESSION")).getIdentity();
+
+            System.out.println("User拦截器：" + identity);
             if (identity) {
                 return true;
             }

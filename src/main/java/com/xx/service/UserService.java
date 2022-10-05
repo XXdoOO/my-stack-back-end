@@ -21,6 +21,8 @@ public class UserService {
     private HttpSession session;
 
     public Map<String, String> login(String username, String password) {
+        System.out.println("用户：【" + username + "】请求登录");
+
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         Map<String, String> map = new HashMap<>();
 
@@ -37,7 +39,7 @@ public class UserService {
 
     public int register(String username, String password) {
         User result = userMapper.selectById(username);
-        if(result != null){
+        if (result != null) {
             return -1;
         }
 

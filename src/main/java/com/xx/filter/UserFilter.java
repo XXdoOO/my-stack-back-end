@@ -14,6 +14,8 @@ public class UserFilter implements HandlerInterceptor {
             HttpSession session = request.getSession();
 
             User user = (User) session.getAttribute("USER_SESSION");
+
+            System.out.println("User拦截器：" + user);
             if (user != null) {
                 return true;
             }

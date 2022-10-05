@@ -82,7 +82,9 @@ public class VisitorController {
     public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<BlogView> blogList = blogService.getBlogListByKeywords(keywords == null ? "" : keywords, (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        List<BlogView> blogList = blogService.getBlogListByKeywords(keywords == null ? "" : keywords,
+                (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
+                pageSize == null ? 10 : pageSize);
         myResponse.setData(blogList);
         return myResponse;
     }
@@ -96,7 +98,8 @@ public class VisitorController {
             myResponse.setCode(400);
             myResponse.setMsg("请传入用户名！");
         } else {
-            List<BlogView> blogs = blogService.getUserBlogList(username, startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+            List<BlogView> blogs = blogService.getUserBlogList(username, startIndex == null ? 0 : startIndex,
+                    pageSize == null ? 10 : pageSize);
             myResponse.setData(blogs);
         }
         return myResponse;
@@ -118,7 +121,8 @@ public class VisitorController {
     public MyResponse getCommentsList(int id, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" : "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" :
+                "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(commentsList);
         return myResponse;
     }
@@ -145,14 +149,16 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getBlogByCategories")
-    public MyResponse getBlogListByCategories(@RequestParam("categories") List<String> categories, Boolean orderBy, Integer startIndex, Integer pageSize) {
+    public MyResponse getBlogListByCategories(@RequestParam("categories") List<String> categories, Boolean orderBy,
+                                              Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
         for (String category : categories) {
             System.out.println(category);
         }
 
-        List<BlogView> blogViewList = blogService.getBlogListByCategories(categories, (orderBy == null || !orderBy) ? "up" : "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        List<BlogView> blogViewList = blogService.getBlogListByCategories(categories, (orderBy == null || !orderBy) ?
+                "up" : "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(blogViewList);
         return myResponse;
     }
