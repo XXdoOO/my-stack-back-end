@@ -1,6 +1,7 @@
 package com.xx.controller;
 
 import com.xx.pojo.Blog;
+import com.xx.pojo.BlogView;
 import com.xx.pojo.Comments;
 import com.xx.service.BlogService;
 import com.xx.service.CommentsService;
@@ -81,6 +82,36 @@ public class UserController {
     }
 
     @ResponseBody
+    @PutMapping("/upBlog")
+    public MyResponse upBlog(int id) {
+        MyResponse myResponse = new MyResponse();
+
+        if (blogService.upBlog(id)) {
+            myResponse.setMsg("顶成功！");
+        } else {
+            myResponse.setMsg("顶失败！");
+            myResponse.setCode(400);
+        }
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @PutMapping("/downBlog")
+    public MyResponse downBlog(int id) {
+        MyResponse myResponse = new MyResponse();
+
+        if (blogService.downBlog(id)) {
+            myResponse.setMsg("踩成功！");
+        } else {
+            myResponse.setMsg("踩失败！");
+            myResponse.setCode(400);
+        }
+
+        return myResponse;
+    }
+
+    @ResponseBody
     @PutMapping("/starBlog")
     public MyResponse starBlog(int id) {
         MyResponse myResponse = new MyResponse();
@@ -100,7 +131,30 @@ public class UserController {
     public MyResponse getMyStarList(Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<Blog> myStar = blogService.getMyStarList(startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+        List<BlogView> myStar = blogService.getMyStarList(startIndex == null ? 0 : startIndex, pageSize == null ? 10
+                : pageSize);
+        myResponse.setData(myStar);
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("/getMyUpList")
+    public MyResponse getMyUpList(Integer startIndex, Integer pageSize) {
+        MyResponse myResponse = new MyResponse();
+
+        List<BlogView> myStar = blogService.getMyUpList(startIndex == null ? 0 : startIndex, pageSize == null ? 10 :
+                pageSize);
+        myResponse.setData(myStar);
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("/getMyDownList")
+    public MyResponse getMyDownList(Integer startIndex, Integer pageSize) {
+        MyResponse myResponse = new MyResponse();
+
+        List<BlogView> myStar = blogService.getMyDownList(startIndex == null ? 0 : startIndex, pageSize == null ? 10
+                : pageSize);
         myResponse.setData(myStar);
         return myResponse;
     }

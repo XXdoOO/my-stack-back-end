@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName
-public class BlogStar {
+public class BlogUp {
     private Integer blogId;
     private String username;
 
-    @TableLogic()
+    @TableLogic
     private Boolean logicDelete;
 }

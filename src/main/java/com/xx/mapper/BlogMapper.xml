@@ -4,13 +4,26 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xx.mapper.BlogMapper">
-    <select id="getMyStarList" parameterType="map" resultType="Blog">
-        select `id`, `title`, `star`, `views`, `author_username`, `post_time`
+    <select id="getMyStarList" parameterType="map" resultType="BlogView">
+        select *
         from `blog`
         where `id` in (select `blog_id` from `blog_star` where `logic_delete` = 0 and `username` = #{username})
         limit #{startIndex}, #{pageSize};
     </select>
 
+    <select id="getMyUpList" parameterType="map" resultType="BlogView">
+        select *
+        from `blog`
+        where `id` in (select `blog_id` from `blog_up` where `logic_delete` = 0 and `username` = #{username})
+        limit #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="getMyDownList" parameterType="map" resultType="BlogView">
+        select *
+        from `blog`
+        where `id` in (select `blog_id` from `blog_down` where `logic_delete` = 0 and `username` = #{username})
+        limit #{startIndex}, #{pageSize};
+    </select>
 
     <select id="getBlogListByCategories" parameterType="map" resultType="Blog">
         select *
