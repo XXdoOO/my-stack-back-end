@@ -42,7 +42,7 @@ public class VisitorController {
             myResponse.setMsg("用户名或密码格式错误！");
             myResponse.setCode(400);
         } else {
-            Map<String, String> result = userService.login(username, password);
+            Map<String, Object> result = userService.login(username, password);
 
             if (result.size() != 0) {
                 myResponse.setMsg("登录成功！");

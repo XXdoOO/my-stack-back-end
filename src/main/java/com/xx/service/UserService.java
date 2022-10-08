@@ -20,18 +20,21 @@ public class UserService {
     @Autowired
     private HttpSession session;
 
-    public Map<String, String> login(String username, String password) {
+    public Map<String, Object> login(String username, String password) {
         System.out.println("用户：【" + username + "】请求登录");
 
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        Map<String, String> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
 
         User user = userMapper.selectOne(wrapper.eq("username", username).eq("password", password));
 
         if (user != null) {
             session.setAttribute("USER_SESSION", user);
+            map.put("username", user.getUsername());
             map.put("nickname", user.getNickname());
             map.put("avatar", user.getAvatar());
+            map.put("registerTime", user.getRegisterTime());
+            map.put("disableTime", user.getDisableTime());
         }
 
         return map;
