@@ -33,6 +33,7 @@ public class UserService {
             map.put("username", user.getUsername());
             map.put("nickname", user.getNickname());
             map.put("avatar", user.getAvatar());
+            map.put("identity", user.getIdentity());
             map.put("registerTime", user.getRegisterTime());
             map.put("disableTime", user.getDisableTime());
         }
