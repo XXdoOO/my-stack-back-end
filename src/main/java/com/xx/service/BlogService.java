@@ -40,6 +40,9 @@ public class BlogService {
     private CategoryService categoryService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private UserMapper userMapper;
 
     @Autowired
@@ -84,6 +87,9 @@ public class BlogService {
             Blog blog = blogMapper.selectOne(wrapper.
                     eq("status", 1).
                     eq("id", id));
+
+            String username = blog.getAuthorUsername();
+            blog.setAuthorInfo(userService.getUserInfo(username));
 
             // 默认获取最多五条热评，最多十条新评
             List<Comments> comments = commentsService.getCommentsList(blog.getId(), "up", 0, 5);

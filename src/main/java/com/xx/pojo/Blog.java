@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -28,6 +29,8 @@ public class Blog {
     private Long postTime;
     private Boolean status;
 
+    @TableField(exist = false)
+    private Map<String, Object> authorInfo;
     @TableField(exist = false)
     private List<String> categories;
     @TableField(exist = false)
