@@ -73,7 +73,6 @@ public class UserService {
     public Map<String, Object> getUserInfo(String username) {
         HashMap<String, Object> map = new HashMap<>();
         QueryWrapper<Blog> blogWrapper = new QueryWrapper<>();
-        QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
         QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
         QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
 
@@ -81,17 +80,18 @@ public class UserService {
 
         String nickname = user.getNickname();
         String avatar = user.getAvatar();
+        Long registerTime = user.getRegisterTime();
         long postCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).eq("status", 1));
-        long starCount = blogStarMapper.selectCount(starWrapper.eq("username", username));
         long upCount = blogUpMapper.selectCount(upWrapper.eq("username", username));
         long downCount = blogDownMapper.selectCount(downWrapper.eq("username", username));
 
+        map.put("username", username);
         map.put("nickname", nickname);
         map.put("avatar", avatar);
+        map.put("registerTime", registerTime);
         map.put("postCount", postCount);
         map.put("upCount", upCount);
         map.put("downCount", downCount);
-        map.put("starCount", starCount);
 
         return map;
     }

@@ -65,14 +65,44 @@ public class BlogService {
         return blogViews;
     }
 
-    public List<BlogView> getUserBlogList(String username, int startIndex, int pageSize) {
+    public List<BlogView> getUserPostBlogList(String username, int startIndex, int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
         return blogViewMapper.selectList(wrapper.
-                select("id", "title", "star", "views", "author_username", "post_time").
                 eq("author_username", username).
+                eq("status", 1).
                 orderByAsc("post_time").
                 last("limit " + startIndex + ", " + pageSize));
+    }
+
+    public List<BlogView> getUserUpBlogList(String username, int startIndex, int pageSize) {
+        QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
+
+        List<BlogUp> blogUps = upMapper.selectList(upWrapper.eq("username", username).last("limit " + startIndex + "," +
+                " " + pageSize));
+        List<BlogView> blogViews = new ArrayList<>();
+
+        for (BlogUp blogUp : blogUps) {
+            BlogView blogView = blogViewMapper.selectById(blogUp.getBlogId());
+            blogViews.add(blogView);
+        }
+
+        return blogViews;
+    }
+
+    public List<BlogView> getUserDownBlogList(String username, int startIndex, int pageSize) {
+        QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
+
+        List<BlogDown> blogDowns =
+                downMapper.selectList(downWrapper.eq("username", username).last("limit " + startIndex + ", " + pageSize));
+        List<BlogView> blogViews = new ArrayList<>();
+
+        for (BlogDown blogDown : blogDowns) {
+            BlogView blogView = blogViewMapper.selectById(blogDown.getBlogId());
+            blogViews.add(blogView);
+        }
+
+        return blogViews;
     }
 
     public Blog getBlogDetails(int id) {

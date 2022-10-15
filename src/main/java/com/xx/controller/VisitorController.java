@@ -90,7 +90,22 @@ public class VisitorController {
     }
 
     @ResponseBody
-    @GetMapping("getUserBlogList")
+    @GetMapping("getUserInfo")
+    public MyResponse getUserInfo(String username) {
+        MyResponse myResponse = new MyResponse();
+
+        if (username == null || username.length() == 0) {
+            myResponse.setCode(400);
+            myResponse.setMsg("请传入用户名！");
+        } else {
+            Map<String, Object> userInfo = userService.getUserInfo(username);
+            myResponse.setData(userInfo);
+        }
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("getUserPostBlogList")
     public MyResponse getUserBlogList(String username, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
@@ -98,7 +113,39 @@ public class VisitorController {
             myResponse.setCode(400);
             myResponse.setMsg("请传入用户名！");
         } else {
-            List<BlogView> blogs = blogService.getUserBlogList(username, startIndex == null ? 0 : startIndex,
+            List<BlogView> blogs = blogService.getUserPostBlogList(username, startIndex == null ? 0 : startIndex,
+                    pageSize == null ? 10 : pageSize);
+            myResponse.setData(blogs);
+        }
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("getUserUpBlogList")
+    public MyResponse getUserUpBlogList(String username, Integer startIndex, Integer pageSize) {
+        MyResponse myResponse = new MyResponse();
+
+        if (username == null || username.length() == 0) {
+            myResponse.setCode(400);
+            myResponse.setMsg("请传入用户名！");
+        } else {
+            List<BlogView> blogs = blogService.getUserUpBlogList(username, startIndex == null ? 0 : startIndex,
+                    pageSize == null ? 10 : pageSize);
+            myResponse.setData(blogs);
+        }
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("getUserDownBlogList")
+    public MyResponse getUserDownBlogList(String username, Integer startIndex, Integer pageSize) {
+        MyResponse myResponse = new MyResponse();
+
+        if (username == null || username.length() == 0) {
+            myResponse.setCode(400);
+            myResponse.setMsg("请传入用户名！");
+        } else {
+            List<BlogView> blogs = blogService.getUserDownBlogList(username, startIndex == null ? 0 : startIndex,
                     pageSize == null ? 10 : pageSize);
             myResponse.setData(blogs);
         }
