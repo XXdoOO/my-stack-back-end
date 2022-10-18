@@ -34,7 +34,7 @@ public class Blog {
     @TableField(exist = false)
     private List<String> categories;
     @TableField(exist = false)
-    private List<Comments> commentsList;
+    private Map<String, List<Comments>> commentsList;
 
     @TableLogic
     private Boolean logicDelete;

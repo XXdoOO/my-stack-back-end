@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
@@ -127,6 +129,28 @@ public class UserController {
     }
 
     @ResponseBody
+    @GetMapping("/getMyInfo")
+    public MyResponse getMyInfo() {
+        MyResponse myResponse = new MyResponse();
+
+        Map<String, Object> myInfo = userService.getMyInfo();
+        myResponse.setData(myInfo);
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("/getMyPostList")
+    public MyResponse getMyPostList(Integer status, Integer startIndex, Integer pageSize) {
+        MyResponse myResponse = new MyResponse();
+
+        List<BlogView> myPostList = blogService.getMyPostList(status, startIndex == null ? 0 : startIndex,
+                pageSize == null ? 10
+                        : pageSize);
+        myResponse.setData(myPostList);
+        return myResponse;
+    }
+
+    @ResponseBody
     @GetMapping("/getMyStarList")
     public MyResponse getMyStarList(Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
@@ -184,6 +208,36 @@ public class UserController {
             myResponse.setMsg("删除失败！");
             myResponse.setCode(400);
         }
+        return myResponse;
+    }
+
+    @ResponseBody
+    @PutMapping("/upComments")
+    public MyResponse upComments(int id) {
+        MyResponse myResponse = new MyResponse();
+
+        if (commentsService.upComments(id)) {
+            myResponse.setMsg("顶成功！");
+        } else {
+            myResponse.setMsg("顶失败！");
+            myResponse.setCode(400);
+        }
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @PutMapping("/downComments")
+    public MyResponse downComments(int id) {
+        MyResponse myResponse = new MyResponse();
+
+        if (commentsService.downComments(id)) {
+            myResponse.setMsg("顶成功！");
+        } else {
+            myResponse.setMsg("顶失败！");
+            myResponse.setCode(400);
+        }
+
         return myResponse;
     }
 }

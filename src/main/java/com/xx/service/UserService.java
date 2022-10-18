@@ -78,21 +78,42 @@ public class UserService {
 
         User user = userMapper.selectById(username);
 
-        String nickname = user.getNickname();
-        String avatar = user.getAvatar();
-        Long registerTime = user.getRegisterTime();
-        long postCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).eq("status", 1));
-        long upCount = blogUpMapper.selectCount(upWrapper.eq("username", username));
-        long downCount = blogDownMapper.selectCount(downWrapper.eq("username", username));
+        if (user != null) {
+            String nickname = user.getNickname();
+            String avatar = user.getAvatar();
+            Long registerTime = user.getRegisterTime();
+            long postCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).eq("status", 1));
+            long upCount = blogUpMapper.selectCount(upWrapper.eq("username", username));
+            long downCount = blogDownMapper.selectCount(downWrapper.eq("username", username));
 
-        map.put("username", username);
-        map.put("nickname", nickname);
-        map.put("avatar", avatar);
-        map.put("registerTime", registerTime);
-        map.put("postCount", postCount);
-        map.put("upCount", upCount);
-        map.put("downCount", downCount);
+            map.put("username", username);
+            map.put("nickname", nickname);
+            map.put("avatar", avatar);
+            map.put("registerTime", registerTime);
+            map.put("postCount", postCount);
+            map.put("upCount", upCount);
+            map.put("downCount", downCount);
+        }
 
         return map;
+    }
+
+    public Map<String, Object> getMyInfo() {
+        QueryWrapper<Blog> blogWrapper = new QueryWrapper<>();
+        QueryWrapper<Blog> blogWrapper2 = new QueryWrapper<>();
+        QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
+
+        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+
+        long noPassCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).eq("status", 0));
+        long auditingCount = blogMapper.selectCount(blogWrapper2.eq("author_username", username).isNull("status"));
+        long starCount = blogStarMapper.selectCount(starWrapper.eq("username", username));
+
+        Map<String, Object> myInfo = getUserInfo(username);
+
+        myInfo.put("noPassCount", noPassCount);
+        myInfo.put("auditingCount", auditingCount);
+        myInfo.put("starCount", starCount);
+        return myInfo;
     }
 }

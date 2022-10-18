@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -22,6 +23,15 @@ public class Comments {
     private Integer up;
     private Integer down;
     private Long postTime;
+
+    @TableField(exist = false)
+    private Boolean isUp;
+
+    @TableField(exist = false)
+    private Boolean isDown;
+
+    @TableField(exist = false)
+    private Map<String, Object> authorInfo;
 
     @TableField(exist = false)
     private Integer replyCount;

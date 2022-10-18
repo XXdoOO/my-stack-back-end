@@ -121,13 +121,14 @@ public class BlogService {
             String username = blog.getAuthorUsername();
             blog.setAuthorInfo(userService.getUserInfo(username));
 
+            HashMap<String, List<Comments>> map = new HashMap<>();
             // 默认获取最多五条热评，最多十条新评
-            List<Comments> comments = commentsService.getCommentsList(blog.getId(), "up", 0, 5);
+            List<Comments> hotComments = commentsService.getCommentsList(blog.getId(), "up", 0, 5);
+            List<Comments> newComments = commentsService.getCommentsList(blog.getId(), "post_time", 0, 10);
 
-            comments.addAll(commentsService.getCommentsList(blog.getId(), "post_time", 0, 10));
-            blog.setCommentsList(comments);
-
-            // categoryService
+            map.put("hotComments", hotComments);
+            map.put("newComments", newComments);
+            blog.setCommentsList(map);
 
             return blog;
         }
@@ -258,6 +259,24 @@ public class BlogService {
         int update1 = starMapper.delete(wrapper2.eq("username", username).eq("blog_id",
                 id));
         return update == 1 && update1 == 1;
+    }
+
+    public List<BlogView> getMyPostList(Integer status, int startIndex, int pageSize) {
+        QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
+        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+
+        if (status != null) {
+            return blogViewMapper.selectList(wrapper.
+                    eq("author_username", username).
+                    eq("status", status).
+                    orderByAsc("post_time").
+                    last("limit " + startIndex + ", " + pageSize));
+        }
+        return blogViewMapper.selectList(wrapper.
+                eq("author_username", username).
+                isNull("status").
+                orderByAsc("post_time").
+                last("limit " + startIndex + ", " + pageSize));
     }
 
     public List<BlogView> getMyStarList(int startIndex, int pageSize) {

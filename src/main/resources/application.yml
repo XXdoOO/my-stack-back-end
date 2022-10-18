@@ -11,7 +11,8 @@ spring:
       exclude: WEB-INF/**
     freemarker:
       cache: false    #页面不加载缓存，修改即时生效
-
+  mvc:
+    dispatch-options-request: true
 mybatis-plus:
   type-aliases-package: com.xx.pojo
   configuration:
