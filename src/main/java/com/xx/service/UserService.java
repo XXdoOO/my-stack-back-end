@@ -32,25 +32,20 @@ public class UserService {
     @Autowired
     private HttpSession session;
 
-    public Map<String, Object> login(String username, String password) {
+    public User login(String username, String password) {
         System.out.println("用户：【" + username + "】请求登录");
 
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        Map<String, Object> map = new HashMap<>();
 
         User user = userMapper.selectOne(wrapper.eq("username", username).eq("password", password));
-
+        User userInfo = null;
         if (user != null) {
             session.setAttribute("USER_SESSION", user);
-            map.put("username", user.getUsername());
-            map.put("nickname", user.getNickname());
-            map.put("avatar", user.getAvatar());
-            map.put("identity", user.getIdentity());
-            map.put("registerTime", user.getRegisterTime());
-            map.put("disableTime", user.getDisableTime());
+
+            userInfo = getMyInfo();
         }
 
-        return map;
+        return userInfo;
     }
 
     public int register(String username, String password) {
@@ -70,8 +65,7 @@ public class UserService {
         session.removeAttribute("USER_SESSION");
     }
 
-    public Map<String, Object> getUserInfo(String username) {
-        HashMap<String, Object> map = new HashMap<>();
+    public User getUserInfo(String username) {
         QueryWrapper<Blog> blogWrapper = new QueryWrapper<>();
         QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
         QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
@@ -79,26 +73,19 @@ public class UserService {
         User user = userMapper.selectById(username);
 
         if (user != null) {
-            String nickname = user.getNickname();
-            String avatar = user.getAvatar();
-            Long registerTime = user.getRegisterTime();
-            long postCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).eq("status", 1));
+            long passCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).eq("status", 1));
             long upCount = blogUpMapper.selectCount(upWrapper.eq("username", username));
             long downCount = blogDownMapper.selectCount(downWrapper.eq("username", username));
 
-            map.put("username", username);
-            map.put("nickname", nickname);
-            map.put("avatar", avatar);
-            map.put("registerTime", registerTime);
-            map.put("postCount", postCount);
-            map.put("upCount", upCount);
-            map.put("downCount", downCount);
+            user.setPassCount(passCount);
+            user.setUpCount(upCount);
+            user.setDownCount(downCount);
         }
 
-        return map;
+        return user;
     }
 
-    public Map<String, Object> getMyInfo() {
+    public User getMyInfo() {
         QueryWrapper<Blog> blogWrapper = new QueryWrapper<>();
         QueryWrapper<Blog> blogWrapper2 = new QueryWrapper<>();
         QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
@@ -109,11 +96,11 @@ public class UserService {
         long auditingCount = blogMapper.selectCount(blogWrapper2.eq("author_username", username).isNull("status"));
         long starCount = blogStarMapper.selectCount(starWrapper.eq("username", username));
 
-        Map<String, Object> myInfo = getUserInfo(username);
+        User user = getUserInfo(username);
 
-        myInfo.put("noPassCount", noPassCount);
-        myInfo.put("auditingCount", auditingCount);
-        myInfo.put("starCount", starCount);
-        return myInfo;
+        user.setNoPassCount(noPassCount);
+        user.setAuditingCount(auditingCount);
+        user.setStarCount(starCount);
+        return user;
     }
 }

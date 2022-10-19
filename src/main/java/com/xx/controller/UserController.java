@@ -3,6 +3,7 @@ package com.xx.controller;
 import com.xx.pojo.Blog;
 import com.xx.pojo.BlogView;
 import com.xx.pojo.Comments;
+import com.xx.pojo.User;
 import com.xx.service.BlogService;
 import com.xx.service.CommentsService;
 import com.xx.service.UserService;
@@ -133,8 +134,8 @@ public class UserController {
     public MyResponse getMyInfo() {
         MyResponse myResponse = new MyResponse();
 
-        Map<String, Object> myInfo = userService.getMyInfo();
-        myResponse.setData(myInfo);
+        User user = userService.getMyInfo();
+        myResponse.setData(user);
         return myResponse;
     }
 

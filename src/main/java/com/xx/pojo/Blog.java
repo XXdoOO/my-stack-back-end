@@ -30,7 +30,7 @@ public class Blog {
     private Boolean status;
 
     @TableField(exist = false)
-    private Map<String, Object> authorInfo;
+    private User authorInfo;
     @TableField(exist = false)
     private List<String> categories;
     @TableField(exist = false)

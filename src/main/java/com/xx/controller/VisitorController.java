@@ -2,10 +2,7 @@ package com.xx.controller;
 
 import com.xx.mapper.BlogMapper;
 import com.xx.mapper.CommentsMapper;
-import com.xx.pojo.Blog;
-import com.xx.pojo.BlogView;
-import com.xx.pojo.Category;
-import com.xx.pojo.Comments;
+import com.xx.pojo.*;
 import com.xx.service.BlogService;
 import com.xx.service.CategoryService;
 import com.xx.service.CommentsService;
@@ -42,11 +39,11 @@ public class VisitorController {
             myResponse.setMsg("用户名或密码格式错误！");
             myResponse.setCode(400);
         } else {
-            Map<String, Object> result = userService.login(username, password);
+            User user = userService.login(username, password);
 
-            if (result.size() != 0) {
+            if (user != null) {
                 myResponse.setMsg("登录成功！");
-                myResponse.setData(result);
+                myResponse.setData(user);
             } else {
                 myResponse.setMsg("用户名或密码错误！");
                 myResponse.setCode(400);
@@ -98,8 +95,8 @@ public class VisitorController {
             myResponse.setCode(400);
             myResponse.setMsg("请传入用户名！");
         } else {
-            Map<String, Object> userInfo = userService.getUserInfo(username);
-            myResponse.setData(userInfo);
+            User user = userService.getUserInfo(username);
+            myResponse.setData(user);
         }
         return myResponse;
     }
