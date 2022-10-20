@@ -11,10 +11,14 @@ import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/user")
@@ -44,13 +48,20 @@ public class UserController {
     public MyResponse postBlog(@RequestBody Blog blog) {
         MyResponse myResponse = new MyResponse();
 
-        if (blogService.postBlog(blog)) {
-            myResponse.setMsg("发布成功！");
-        } else {
-            myResponse.setMsg("发布失败！");
-            myResponse.setCode(400);
-        }
+        int blogId = blogService.postBlog(blog);
+        myResponse.setData(blogId);
+        myResponse.setMsg("发布成功！");
 
+        return myResponse;
+    }
+
+    @ResponseBody
+    @PostMapping("/uploadCover")
+    public MyResponse upload(@RequestParam("file") MultipartFile file) {
+        MyResponse myResponse = new MyResponse();
+
+        String result = blogService.saveFile(file);
+        myResponse.setData(result);
         return myResponse;
     }
 
@@ -189,12 +200,10 @@ public class UserController {
     public MyResponse postComments(@RequestBody Comments comments) {
         MyResponse myResponse = new MyResponse();
 
-        if (commentsService.postComments(comments) == 1) {
-            myResponse.setMsg("发布成功！");
-        } else {
-            myResponse.setMsg("发布失败！");
-            myResponse.setCode(400);
-        }
+        int commentsId = commentsService.postComments(comments);
+        myResponse.setData(commentsId);
+        myResponse.setMsg("发布成功！");
+
         return myResponse;
     }
 

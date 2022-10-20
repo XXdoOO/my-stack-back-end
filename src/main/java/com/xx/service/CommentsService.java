@@ -87,15 +87,15 @@ public class CommentsService {
         comments1.setAuthorUsername(username);
         comments1.setContent(comments.getContent());
 
-        return commentsMapper.insert(comments1);
+        commentsMapper.insert(comments1);
+        return comments1.getId();
     }
 
     public int deleteMyComments(int id) {
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
         UpdateWrapper<Comments> wrapper = new UpdateWrapper<>();
 
-        return commentsMapper.update(null, wrapper.
-                set("logic_delete", 1).
+        return commentsMapper.delete(wrapper.
                 eq("author_username", username).
                 eq("id", id));
     }

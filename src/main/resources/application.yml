@@ -13,6 +13,13 @@ spring:
       cache: false    #页面不加载缓存，修改即时生效
   mvc:
     dispatch-options-request: true
+    static-path-pattern: /static/**
+  web:
+    resources:
+      static-locations: C:\Users\19725\Desktop\graduation-design\src\main\resources\static
+      chain:
+        cache: false
+
 mybatis-plus:
   type-aliases-package: com.xx.pojo
   configuration:
@@ -23,3 +30,7 @@ mybatis-plus:
       logic-delete-field: logic_delete  # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
       logic-delete-value: 1 # 逻辑已删除值(默认为 1)
       logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+cover-img:
+  request-path: /cover/**
+  local-path: D:/fileUpload/

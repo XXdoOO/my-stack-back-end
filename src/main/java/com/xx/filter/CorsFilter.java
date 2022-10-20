@@ -17,7 +17,7 @@ public class CorsFilter implements HandlerInterceptor {
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS");
         response.setHeader("Access-Control-Max-Age", "86400");
-        response.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token");
+        response.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token,");
         response.setHeader("Access-Control-Expose-Headers", "*");
 
         // 如果是OPTIONS则结束请求

@@ -1,15 +1,18 @@
 package com.xx.service;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +50,12 @@ public class BlogService {
 
     @Autowired
     private HttpSession session;
+
+    @Value("${cover-img.request-path}")
+    private String reqPath;
+
+    @Value("${cover-img.local-path}")
+    private String locPath;
 
     public List<BlogView> getBlogListByKeywords(String keywords, String orderBy, int startIndex, int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
@@ -136,18 +145,47 @@ public class BlogService {
 
     }
 
-    public boolean postBlog(Blog blog) {
+    public int postBlog(Blog blog) {
         User user = (User) session.getAttribute("USER_SESSION");
+
         Blog blog1 = new Blog();
         blog1.setTitle(blog.getTitle());
+        blog1.setDescription(blog.getDescription());
         blog1.setContent(blog.getContent());
+        blog1.setCover(blog.getCover());
         blog1.setAuthorUsername(user.getUsername());
 
-        int insert = blogMapper.insert(blog1);
+        blogMapper.insert(blog1);
 
-        boolean result = categoryService.addCategoryBlog(blog1.getId(), blog.getCategories());
+        return blog1.getId();
+    }
 
-        return insert > 0 && result;
+    public String saveFile(MultipartFile file) {
+        if (file.isEmpty()) {
+            return "未选择文件";
+        }
+        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+        //获取上传文件原来的名称
+        String filename = username + ".jpg";
+        String filePath = locPath;
+        File temp = new File(filePath);
+        if (!temp.exists()) {
+            temp.mkdirs();
+        }
+
+        File localFile = new File(filePath + filename);
+        try {
+            //把上传的文件保存至本地
+            file.transferTo(localFile);
+
+            System.out.println(filePath + filename);
+            System.out.println(file.getOriginalFilename() + " 上传成功");
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "上传失败";
+        }
+
+        return filename;
     }
 
     public boolean deleteMyBlog(int id) {
@@ -158,9 +196,7 @@ public class BlogService {
                 eq("id", id).
                 eq("author_username", username));
 
-        int i = categoryService.deleteCategoryBlog(id);
-
-        return i > 0 && delete > 0;
+        return delete == 1;
     }
 
     public int updateMyBlog(Blog blog) {
