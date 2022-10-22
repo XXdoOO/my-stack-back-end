@@ -45,23 +45,12 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/postBlog")
-    public MyResponse postBlog(@RequestBody Blog blog) {
+    public MyResponse postBlog(Blog blog) {
         MyResponse myResponse = new MyResponse();
 
-        int blogId = blogService.postBlog(blog);
-        myResponse.setData(blogId);
+        myResponse.setData(blogService.postBlog(blog));
         myResponse.setMsg("发布成功！");
 
-        return myResponse;
-    }
-
-    @ResponseBody
-    @PostMapping("/uploadCover")
-    public MyResponse upload(@RequestParam("file") MultipartFile file) {
-        MyResponse myResponse = new MyResponse();
-
-        String result = blogService.saveFile(file);
-        myResponse.setData(result);
         return myResponse;
     }
 
@@ -82,10 +71,10 @@ public class UserController {
 
     @ResponseBody
     @PutMapping("/updateMyBlog")
-    public MyResponse updateMyBlog(@RequestBody Blog blog) {
+    public MyResponse updateMyBlog(Blog blog) {
         MyResponse myResponse = new MyResponse();
 
-        if (blogService.updateMyBlog(blog) == 1) {
+        if (blogService.updateMyBlog(blog)) {
             myResponse.setMsg("更新成功！");
         } else {
             myResponse.setMsg("更新失败！");

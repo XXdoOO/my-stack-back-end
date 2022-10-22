@@ -53,18 +53,18 @@ public class CommentsService {
                 map.put("avatar", user.getAvatar());
                 map.put("nickname", user.getNickname());
                 comment.setAuthorInfo(map);
-                comment.setIsUp(false);
-                comment.setIsDown(false);
             }
         } else {
             for (Comments comment : comments) {
                 String username = ((User) userSession).getUsername();
+
                 User user = userMapper.selectById(comment.getAuthorUsername());
-                Long upCount = commentsUpMapper.selectCount(commentsUpWrapper.eq("username", username).eq("comments_id",
-                        comment.getId()));
-                Long downCount = commentsDownMapper.selectCount(commentsDownWrapper.eq("username", username).eq(
-                        "comments_id",
-                        comment.getId()));
+                Long upCount = commentsUpMapper.selectCount(commentsUpWrapper.
+                        eq("username", username).
+                        eq("comments_id", comment.getId()));
+                Long downCount = commentsDownMapper.selectCount(commentsDownWrapper.
+                        eq("username", username).
+                        eq("comments_id", comment.getId()));
 
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("avatar", user.getAvatar());

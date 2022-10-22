@@ -1,6 +1,7 @@
 package com.xx.controller;
 
 import com.xx.pojo.Blog;
+import com.xx.pojo.BlogView;
 import com.xx.service.AuditService;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,10 @@ public class AdminController {
 
     @ResponseBody
     @PutMapping("/auditBlog")
-    public MyResponse auditBlog(int id) {
+    public MyResponse auditBlog(int id, boolean status) {
         MyResponse myResponse = new MyResponse();
 
-        int result = auditService.auditBlog(id);
+        int result = auditService.auditBlog(id, status);
 
         if (result == 1) {
             myResponse.setMsg("审核成功！");
@@ -33,18 +34,14 @@ public class AdminController {
     }
 
     @ResponseBody
-    @DeleteMapping("/deleteBlog")
-    public MyResponse deleteBlog(int id) {
+    @GetMapping("/getPostBlogList")
+    public MyResponse getPostBlogList(Integer status, int startIndex, int pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        int result = auditService.deleteBlog(id);
+        List<BlogView> blogList = auditService.getPostBlogList(status, startIndex, pageSize);
 
-        if (result == 1) {
-            myResponse.setMsg("删除成功！");
-        } else {
-            myResponse.setMsg("删除失败！");
-            myResponse.setCode(400);
-        }
+        myResponse.setData(blogList);
+        myResponse.setMsg("获取成功！");
 
         return myResponse;
     }

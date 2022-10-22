@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.xx.util.FormatTime;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -31,10 +32,24 @@ public class Blog {
 
     @TableField(exist = false)
     private User authorInfo;
+
     @TableField(exist = false)
     private List<String> categories;
+
     @TableField(exist = false)
     private Map<String, List<Comments>> commentsList;
+
+    @TableField(exist = false)
+    private Boolean isUp = false;
+
+    @TableField(exist = false)
+    private Boolean isDown = false;
+
+    @TableField(exist = false)
+    private Boolean isStar = false;
+
+    @TableField(exist = false)
+    private MultipartFile coverImg;
 
     @TableLogic
     private Boolean logicDelete;

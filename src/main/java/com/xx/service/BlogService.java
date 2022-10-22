@@ -13,10 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Transactional
 @Service
@@ -123,12 +121,32 @@ public class BlogService {
                 eq("id", id));
 
         if (update != 0) {
+            Object userSession = session.getAttribute("USER_SESSION");
+
             Blog blog = blogMapper.selectOne(wrapper.
                     eq("status", 1).
                     eq("id", id));
 
-            String username = blog.getAuthorUsername();
-            blog.setAuthorInfo(userService.getUserInfo(username));
+            String authorUsername = blog.getAuthorUsername();
+
+            blog.setAuthorInfo(userService.getUserInfo(authorUsername));
+
+            if (userSession != null) {
+                String username = ((User) userSession).getUsername();
+                QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
+                QueryWrapper<BlogUp> downWrapper = new QueryWrapper<>();
+                QueryWrapper<BlogUp> starWrapper = new QueryWrapper<>();
+                Long upCount = upMapper.selectCount(upWrapper.eq("blog_id", blog.getId()).
+                        eq("username", username));
+                Long downCount = upMapper.selectCount(downWrapper.eq("blog_id", blog.getId()).
+                        eq("username", username));
+                Long starCount = upMapper.selectCount(starWrapper.eq("blog_id", blog.getId()).
+                        eq("username", username));
+
+                blog.setIsUp(upCount == 1);
+                blog.setIsDown(downCount == 1);
+                blog.setIsStar(starCount == 1);
+            }
 
             HashMap<String, List<Comments>> map = new HashMap<>();
             // 默认获取最多五条热评，最多十条新评
@@ -146,46 +164,50 @@ public class BlogService {
     }
 
     public int postBlog(Blog blog) {
+        System.out.println(blog.getCoverImg());
         User user = (User) session.getAttribute("USER_SESSION");
-
         Blog blog1 = new Blog();
+
         blog1.setTitle(blog.getTitle());
         blog1.setDescription(blog.getDescription());
         blog1.setContent(blog.getContent());
-        blog1.setCover(blog.getCover());
         blog1.setAuthorUsername(user.getUsername());
 
         blogMapper.insert(blog1);
 
+        String filename = blog1.getId() + ".jpg";
+        if (saveFile(blog.getCoverImg(), filename)) {
+            blog1.setCover("/cover/" + filename);
+        }
+
+        UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+
+        blogMapper.update(null, wrapper.set("cover", "/cover/" + filename));
         return blog1.getId();
     }
 
-    public String saveFile(MultipartFile file) {
-        if (file.isEmpty()) {
-            return "未选择文件";
+    public boolean saveFile(MultipartFile file, String filename) {
+        if (file == null || file.isEmpty()) {
+            return false;
         }
-        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
-        //获取上传文件原来的名称
-        String filename = username + ".jpg";
-        String filePath = locPath;
-        File temp = new File(filePath);
+        File temp = new File(locPath);
         if (!temp.exists()) {
             temp.mkdirs();
         }
 
-        File localFile = new File(filePath + filename);
+        File localFile = new File(locPath + filename);
         try {
             //把上传的文件保存至本地
             file.transferTo(localFile);
 
-            System.out.println(filePath + filename);
+            System.out.println(locPath + filename);
             System.out.println(file.getOriginalFilename() + " 上传成功");
         } catch (IOException e) {
             e.printStackTrace();
-            return "上传失败";
+            return false;
         }
 
-        return filename;
+        return true;
     }
 
     public boolean deleteMyBlog(int id) {
@@ -199,20 +221,34 @@ public class BlogService {
         return delete == 1;
     }
 
-    public int updateMyBlog(Blog blog) {
-        UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+    public boolean updateMyBlog(Blog blog) {
+        QueryWrapper<Blog> queryWrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
-        Blog blog1 = new Blog();
-        blog1.setTitle(blog.getTitle());
-        blog1.setContent(blog.getContent());
-        blog1.setStatus(null);
-
-        categoryService.updateCategoryBlog(blog.getId(), blog.getCategories());
-
-        return blogMapper.update(blog1, wrapper.
+        Long count = blogMapper.selectCount(queryWrapper.
                 eq("id", blog.getId()).
                 eq("author_username", username));
+
+        if (count == 1) {
+            String filename = blog.getId() + ".jpg";
+            if (saveFile(blog.getCoverImg(), filename)) {
+                blog.setCover("/cover/" + filename);
+            }
+
+            UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+
+            blogMapper.update(null, wrapper.
+                    set("title", blog.getTitle()).
+                    set("description", blog.getDescription()).
+                    set("content", blog.getContent()).
+                    set("cover", blog.getCover()).
+                    set("status", null).
+                    eq("id", blog.getId()).
+                    eq("author_username", username));
+
+            return true;
+        }
+        return false;
     }
 
     public boolean upBlog(int id) {

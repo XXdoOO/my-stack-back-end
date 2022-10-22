@@ -33,4 +33,4 @@ mybatis-plus:
 
 cover-img:
   request-path: /cover/**
-  local-path: D:/fileUpload/
+  local-path: D:/fileUpload/coverImg/

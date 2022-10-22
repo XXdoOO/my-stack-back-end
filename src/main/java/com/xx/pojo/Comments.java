@@ -25,10 +25,10 @@ public class Comments {
     private Long postTime;
 
     @TableField(exist = false)
-    private Boolean isUp;
+    private Boolean isUp = false;
 
     @TableField(exist = false)
-    private Boolean isDown;
+    private Boolean isDown = false;
 
     @TableField(exist = false)
     private Map<String, Object> authorInfo;

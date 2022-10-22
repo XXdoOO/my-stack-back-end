@@ -3,7 +3,9 @@ package com.xx.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.mapper.BlogMapper;
+import com.xx.mapper.BlogViewMapper;
 import com.xx.pojo.Blog;
+import com.xx.pojo.BlogView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -15,19 +17,26 @@ public class AuditService {
     @Autowired
     private BlogMapper blogMapper;
 
-    public int auditBlog(int id) {
+    @Autowired
+    private BlogViewMapper blogViewMapper;
+
+    public int auditBlog(int id, boolean status) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         return blogMapper.update(null, wrapper.
                 eq("id", id).
                 isNull("status").
-                setSql("status = !status"));
+                set("status", status));
     }
 
-    // 删除审核中、审核通过、审核不通过的博客
-    public int deleteBlog(int id) {
-        UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
-        return blogMapper.update(null, wrapper.
-                eq("id", id).
-                set("logic_delete", 1));
+    public List<BlogView> getPostBlogList(Integer status, int startIndex, int pageSize) {
+        QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
+
+        if (status == null) {
+            return blogViewMapper.selectList(wrapper.isNull("status").
+                    last("limit " + startIndex + ", " + pageSize));
+        }
+
+        return blogViewMapper.selectList(wrapper.eq("status", status).
+                last("limit " + startIndex + ", " + pageSize));
     }
 }
