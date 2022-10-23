@@ -1,10 +1,7 @@
 package com.xx.controller;
 
-import com.xx.mapper.BlogMapper;
-import com.xx.mapper.CommentsMapper;
 import com.xx.pojo.*;
 import com.xx.service.BlogService;
-import com.xx.service.CategoryService;
 import com.xx.service.CommentsService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
@@ -13,7 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -26,9 +22,6 @@ public class VisitorController {
 
     @Autowired
     private CommentsService commentsService;
-
-    @Autowired
-    private CategoryService categoryService;
 
     @ResponseBody
     @PostMapping("login")
@@ -168,42 +161,6 @@ public class VisitorController {
         List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" :
                 "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(commentsList);
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("getCategories")
-    public MyResponse getCategories() {
-        MyResponse myResponse = new MyResponse();
-
-        List<Category> categories = categoryService.getCategories();
-        myResponse.setData(categories);
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("getCategory")
-    public MyResponse getCategory(String name) {
-        MyResponse myResponse = new MyResponse();
-
-        Category category = categoryService.getCategory(name);
-        myResponse.setData(category);
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("getBlogByCategories")
-    public MyResponse getBlogListByCategories(@RequestParam("categories") List<String> categories, Boolean orderBy,
-                                              Integer startIndex, Integer pageSize) {
-        MyResponse myResponse = new MyResponse();
-
-        for (String category : categories) {
-            System.out.println(category);
-        }
-
-        List<BlogView> blogViewList = blogService.getBlogListByCategories(categories, (orderBy == null || !orderBy) ?
-                "up" : "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
-        myResponse.setData(blogViewList);
         return myResponse;
     }
 }

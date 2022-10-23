@@ -8,6 +8,7 @@
         select *
         from `blog`
         where `id` in (select `blog_id` from `blog_star` where `logic_delete` = 0 and `username` = #{username})
+          and `logic_delete` = 0
         limit #{startIndex}, #{pageSize};
     </select>
 
@@ -15,6 +16,7 @@
         select *
         from `blog`
         where `id` in (select `blog_id` from `blog_up` where `logic_delete` = 0 and `username` = #{username})
+          and `logic_delete` = 0
         limit #{startIndex}, #{pageSize};
     </select>
 
@@ -22,15 +24,7 @@
         select *
         from `blog`
         where `id` in (select `blog_id` from `blog_down` where `logic_delete` = 0 and `username` = #{username})
-        limit #{startIndex}, #{pageSize};
-    </select>
-
-    <select id="getBlogListByCategories" parameterType="map" resultType="Blog">
-        select *
-        from `blog`,
-             `category_blog`
-        where `category_blog`.`category_name` in #{categories}
-        order by #{orderby}
+          and `logic_delete` = 0
         limit #{startIndex}, #{pageSize};
     </select>
 </mapper>
