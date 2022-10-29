@@ -47,9 +47,25 @@ public class AdminController {
     }
 
     @ResponseBody
-    @PostMapping("/postCategory")
-    public MyResponse postCategory() {
+    @GetMapping("/getAuditBlogDetails")
+    public MyResponse getAuditBlogDetails(int id) {
         MyResponse myResponse = new MyResponse();
+
+        Blog blogDetails = auditService.getAuditBlogDetails(id);
+        myResponse.setData(blogDetails);
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("/getNearAuditBlogDetails")
+    public MyResponse getNearAuditBlogDetails(@RequestParam int id, @RequestParam boolean isNext) {
+        MyResponse myResponse = new MyResponse();
+
+        System.out.println(id);
+        System.out.println(isNext);
+        Blog blogDetails = auditService.getNearAuditBlogDetails(id, isNext);
+        myResponse.setData(blogDetails);
 
         return myResponse;
     }
