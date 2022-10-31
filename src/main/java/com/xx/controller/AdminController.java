@@ -2,6 +2,7 @@ package com.xx.controller;
 
 import com.xx.pojo.Blog;
 import com.xx.pojo.BlogView;
+import com.xx.pojo.User;
 import com.xx.service.AuditService;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,10 @@ public class AdminController {
 
     @ResponseBody
     @GetMapping("/getPostBlogList")
-    public MyResponse getPostBlogList(Integer status, int startIndex, int pageSize) {
+    public MyResponse getPostBlogList(int startIndex, int pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<BlogView> blogList = auditService.getPostBlogList(status, startIndex, pageSize);
+        List<BlogView> blogList = auditService.getPostBlogList(startIndex, pageSize);
 
         myResponse.setData(blogList);
         myResponse.setMsg("获取成功！");
@@ -66,6 +67,32 @@ public class AdminController {
         System.out.println(isNext);
         Blog blogDetails = auditService.getNearAuditBlogDetails(id, isNext);
         myResponse.setData(blogDetails);
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("/getUserList")
+    public MyResponse getUserList(Integer startIndex, Integer pageSize) {
+        MyResponse myResponse = new MyResponse();
+
+        List<User> userList = auditService.getUserList(startIndex == null ? 0 : startIndex, pageSize == null ? 10 :
+                pageSize);
+
+        myResponse.setData(userList);
+        myResponse.setMsg("获取成功！");
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @GetMapping("/setUserDisableTime")
+    public MyResponse setUserDisableTime(@RequestParam String username, @RequestParam long timestamp) {
+        MyResponse myResponse = new MyResponse();
+
+        boolean result = auditService.setUserDisableTime(username, timestamp);
+
+        myResponse.setMsg(result ? "设置成功！" : "设置失败！");
 
         return myResponse;
     }

@@ -53,6 +53,10 @@ public class User {
         this.registerTime = FormatTime.timestampToLong(registerTime);
     }
 
+    // public Timestamp getDisableTime() {
+    //     return FormatTime.longToTimestamp(this.disableTime);
+    // }
+
     public void setDisableTime(Timestamp disableTime) throws ParseException {
         this.disableTime = FormatTime.timestampToLong(disableTime);
     }

@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.mapper.BlogMapper;
 import com.xx.mapper.BlogViewMapper;
+import com.xx.mapper.UserMapper;
 import com.xx.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PutMapping;
 
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,6 +30,9 @@ public class AuditService {
     private BlogService blogService;
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
     private HttpSession session;
 
     public int auditBlog(int id, boolean status) {
@@ -38,16 +43,12 @@ public class AuditService {
                 set("status", status));
     }
 
-    public List<BlogView> getPostBlogList(Integer status, int startIndex, int pageSize) {
+    public List<BlogView> getPostBlogList(int startIndex, int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
         List<BlogView> blogViews;
-        if (status == null) {
-            blogViews = blogViewMapper.selectList(wrapper.isNull("status").
-                    last("limit " + startIndex + ", " + pageSize));
-        } else {
-            blogViews = blogViewMapper.selectList(wrapper.eq("status", status).
-                    last("limit " + startIndex + ", " + pageSize));
-        }
+
+        blogViews = blogViewMapper.selectList(wrapper.
+                last("limit " + startIndex + ", " + pageSize));
 
         blogService.setOtherInfo(blogViews);
 
@@ -93,5 +94,36 @@ public class AuditService {
         }
 
         return blog;
+    }
+
+    public List<User> getUserList(int startIndex, int pageSize) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        return userMapper.selectList(wrapper.last("limit " + startIndex + ", " + pageSize));
+    }
+
+    public boolean setUserIdentity(String username) {
+        UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+        int update = userMapper.update(null, wrapper.
+                eq("username", username).
+                set("identity", 1));
+
+        return update == 1;
+    }
+
+    public boolean setUserDisableTime(String username, long timestamp) {
+        UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+
+        User user = userMapper.selectById(username);
+
+        int update = 0;
+        if (user != null) {
+            long disableTime = user.getDisableTime() + timestamp;
+
+            update = userMapper.update(null, wrapper.
+                    eq("username", username).
+                    set("disable_time", new Timestamp(disableTime)));
+        }
+
+        return update == 1;
     }
 }

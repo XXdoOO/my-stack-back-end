@@ -37,7 +37,9 @@ public class UserService {
 
         QueryWrapper<User> wrapper = new QueryWrapper<>();
 
-        User user = userMapper.selectOne(wrapper.eq("username", username).eq("password", password));
+        User user = userMapper.selectOne(wrapper.eq("username", username).
+                eq("password", password).
+                last("and disable_time <= register_time"));
         User userInfo = null;
         if (user != null) {
             session.setAttribute("USER_SESSION", user);
