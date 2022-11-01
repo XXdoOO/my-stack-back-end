@@ -113,16 +113,11 @@ public class AuditService {
     public boolean setUserDisableTime(String username, long timestamp) {
         UpdateWrapper<User> wrapper = new UpdateWrapper<>();
 
-        User user = userMapper.selectById(username);
+        long disableTime = System.currentTimeMillis() + timestamp;
 
-        int update = 0;
-        if (user != null) {
-            long disableTime = user.getDisableTime() + timestamp;
-
-            update = userMapper.update(null, wrapper.
-                    eq("username", username).
-                    set("disable_time", new Timestamp(disableTime)));
-        }
+        int update = userMapper.update(null, wrapper.
+                eq("username", username).
+                set("disable_time", new Timestamp(disableTime)));
 
         return update == 1;
     }

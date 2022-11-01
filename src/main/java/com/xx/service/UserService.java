@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class UserService {
 
         User user = userMapper.selectOne(wrapper.eq("username", username).
                 eq("password", password).
-                last("and disable_time <= register_time"));
+                le("disable_time", new Timestamp(System.currentTimeMillis())));
         User userInfo = null;
         if (user != null) {
             session.setAttribute("USER_SESSION", user);

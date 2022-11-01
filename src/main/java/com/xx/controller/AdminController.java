@@ -4,6 +4,7 @@ import com.xx.pojo.Blog;
 import com.xx.pojo.BlogView;
 import com.xx.pojo.User;
 import com.xx.service.AuditService;
+import com.xx.service.BlogService;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,6 +17,9 @@ import java.util.List;
 public class AdminController {
     @Autowired
     private AuditService auditService;
+
+    @Autowired
+    private BlogService blogService;
 
     @ResponseBody
     @PutMapping("/auditBlog")
@@ -35,15 +39,14 @@ public class AdminController {
     }
 
     @ResponseBody
-    @GetMapping("/getPostBlogList")
-    public MyResponse getPostBlogList(int startIndex, int pageSize) {
+    @GetMapping("/getBlogByKeywords")
+    public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<BlogView> blogList = auditService.getPostBlogList(startIndex, pageSize);
-
+        List<BlogView> blogList = blogService.getBlogListByKeywords2(keywords == null ? "" : keywords,
+                (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
+                pageSize == null ? 10 : pageSize);
         myResponse.setData(blogList);
-        myResponse.setMsg("获取成功！");
-
         return myResponse;
     }
 

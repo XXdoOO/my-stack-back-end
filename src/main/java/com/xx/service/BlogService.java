@@ -69,6 +69,19 @@ public class BlogService {
         return blogViews;
     }
 
+    public List<BlogView> getBlogListByKeywords2(String keywords, String orderBy, int startIndex, int pageSize) {
+        QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
+
+        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
+                and(i -> i.like("title", keywords).or().like("content", keywords)).
+                orderByAsc(orderBy).
+                last("limit " + startIndex + ", " + pageSize));
+
+        setOtherInfo(blogViews);
+
+        return blogViews;
+    }
+
     public List<BlogView> getUserPostBlogList(String username, int startIndex, int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
