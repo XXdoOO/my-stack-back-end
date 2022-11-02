@@ -11,12 +11,12 @@ public class OtherController {
     @ResponseBody
     @RequestMapping("/handleNotLogin")
     public MyResponse handleNotLogin() {
-        return new MyResponse(200, "请登录后操作！", null);
+        return new MyResponse(401, "请登录后操作！", null);
     }
 
     @ResponseBody
     @RequestMapping("/handleNotPermission")
     public MyResponse handleNotPermission() {
-        return new MyResponse(200, "您无权访问该接口！", null);
+        return new MyResponse(401, "您无权访问该接口！", null);
     }
 }

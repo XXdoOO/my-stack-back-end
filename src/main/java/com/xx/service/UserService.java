@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.sql.Timestamp;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class UserService {
@@ -31,6 +28,9 @@ public class UserService {
     private BlogDownMapper blogDownMapper;
 
     @Autowired
+    private DisableMapper disableMapper;
+
+    @Autowired
     private HttpSession session;
 
     public User login(String username, String password) {
@@ -39,29 +39,41 @@ public class UserService {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
 
         User user = userMapper.selectOne(wrapper.eq("username", username).
-                eq("password", password).
-                le("disable_time", new Timestamp(System.currentTimeMillis())));
-        User userInfo = null;
-        if (user != null) {
-            session.setAttribute("USER_SESSION", user);
+                eq("password", password));
 
-            userInfo = getMyInfo();
+        if (user != null) {
+            if (!user.getStatus()) {
+                session.setAttribute("USER_SESSION", user);
+
+                user = getMyInfo();
+            } else {
+                QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
+                Disable disable = disableMapper.selectOne(disableWrapper.eq("username", username).
+                        orderByDesc("end_time"));
+
+                if (disable.getEndTime() < System.currentTimeMillis()) {
+                    session.setAttribute("USER_SESSION", user);
+                    user = getMyInfo();
+                } else {
+                    user.setDisableInfo(disable);
+                }
+            }
         }
 
-        return userInfo;
+        return user;
     }
 
-    public int register(String username, String password) {
+    public boolean register(String username, String password) {
         User result = userMapper.selectById(username);
         if (result != null) {
-            return -1;
+            return false;
         }
 
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
 
-        return userMapper.insert(user);
+        return userMapper.insert(user) == 1;
     }
 
     public void logout() {
@@ -76,7 +88,8 @@ public class UserService {
         User user = userMapper.selectById(username);
 
         if (user != null) {
-            long passCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).eq("status", 1));
+            long passCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).
+                    eq("status", 1));
             long upCount = blogUpMapper.selectCount(upWrapper.eq("username", username));
             long downCount = blogDownMapper.selectCount(downWrapper.eq("username", username));
 

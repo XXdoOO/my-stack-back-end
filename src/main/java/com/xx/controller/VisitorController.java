@@ -5,6 +5,7 @@ import com.xx.service.BlogService;
 import com.xx.service.CommentsService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
+import com.xx.util.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -25,21 +26,32 @@ public class VisitorController {
 
     @ResponseBody
     @PostMapping("login")
-    public MyResponse login(String username, String password) {
+    public MyResponse login(@RequestParam String username, @RequestParam String password) {
         MyResponse myResponse = new MyResponse();
 
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
             myResponse.setMsg("用户名或密码格式错误！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.USER_ERROR);
         } else {
-            User user = userService.login(username, password);
+            User userInfo = userService.getUserInfo(username);
 
-            if (user != null) {
-                myResponse.setMsg("登录成功！");
-                myResponse.setData(user);
+            if (userInfo == null) {
+                myResponse.setMsg("用户不存在！");
+                myResponse.setCode(Code.USER_NOT_EXIST);
             } else {
-                myResponse.setMsg("用户名或密码错误！");
-                myResponse.setCode(400);
+                User user = userService.login(username, password);
+
+                if (user == null) {
+                    myResponse.setMsg("用户名或密码错误！");
+                    myResponse.setCode(Code.USER_ERROR);
+                } else if (user.getStatus()) {
+                    myResponse.setData(user.getDisableInfo());
+                    myResponse.setMsg("用户已被封禁！");
+                    myResponse.setCode(Code.USER_DISABLE);
+                } else {
+                    myResponse.setData(user);
+                    myResponse.setMsg("登录成功");
+                }
             }
         }
         return myResponse;
@@ -47,20 +59,18 @@ public class VisitorController {
 
     @ResponseBody
     @PostMapping("register")
-    public MyResponse register(String username, String password) {
+    public MyResponse register(@RequestParam String username, @RequestParam String password) {
         MyResponse myResponse = new MyResponse();
 
         if (username == null || username.length() == 0 || password == null || password.length() == 0) {
             myResponse.setMsg("用户名或密码格式错误！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.USER_ERROR);
         } else {
-            int result = userService.register(username, password);
-
-            if (result == 1) {
+            if (userService.register(username, password)) {
                 myResponse.setMsg("注册成功！");
             } else {
                 myResponse.setMsg("用户已存在！");
-                myResponse.setCode(400);
+                myResponse.setCode(Code.USER_ALREADY_EXIST);
             }
         }
 

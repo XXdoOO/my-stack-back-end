@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -22,11 +23,15 @@ public class User {
 
     @TableField(select = false)
     private String password;
+
     private String nickname;
     private String avatar;
     private Long registerTime;
-    private Long disableTime;
+    private Boolean status;
     private Boolean identity;
+
+    @TableField(exist = false)
+    private Disable disableInfo;
 
     @TableField(exist = false)
     private Long passCount;
@@ -52,13 +57,4 @@ public class User {
     public void setRegisterTime(Timestamp registerTime) throws ParseException {
         this.registerTime = FormatTime.timestampToLong(registerTime);
     }
-
-    // public Timestamp getDisableTime() {
-    //     return FormatTime.longToTimestamp(this.disableTime);
-    // }
-
-    public void setDisableTime(Timestamp disableTime) throws ParseException {
-        this.disableTime = FormatTime.timestampToLong(disableTime);
-    }
-
 }

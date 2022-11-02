@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MyResponse {
-    private int code = 200;
-    private String msg = "操作成功！";
+    private int code = Code.SUCCESS;
+    private String msg = "请求成功！";
     private Object data;
 }
