@@ -1,5 +1,6 @@
 package com.xx.controller;
 
+import com.xx.util.Code;
 import com.xx.util.MyResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,12 +12,12 @@ public class OtherController {
     @ResponseBody
     @RequestMapping("/handleNotLogin")
     public MyResponse handleNotLogin() {
-        return new MyResponse(401, "请登录后操作！", null);
+        return new MyResponse(Code.AUTHORITY_ERROR, "请登录后操作！", null);
     }
 
     @ResponseBody
     @RequestMapping("/handleNotPermission")
     public MyResponse handleNotPermission() {
-        return new MyResponse(401, "您无权访问该接口！", null);
+        return new MyResponse(Code.AUTHORITY_ERROR, "您无权访问该接口！", null);
     }
 }

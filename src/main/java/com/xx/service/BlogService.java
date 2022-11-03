@@ -55,52 +55,68 @@ public class BlogService {
     @Value("${cover-img.local-path}")
     private String locPath;
 
-    public List<BlogView> getBlogListByKeywords(String keywords, String orderBy, int startIndex, int pageSize) {
+    public Map<String, Object> getBlogListByKeywords(String keywords, String orderBy, int startIndex, int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
-        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
+        Long total = blogViewMapper.selectCount(wrapper.
                 eq("status", 1).
                 and(i -> i.like("title", keywords).or().like("content", keywords)).
-                orderByAsc(orderBy).
+                orderByAsc(orderBy));
+
+        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
                 last("limit " + startIndex + ", " + pageSize));
 
         setOtherInfo(blogViews);
 
-        return blogViews;
+        return new HashMap<String, Object>() {{
+            put("total", total);
+            put("list", blogViews);
+        }};
     }
 
-    public List<BlogView> getBlogListByKeywords2(String keywords, String orderBy, int startIndex, int pageSize) {
+    public Map<String, Object> getBlogListByKeywords2(String keywords, String orderBy, int startIndex, int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
-        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
+        Long total = blogViewMapper.selectCount(wrapper.
                 and(i -> i.like("title", keywords).or().like("content", keywords)).
-                orderByAsc(orderBy).
+                orderByAsc(orderBy));
+
+        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
                 last("limit " + startIndex + ", " + pageSize));
 
         setOtherInfo(blogViews);
 
-        return blogViews;
+        return new HashMap<String, Object>() {{
+            put("total", total);
+            put("list", blogViews);
+        }};
     }
 
-    public List<BlogView> getUserPostBlogList(String username, int startIndex, int pageSize) {
+    public Map<String, Object> getUserPostBlogList(String username, int startIndex, int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
-        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
+        Long total = blogViewMapper.selectCount(wrapper.
                 eq("author_username", username).
                 eq("status", 1).
-                orderByAsc("post_time").
+                orderByAsc("post_time"));
+
+        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
                 last("limit " + startIndex + ", " + pageSize));
 
         setOtherInfo(blogViews);
 
-        return blogViews;
+        return new HashMap<String, Object>() {{
+            put("total", total);
+            put("list", blogViews);
+        }};
     }
 
-    public List<BlogView> getUserUpBlogList(String username, int startIndex, int pageSize) {
+    public Map<String, Object> getUserUpBlogList(String username, int startIndex, int pageSize) {
         QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
 
-        List<BlogUp> blogUps = upMapper.selectList(upWrapper.eq("username", username).last("limit " + startIndex + "," +
-                " " + pageSize));
+        Long total = upMapper.selectCount(upWrapper.eq("username", username));
+        List<BlogUp> blogUps = upMapper.selectList(upWrapper.
+                last("limit " + startIndex + ", " + pageSize));
         List<BlogView> blogViews = new ArrayList<>();
 
         for (BlogUp blogUp : blogUps) {
@@ -110,14 +126,19 @@ public class BlogService {
 
         setOtherInfo(blogViews);
 
-        return blogViews;
+        return new HashMap<String, Object>() {{
+            put("total", total);
+            put("list", blogViews);
+        }};
     }
 
-    public List<BlogView> getUserDownBlogList(String username, int startIndex, int pageSize) {
+    public Map<String, Object> getUserDownBlogList(String username, int startIndex, int pageSize) {
         QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
 
+        Long total = downMapper.selectCount(downWrapper.eq("username", username));
         List<BlogDown> blogDowns =
-                downMapper.selectList(downWrapper.eq("username", username).last("limit " + startIndex + ", " + pageSize));
+                downMapper.selectList(downWrapper.
+                        last("limit " + startIndex + ", " + pageSize));
         List<BlogView> blogViews = new ArrayList<>();
 
         for (BlogDown blogDown : blogDowns) {
@@ -126,7 +147,10 @@ public class BlogService {
         }
 
         setOtherInfo(blogViews);
-        return blogViews;
+        return new HashMap<String, Object>() {{
+            put("total", total);
+            put("list", blogViews);
+        }};
     }
 
     public Blog getBlogDetails(int id) {
@@ -396,31 +420,37 @@ public class BlogService {
         return update == 1 && update1 == 1;
     }
 
-    public List<BlogView> getMyPostList(Integer status, int startIndex, int pageSize) {
+    public Map<String, Object> getMyPostList(Integer status, int startIndex, int pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
         List<BlogView> blogViews;
+        long total;
         if (status != null) {
-            blogViews = blogViewMapper.selectList(wrapper.
+            total = blogViewMapper.selectCount(wrapper.
                     eq("author_username", username).
                     eq("status", status).
-                    orderByAsc("post_time").
+                    orderByAsc("post_time"));
+            blogViews = blogViewMapper.selectList(wrapper.
                     last("limit " + startIndex + ", " + pageSize));
 
         } else {
-            blogViews = blogViewMapper.selectList(wrapper.
+            total = blogViewMapper.selectCount(wrapper.
                     eq("author_username", username).
                     isNull("status").
-                    orderByAsc("post_time").
+                    orderByAsc("post_time"));
+            blogViews = blogViewMapper.selectList(wrapper.
                     last("limit " + startIndex + ", " + pageSize));
         }
 
         setOtherInfo(blogViews);
-        return blogViews;
+        return new HashMap<String, Object>() {{
+            put("total", total);
+            put("list", blogViews);
+        }};
     }
 
-    public List<BlogView> getMyStarList(int startIndex, int pageSize) {
+    public Map<String, Object> getMyStarList(int startIndex, int pageSize) {
         HashMap<String, Object> map = new HashMap<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
@@ -428,13 +458,18 @@ public class BlogService {
         map.put("startIndex", startIndex);
         map.put("pageSize", pageSize);
 
+        QueryWrapper<BlogStar> wrapper = new QueryWrapper<>();
+        long total = starMapper.selectCount(wrapper.eq("username", username));
         List<BlogView> myStarList = blogMapper.getMyStarList(map);
 
         setOtherInfo(myStarList);
-        return myStarList;
+        return new HashMap<String, Object>() {{
+            put("total", total);
+            put("list", myStarList);
+        }};
     }
 
-    public List<BlogView> getMyUpList(int startIndex, int pageSize) {
+    public Map<String, Object> getMyUpList(int startIndex, int pageSize) {
         HashMap<String, Object> map = new HashMap<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
@@ -442,13 +477,18 @@ public class BlogService {
         map.put("startIndex", startIndex);
         map.put("pageSize", pageSize);
 
+        QueryWrapper<BlogUp> wrapper = new QueryWrapper<>();
+        long total = upMapper.selectCount(wrapper.eq("username", username));
         List<BlogView> myUpList = blogMapper.getMyUpList(map);
 
         setOtherInfo(myUpList);
-        return myUpList;
+        return new HashMap<String, Object>() {{
+            put("total", total);
+            put("list", myUpList);
+        }};
     }
 
-    public List<BlogView> getMyDownList(int startIndex, int pageSize) {
+    public Map<String, Object> getMyDownList(int startIndex, int pageSize) {
         HashMap<String, Object> map = new HashMap<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
@@ -456,10 +496,15 @@ public class BlogService {
         map.put("startIndex", startIndex);
         map.put("pageSize", pageSize);
 
+        QueryWrapper<BlogDown> wrapper = new QueryWrapper<>();
+        long total = downMapper.selectCount(wrapper.eq("username", username));
         List<BlogView> myDownList = blogMapper.getMyDownList(map);
 
         setOtherInfo(myDownList);
-        return myDownList;
+        return new HashMap<String, Object>() {{
+            put("total", total);
+            put("list", myDownList);
+        }};
     }
 
     public void setOtherInfo(List<BlogView> blogViews) {

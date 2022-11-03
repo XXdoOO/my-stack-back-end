@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -82,10 +83,10 @@ public class VisitorController {
     public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<BlogView> blogList = blogService.getBlogListByKeywords(keywords == null ? "" : keywords,
+        Map<String, Object> map = blogService.getBlogListByKeywords(keywords == null ? "" : keywords,
                 (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
                 pageSize == null ? 10 : pageSize);
-        myResponse.setData(blogList);
+        myResponse.setData(map);
         return myResponse;
     }
 
@@ -113,9 +114,10 @@ public class VisitorController {
             myResponse.setCode(400);
             myResponse.setMsg("请传入用户名！");
         } else {
-            List<BlogView> blogs = blogService.getUserPostBlogList(username, startIndex == null ? 0 : startIndex,
+            Map<String, Object> map = blogService.getUserPostBlogList(username, startIndex == null ? 0 :
+                            startIndex,
                     pageSize == null ? 10 : pageSize);
-            myResponse.setData(blogs);
+            myResponse.setData(map);
         }
         return myResponse;
     }
@@ -129,9 +131,10 @@ public class VisitorController {
             myResponse.setCode(400);
             myResponse.setMsg("请传入用户名！");
         } else {
-            List<BlogView> blogs = blogService.getUserUpBlogList(username, startIndex == null ? 0 : startIndex,
+            Map<String, Object> map = blogService.getUserUpBlogList(username, startIndex == null ? 0 :
+                            startIndex,
                     pageSize == null ? 10 : pageSize);
-            myResponse.setData(blogs);
+            myResponse.setData(map);
         }
         return myResponse;
     }
@@ -145,9 +148,10 @@ public class VisitorController {
             myResponse.setCode(400);
             myResponse.setMsg("请传入用户名！");
         } else {
-            List<BlogView> blogs = blogService.getUserDownBlogList(username, startIndex == null ? 0 : startIndex,
+            Map<String, Object> map = blogService.getUserDownBlogList(username, startIndex == null ? 0 :
+                            startIndex,
                     pageSize == null ? 10 : pageSize);
-            myResponse.setData(blogs);
+            myResponse.setData(map);
         }
         return myResponse;
     }

@@ -22,7 +22,6 @@ values ('admin', 'admin', 1),
 
 create table `disable`
 (
-    `id`         int auto_increment primary key not null comment 'id',
     `start_time` datetime                       not null comment '封号起始时间',
     `end_time`   datetime                       not null comment '封号结束时间',
     `username`   varchar(10)                    not null comment '用户名',
@@ -55,7 +54,6 @@ create table `blog`
 
 create table `blog_star`
 (
-    `id`           int auto_increment primary key not null comment 'id',
     `username`     varchar(10)                    not null comment '用户名',
     `blog_id`      int                            not null comment '博客id',
     `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',
@@ -65,7 +63,6 @@ create table `blog_star`
 
 create table `blog_up`
 (
-    `id`           int auto_increment primary key not null comment 'id',
     `username`     varchar(10)                    not null comment '用户名',
     `blog_id`      int                            not null comment '博客id',
     `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',
@@ -75,7 +72,6 @@ create table `blog_up`
 
 create table `blog_down`
 (
-    `id`           int auto_increment primary key not null comment 'id',
     `username`     varchar(10)                    not null comment '用户名',
     `blog_id`      int                            not null comment '博客id',
     `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',
@@ -100,7 +96,6 @@ create table `comments`
 
 create table `comments_up`
 (
-    `id`           int auto_increment primary key not null comment 'id',
     `username`     varchar(10)                    not null comment '用户名',
     `comments_id`  int                            not null comment '评论id',
     `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',
@@ -110,7 +105,6 @@ create table `comments_up`
 
 create table `comments_down`
 (
-    `id`           int auto_increment primary key not null comment 'id',
     `username`     varchar(10)                    not null comment '用户名',
     `comments_id`  int                            not null comment '评论id',
     `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',

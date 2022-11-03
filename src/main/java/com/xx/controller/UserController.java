@@ -7,6 +7,7 @@ import com.xx.pojo.User;
 import com.xx.service.BlogService;
 import com.xx.service.CommentsService;
 import com.xx.service.UserService;
+import com.xx.util.Code;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -63,7 +64,7 @@ public class UserController {
             myResponse.setMsg("删除成功！");
         } else {
             myResponse.setMsg("删除失败！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.RECORD_NOT_EXIST);
         }
 
         return myResponse;
@@ -78,7 +79,7 @@ public class UserController {
             myResponse.setMsg("更新成功！");
         } else {
             myResponse.setMsg("更新失败！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.RECORD_NOT_EXIST);
         }
 
         return myResponse;
@@ -93,7 +94,7 @@ public class UserController {
             myResponse.setMsg("顶成功！");
         } else {
             myResponse.setMsg("顶失败！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.RECORD_NOT_EXIST);
         }
 
         return myResponse;
@@ -108,7 +109,7 @@ public class UserController {
             myResponse.setMsg("踩成功！");
         } else {
             myResponse.setMsg("踩失败！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.RECORD_NOT_EXIST);
         }
 
         return myResponse;
@@ -123,7 +124,7 @@ public class UserController {
             myResponse.setMsg("收藏成功！");
         } else {
             myResponse.setMsg("收藏失败！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.RECORD_NOT_EXIST);
         }
 
         return myResponse;
@@ -144,10 +145,10 @@ public class UserController {
     public MyResponse getMyPostList(Integer status, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<BlogView> myPostList = blogService.getMyPostList(status, startIndex == null ? 0 : startIndex,
+        Map<String, Object> map = blogService.getMyPostList(status, startIndex == null ? 0 : startIndex,
                 pageSize == null ? 10
                         : pageSize);
-        myResponse.setData(myPostList);
+        myResponse.setData(map);
         return myResponse;
     }
 
@@ -156,9 +157,10 @@ public class UserController {
     public MyResponse getMyStarList(Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<BlogView> myStar = blogService.getMyStarList(startIndex == null ? 0 : startIndex, pageSize == null ? 10
+        Map<String, Object> map = blogService.getMyStarList(startIndex == null ? 0 : startIndex,
+                pageSize == null ? 10
                 : pageSize);
-        myResponse.setData(myStar);
+        myResponse.setData(map);
         return myResponse;
     }
 
@@ -167,9 +169,10 @@ public class UserController {
     public MyResponse getMyUpList(Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<BlogView> myStar = blogService.getMyUpList(startIndex == null ? 0 : startIndex, pageSize == null ? 10 :
+        Map<String, Object> map = blogService.getMyUpList(startIndex == null ? 0 : startIndex, pageSize == null
+                ? 10 :
                 pageSize);
-        myResponse.setData(myStar);
+        myResponse.setData(map);
         return myResponse;
     }
 
@@ -178,9 +181,10 @@ public class UserController {
     public MyResponse getMyDownList(Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        List<BlogView> myStar = blogService.getMyDownList(startIndex == null ? 0 : startIndex, pageSize == null ? 10
+        Map<String, Object> map = blogService.getMyDownList(startIndex == null ? 0 : startIndex,
+                pageSize == null ? 10
                 : pageSize);
-        myResponse.setData(myStar);
+        myResponse.setData(map);
         return myResponse;
     }
 
@@ -205,7 +209,7 @@ public class UserController {
             myResponse.setMsg("删除成功！");
         } else {
             myResponse.setMsg("删除失败！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.RECORD_NOT_EXIST);
         }
         return myResponse;
     }
@@ -219,7 +223,7 @@ public class UserController {
             myResponse.setMsg("顶成功！");
         } else {
             myResponse.setMsg("顶失败！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.RECORD_NOT_EXIST);
         }
 
         return myResponse;
@@ -234,7 +238,7 @@ public class UserController {
             myResponse.setMsg("顶成功！");
         } else {
             myResponse.setMsg("顶失败！");
-            myResponse.setCode(400);
+            myResponse.setCode(Code.RECORD_NOT_EXIST);
         }
 
         return myResponse;

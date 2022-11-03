@@ -12,10 +12,10 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
-
 @Data
 @NoArgsConstructor
 @TableName
+
 public class Blog {
     private Integer id;
     private String title;

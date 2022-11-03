@@ -1,8 +1,11 @@
 package com.xx.util;
 
 public class Code {
-    // 请求成功
+    // 操作成功
     public final static int SUCCESS = 600;
+
+    // 操作失败
+    public final static int FAIL = 700;
 
     // 用户已存在
     public final static int USER_ALREADY_EXIST = 601;
@@ -18,4 +21,7 @@ public class Code {
 
     // 记录不存在
     public final static int RECORD_NOT_EXIST = 611;
+
+    // 权限不足
+    public final static int AUTHORITY_ERROR = 612;
 }
