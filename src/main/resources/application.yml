@@ -4,13 +4,15 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: wsad168!
-  dvtools:
-    restart:
-      enabled: true  #设置开启热部署
-      additional-paths: src/main/java #重启目录
-      exclude: WEB-INF/**
-    freemarker:
-      cache: false    #页面不加载缓存，修改即时生效
+    hikari:
+      connection-timeout: 60000   # 数据库连接超时时间,默认30秒,即30000
+      validation-timeout: 3000    # 指定验证连接有效性的超时时间(默认是5秒,最小不能小于250毫秒)
+      idle-timeout: 60000         # 空闲连接超时时间,一个连接idle状态的最大时长（毫秒）,超时则被释放（retired）,默认是10分钟,只有空闲连接数大于最大连接数且空闲时间超过该值,才会被释放
+      login-timeout: 5            # 指定连接数据库的超时时间,单位:秒
+      max-lifetime: 70000         # 指定连接池中连接的最大生存时间,单位:毫秒.默认是1800000,即30分钟
+      maximum-pool-size: 30       # 指定连接池最大的连接数,包括使用中的和空闲的连接,默认值10
+      minimum-idle: 10            # 指定连接维护的最小空闲连接数,当使用HikariCP时指定
+      read-only: false            # 当使用Hikari connection pool时,是否标记数据源只读
   mvc:
     dispatch-options-request: true
     static-path-pattern: /static/**

@@ -19,9 +19,6 @@ public class Code {
     // 用户已被封禁
     public final static int USER_DISABLE = 604;
 
-    // 记录不存在
-    public final static int RECORD_NOT_EXIST = 611;
-
     // 权限不足
     public final static int AUTHORITY_ERROR = 612;
 }

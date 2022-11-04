@@ -63,16 +63,11 @@ public class VisitorController {
     public MyResponse register(@RequestParam String username, @RequestParam String password) {
         MyResponse myResponse = new MyResponse();
 
-        if (username == null || username.length() == 0 || password == null || password.length() == 0) {
-            myResponse.setMsg("用户名或密码格式错误！");
-            myResponse.setCode(Code.USER_ERROR);
+        if (userService.register(username, password)) {
+            myResponse.setMsg("注册成功！");
         } else {
-            if (userService.register(username, password)) {
-                myResponse.setMsg("注册成功！");
-            } else {
-                myResponse.setMsg("用户已存在！");
-                myResponse.setCode(Code.USER_ALREADY_EXIST);
-            }
+            myResponse.setMsg("用户已存在！");
+            myResponse.setCode(Code.USER_ALREADY_EXIST);
         }
 
         return myResponse;
@@ -92,73 +87,53 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getUserInfo")
-    public MyResponse getUserInfo(String username) {
+    public MyResponse getUserInfo(@RequestParam String username) {
         MyResponse myResponse = new MyResponse();
 
-        if (username == null || username.length() == 0) {
-            myResponse.setCode(400);
-            myResponse.setMsg("请传入用户名！");
-        } else {
-            User user = userService.getUserInfo(username);
-            myResponse.setData(user);
-        }
+        User user = userService.getUserInfo(username);
+        myResponse.setData(user);
         return myResponse;
     }
 
     @ResponseBody
     @GetMapping("getUserPostBlogList")
-    public MyResponse getUserBlogList(String username, Integer startIndex, Integer pageSize) {
+    public MyResponse getUserBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        if (username == null || username.length() == 0) {
-            myResponse.setCode(400);
-            myResponse.setMsg("请传入用户名！");
-        } else {
-            Map<String, Object> map = blogService.getUserPostBlogList(username, startIndex == null ? 0 :
-                            startIndex,
-                    pageSize == null ? 10 : pageSize);
-            myResponse.setData(map);
-        }
+        Map<String, Object> map = blogService.getUserPostBlogList(username, startIndex == null ? 0 :
+                        startIndex,
+                pageSize == null ? 10 : pageSize);
+        myResponse.setData(map);
         return myResponse;
     }
 
     @ResponseBody
     @GetMapping("getUserUpBlogList")
-    public MyResponse getUserUpBlogList(String username, Integer startIndex, Integer pageSize) {
+    public MyResponse getUserUpBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        if (username == null || username.length() == 0) {
-            myResponse.setCode(400);
-            myResponse.setMsg("请传入用户名！");
-        } else {
-            Map<String, Object> map = blogService.getUserUpBlogList(username, startIndex == null ? 0 :
-                            startIndex,
-                    pageSize == null ? 10 : pageSize);
-            myResponse.setData(map);
-        }
+        Map<String, Object> map = blogService.getUserUpBlogList(username, startIndex == null ? 0 :
+                        startIndex,
+                pageSize == null ? 10 : pageSize);
+        myResponse.setData(map);
         return myResponse;
     }
 
     @ResponseBody
     @GetMapping("getUserDownBlogList")
-    public MyResponse getUserDownBlogList(String username, Integer startIndex, Integer pageSize) {
+    public MyResponse getUserDownBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        if (username == null || username.length() == 0) {
-            myResponse.setCode(400);
-            myResponse.setMsg("请传入用户名！");
-        } else {
-            Map<String, Object> map = blogService.getUserDownBlogList(username, startIndex == null ? 0 :
-                            startIndex,
-                    pageSize == null ? 10 : pageSize);
-            myResponse.setData(map);
-        }
+        Map<String, Object> map = blogService.getUserDownBlogList(username, startIndex == null ? 0 :
+                        startIndex,
+                pageSize == null ? 10 : pageSize);
+        myResponse.setData(map);
         return myResponse;
     }
 
     @ResponseBody
     @GetMapping("getBlogDetails")
-    public MyResponse getBlogDetails(int id) {
+    public MyResponse getBlogDetails(@RequestParam int id) {
         MyResponse myResponse = new MyResponse();
 
         Blog blogDetails = blogService.getBlogDetails(id);
@@ -169,7 +144,7 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getCommentsList")
-    public MyResponse getCommentsList(int id, Boolean orderBy, Integer startIndex, Integer pageSize) {
+    public MyResponse getCommentsList(@RequestParam int id, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
         List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" :

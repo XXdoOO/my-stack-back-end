@@ -34,7 +34,7 @@ public class AdminController {
             myResponse.setMsg("审核成功！");
         } else {
             myResponse.setMsg("审核失败！");
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
         }
 
         return myResponse;
@@ -90,7 +90,7 @@ public class AdminController {
         if (result) {
             myResponse.setMsg("设置成功！");
         } else {
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
             myResponse.setMsg("设置失败！");
         }
 

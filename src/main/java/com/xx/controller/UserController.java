@@ -64,7 +64,7 @@ public class UserController {
             myResponse.setMsg("删除成功！");
         } else {
             myResponse.setMsg("删除失败！");
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
         }
 
         return myResponse;
@@ -79,7 +79,7 @@ public class UserController {
             myResponse.setMsg("更新成功！");
         } else {
             myResponse.setMsg("更新失败！");
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
         }
 
         return myResponse;
@@ -94,7 +94,7 @@ public class UserController {
             myResponse.setMsg("顶成功！");
         } else {
             myResponse.setMsg("顶失败！");
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
         }
 
         return myResponse;
@@ -109,7 +109,7 @@ public class UserController {
             myResponse.setMsg("踩成功！");
         } else {
             myResponse.setMsg("踩失败！");
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
         }
 
         return myResponse;
@@ -124,7 +124,7 @@ public class UserController {
             myResponse.setMsg("收藏成功！");
         } else {
             myResponse.setMsg("收藏失败！");
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
         }
 
         return myResponse;
@@ -209,7 +209,7 @@ public class UserController {
             myResponse.setMsg("删除成功！");
         } else {
             myResponse.setMsg("删除失败！");
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
         }
         return myResponse;
     }
@@ -223,7 +223,7 @@ public class UserController {
             myResponse.setMsg("顶成功！");
         } else {
             myResponse.setMsg("顶失败！");
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
         }
 
         return myResponse;
@@ -238,7 +238,7 @@ public class UserController {
             myResponse.setMsg("顶成功！");
         } else {
             myResponse.setMsg("顶失败！");
-            myResponse.setCode(Code.RECORD_NOT_EXIST);
+            myResponse.setCode(Code.FAIL);
         }
 
         return myResponse;
