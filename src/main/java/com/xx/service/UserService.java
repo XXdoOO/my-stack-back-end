@@ -2,6 +2,8 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.xx.config.FilterConfigurer;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -43,17 +46,26 @@ public class UserService {
 
         if (user != null) {
             if (!user.getStatus()) {
-                session.setAttribute("USER_SESSION", user);
+                this.session.setAttribute("USER_SESSION", user);
 
                 user = getMyInfo();
             } else {
                 QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
-                Disable disable = disableMapper.selectOne(disableWrapper.eq("username", username).
-                        orderByDesc("end_time"));
+                Disable disable = disableMapper.selectOne(disableWrapper.
+                        eq("username", username).
+                        orderByDesc("end_time").
+                        last("limit 1"));
 
                 if (disable.getEndTime() < System.currentTimeMillis()) {
-                    session.setAttribute("USER_SESSION", user);
+                    this.session.setAttribute("USER_SESSION", user);
                     user = getMyInfo();
+
+                    UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+                    userMapper.update(null, updateWrapper.eq("username", username).
+                            set("status", 0));
+
+                    QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
+                    disableMapper.delete(queryWrapper.eq("username", username));
                 } else {
                     user.setDisableInfo(disable);
                 }

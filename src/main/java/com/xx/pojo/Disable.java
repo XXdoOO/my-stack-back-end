@@ -17,11 +17,11 @@ public class Disable {
     private String username;
     private String reason;
 
-    public void setStarTime(Timestamp registerTime) throws ParseException {
-        this.startTime = FormatTime.timestampToLong(registerTime);
+    public void setStartTime(Timestamp startTime) throws ParseException {
+        this.startTime = FormatTime.timestampToLong(startTime);
     }
 
-    public void setEndTime(Timestamp registerTime) throws ParseException {
-        this.endTime = FormatTime.timestampToLong(registerTime);
+    public void setEndTime(Timestamp endTime) throws ParseException {
+        this.endTime = FormatTime.timestampToLong(endTime);
     }
 }

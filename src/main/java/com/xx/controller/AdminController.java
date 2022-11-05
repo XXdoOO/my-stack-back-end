@@ -1,5 +1,6 @@
 package com.xx.controller;
 
+import com.xx.config.FilterConfigurer;
 import com.xx.pojo.Blog;
 import com.xx.pojo.BlogView;
 import com.xx.pojo.User;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +27,10 @@ public class AdminController {
 
     @ResponseBody
     @PutMapping("/auditBlog")
-    public MyResponse auditBlog(int id, boolean status) {
+    public MyResponse auditBlog(@RequestParam int id, @RequestParam boolean isPass) {
         MyResponse myResponse = new MyResponse();
 
-        int result = auditService.auditBlog(id, status);
+        int result = auditService.auditBlog(id, isPass);
 
         if (result == 1) {
             myResponse.setMsg("审核成功！");
@@ -79,11 +81,40 @@ public class AdminController {
     }
 
     @ResponseBody
-    @GetMapping("/setUserDisableTime")
-    public MyResponse setUserDisableTime(@RequestParam String username, @RequestParam long timestamp) {
+    @PutMapping("/disableUser")
+    public MyResponse disableUser(@RequestParam String username, @RequestParam long timestamp,
+                                  @RequestParam String reason) {
         MyResponse myResponse = new MyResponse();
 
-        boolean result = auditService.setUserDisableTime(username, timestamp);
+        boolean result = auditService.setUserDisableTime(username, timestamp, reason);
+
+        myResponse.setMsg(result ? "设置成功！" : "设置失败！");
+
+        if (result) {
+            myResponse.setMsg("设置成功！");
+
+            Map<String, HttpSession> sessionMap = FilterConfigurer.session;
+            for (String key : sessionMap.keySet()) {
+                User user = (User) sessionMap.get(key).getAttribute("USER_SESSION");
+                if (username.equals(user.getUsername())) {
+                    sessionMap.get(key).invalidate();
+                    break;
+                }
+            }
+        } else {
+            myResponse.setCode(Code.FAIL);
+            myResponse.setMsg("设置失败！");
+        }
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @PutMapping("/cancelDisable")
+    public MyResponse cancelDisable(@RequestParam String username) {
+        MyResponse myResponse = new MyResponse();
+
+        boolean result = auditService.cancelDisable(username);
 
         myResponse.setMsg(result ? "设置成功！" : "设置失败！");
 

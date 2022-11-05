@@ -4,10 +4,16 @@ import com.xx.filter.AdminFilter;
 import com.xx.filter.CorsFilter;
 import com.xx.filter.UserFilter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
 
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class FilterConfigurer implements WebMvcConfigurer {
@@ -53,5 +59,29 @@ public class FilterConfigurer implements WebMvcConfigurer {
 
         registry.addResourceHandler(reqPath)
                 .addResourceLocations("file:" + logoDir.getAbsolutePath() + File.separator);
+    }
+
+
+    public static final Map<String, HttpSession> session = new HashMap<>();
+
+    @Bean
+    public HttpSessionListener httpSessionListener() {
+
+        return new HttpSessionListener() {
+
+            @Override
+            public void sessionCreated(HttpSessionEvent se) {
+
+                System.out.println("sessionCreated");
+                session.put(se.getSession().getId(), se.getSession());
+            }
+
+            @Override
+            public void sessionDestroyed(HttpSessionEvent se) {
+
+                System.out.println("sessionDestroyed");
+                session.remove(se.getSession().getId());
+            }
+        };
     }
 }

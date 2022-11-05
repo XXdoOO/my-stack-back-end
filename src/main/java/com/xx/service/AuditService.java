@@ -2,9 +2,7 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.xx.mapper.BlogMapper;
-import com.xx.mapper.BlogViewMapper;
-import com.xx.mapper.UserMapper;
+import com.xx.mapper.*;
 import com.xx.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +30,9 @@ public class AuditService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private DisableMapper disableMapper;
 
     @Autowired
     private HttpSession session;
@@ -70,15 +71,42 @@ public class AuditService {
         }};
     }
 
-    public boolean setUserDisableTime(String username, long timestamp) {
+    public boolean setUserDisableTime(String username, long timestamp, String reason) {
+        User user = userMapper.selectById(username);
+
+        if (user == null) {
+            return false;
+        }
+
         UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-
-        long disableTime = System.currentTimeMillis() + timestamp;
-
-        int update = userMapper.update(null, wrapper.
+        userMapper.update(null, wrapper.
                 eq("username", username).
-                set("disable_time", new Timestamp(disableTime)));
+                set("status", 1));
 
-        return update == 1;
+        disableMapper.setUserDisableTime(new HashMap<String, Object>() {{
+            put("username", username);
+            put("timestamp", timestamp);
+            put("reason", reason);
+        }});
+
+        return true;
+    }
+
+    public boolean cancelDisable(String username) {
+        User user = userMapper.selectById(username);
+
+        if (user == null) {
+            return false;
+        }
+
+        UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+        userMapper.update(null, wrapper.
+                eq("username", username).
+                set("status", 0));
+
+        QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
+        disableMapper.delete(queryWrapper.eq("username", username));
+
+        return true;
     }
 }

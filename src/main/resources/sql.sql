@@ -22,10 +22,12 @@ values ('admin', 'admin', 1),
 
 create table `disable`
 (
-    `start_time` datetime                       not null comment '封号起始时间',
-    `end_time`   datetime                       not null comment '封号结束时间',
-    `username`   varchar(10)                    not null comment '用户名',
-    `reason`     varchar(100)                   not null comment '封号原因'
+    `username`     varchar(10)                          not null comment '用户名',
+    `start_time`   datetime   default current_timestamp not null comment '封号起始时间',
+    `end_time`     datetime                             not null comment '封号结束时间',
+    `reason`       varchar(100)                         not null comment '封号原因',
+    `logic_delete` tinyint(1) default 0                 not null comment '逻辑删除，1为删除',
+    foreign key (`username`) references `user` (`username`)
 ) comment '用户封号记录';
 
 create table `blog`
@@ -54,27 +56,27 @@ create table `blog`
 
 create table `blog_star`
 (
-    `username`     varchar(10)                    not null comment '用户名',
-    `blog_id`      int                            not null comment '博客id',
-    `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',
+    `username`     varchar(10)          not null comment '用户名',
+    `blog_id`      int                  not null comment '博客id',
+    `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
     foreign key (`blog_id`) references `blog` (`id`)
 ) comment '博客-收藏关系';
 
 create table `blog_up`
 (
-    `username`     varchar(10)                    not null comment '用户名',
-    `blog_id`      int                            not null comment '博客id',
-    `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',
+    `username`     varchar(10)          not null comment '用户名',
+    `blog_id`      int                  not null comment '博客id',
+    `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
     foreign key (`blog_id`) references `blog` (`id`)
 ) comment '博客-顶关系';
 
 create table `blog_down`
 (
-    `username`     varchar(10)                    not null comment '用户名',
-    `blog_id`      int                            not null comment '博客id',
-    `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',
+    `username`     varchar(10)          not null comment '用户名',
+    `blog_id`      int                  not null comment '博客id',
+    `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
     foreign key (`blog_id`) references `blog` (`id`)
 ) comment '博客-踩关系';
@@ -96,18 +98,18 @@ create table `comments`
 
 create table `comments_up`
 (
-    `username`     varchar(10)                    not null comment '用户名',
-    `comments_id`  int                            not null comment '评论id',
-    `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',
+    `username`     varchar(10)          not null comment '用户名',
+    `comments_id`  int                  not null comment '评论id',
+    `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
     foreign key (`comments_id`) references `comments` (`id`)
 ) comment '评论-顶关系';
 
 create table `comments_down`
 (
-    `username`     varchar(10)                    not null comment '用户名',
-    `comments_id`  int                            not null comment '评论id',
-    `logic_delete` tinyint(1) default 0           not null comment '逻辑删除，1为删除',
+    `username`     varchar(10)          not null comment '用户名',
+    `comments_id`  int                  not null comment '评论id',
+    `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
     foreign key (`comments_id`) references `comments` (`id`)
 ) comment '评论-踩关系';
