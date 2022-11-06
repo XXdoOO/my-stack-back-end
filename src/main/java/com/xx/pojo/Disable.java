@@ -1,5 +1,6 @@
 package com.xx.pojo;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.xx.util.FormatTime;
 import lombok.Data;
@@ -16,6 +17,9 @@ public class Disable {
     private Long endTime;
     private String username;
     private String reason;
+
+    @TableLogic
+    private Boolean logicDelete;
 
     public void setStartTime(Timestamp startTime) throws ParseException {
         this.startTime = FormatTime.timestampToLong(startTime);

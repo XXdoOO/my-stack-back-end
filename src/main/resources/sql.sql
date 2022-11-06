@@ -11,7 +11,6 @@ create table `user`
     `nickname`      varchar(6)  default '用户昵称'                     not null comment '昵称',
     `avatar`        varchar(50) default '/img/cover.ac211716.webp' not null comment '头像',
     `register_time` datetime    default current_timestamp          not null comment '注册时间',
-    `status`        tinyint(1)  default 0                          not null comment '状态，0为正常，1为封号',
     `identity`      tinyint(1)  default 0                          not null comment '身份，0为普通用户，1为管理员',
     `logic_delete`  tinyint(1)  default 0                          not null comment '逻辑删除，1为删除'
 ) comment '用户账号信息';

@@ -27,7 +27,9 @@ public class User {
     private String nickname;
     private String avatar;
     private Long registerTime;
-    private Boolean status;
+
+    @TableField(exist = false)
+    private Boolean status = false;
     private Boolean identity;
 
     @TableField(exist = false)

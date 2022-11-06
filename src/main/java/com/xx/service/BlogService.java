@@ -156,52 +156,60 @@ public class BlogService {
     public Blog getBlogDetails(int id) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         UpdateWrapper<Blog> updateWrapper = new UpdateWrapper<>();
-        int update = blogMapper.update(null, updateWrapper.
+
+        Blog blog = blogMapper.selectById(id);
+
+        if (blog == null) {
+            return null;
+        }
+
+        if (blog.getStatus() == null || !blog.getStatus()) {
+            User user = (User) session.getAttribute("USER_SESSION");
+
+            if (user != null && user.getUsername().equals(blog.getAuthorUsername())) {
+                blog.setAuthorInfo(userService.getUserInfo(blog.getAuthorUsername()));
+                return blog;
+            }
+            return null;
+        }
+
+        blogMapper.update(null, updateWrapper.
                 setSql("views = views + 1").
                 eq("status", 1).
                 eq("id", id));
 
-        if (update != 0) {
-            Object userSession = session.getAttribute("USER_SESSION");
+        Object userSession = session.getAttribute("USER_SESSION");
 
-            Blog blog = blogMapper.selectOne(wrapper.
-                    eq("status", 1).
-                    eq("id", id));
 
-            String authorUsername = blog.getAuthorUsername();
+        blog.setAuthorInfo(userService.getUserInfo(blog.getAuthorUsername()));
 
-            blog.setAuthorInfo(userService.getUserInfo(authorUsername));
+        if (userSession != null) {
+            String username = ((User) userSession).getUsername();
+            QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
+            QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
+            QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
+            Long upCount = upMapper.selectCount(upWrapper.eq("blog_id", blog.getId()).
+                    eq("username", username));
+            Long downCount = downMapper.selectCount(downWrapper.eq("blog_id", blog.getId()).
+                    eq("username", username));
+            Long starCount = starMapper.selectCount(starWrapper.eq("blog_id", blog.getId()).
+                    eq("username", username));
 
-            if (userSession != null) {
-                String username = ((User) userSession).getUsername();
-                QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
-                QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
-                QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
-                Long upCount = upMapper.selectCount(upWrapper.eq("blog_id", blog.getId()).
-                        eq("username", username));
-                Long downCount = downMapper.selectCount(downWrapper.eq("blog_id", blog.getId()).
-                        eq("username", username));
-                Long starCount = starMapper.selectCount(starWrapper.eq("blog_id", blog.getId()).
-                        eq("username", username));
-
-                blog.setIsUp(upCount == 1);
-                blog.setIsDown(downCount == 1);
-                blog.setIsStar(starCount == 1);
-            }
-
-            HashMap<String, List<Comments>> map = new HashMap<>();
-            // 默认获取最多五条热评，最多十条新评
-            List<Comments> hotComments = commentsService.getCommentsList(blog.getId(), "up", 0, 5);
-            List<Comments> newComments = commentsService.getCommentsList(blog.getId(), "post_time", 0, 10);
-
-            map.put("hotComments", hotComments);
-            map.put("newComments", newComments);
-            blog.setCommentsList(map);
-
-            return blog;
+            blog.setIsUp(upCount == 1);
+            blog.setIsDown(downCount == 1);
+            blog.setIsStar(starCount == 1);
         }
-        return null;
 
+        HashMap<String, List<Comments>> map = new HashMap<>();
+        // 默认获取最多五条热评，最多十条新评
+        List<Comments> hotComments = commentsService.getCommentsList(blog.getId(), "up", 0, 5);
+        List<Comments> newComments = commentsService.getCommentsList(blog.getId(), "post_time", 0, 10);
+
+        map.put("hotComments", hotComments);
+        map.put("newComments", newComments);
+        blog.setCommentsList(map);
+
+        return blog;
     }
 
     public int postBlog(Blog blog) {
@@ -287,7 +295,7 @@ public class BlogService {
         if (count == 1) {
             String filename = blog.getId() + ".jpg";
             if (saveFile(blog.getCoverImg(), filename)) {
-                blog.setCover("/cover/" + filename);
+                blog.setCover("http://localhost:8080/cover/" + filename);
             }
 
             UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();

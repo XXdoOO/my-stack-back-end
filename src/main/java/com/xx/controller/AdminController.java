@@ -116,8 +116,6 @@ public class AdminController {
 
         boolean result = auditService.cancelDisable(username);
 
-        myResponse.setMsg(result ? "设置成功！" : "设置失败！");
-
         if (result) {
             myResponse.setMsg("设置成功！");
         } else {

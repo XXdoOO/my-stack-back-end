@@ -41,37 +41,31 @@ public class UserService {
 
         QueryWrapper<User> wrapper = new QueryWrapper<>();
 
-        User user = userMapper.selectOne(wrapper.eq("username", username).
+        User user = userMapper.selectOne(wrapper.
+                eq("username", username).
                 eq("password", password));
 
-        if (user != null) {
-            if (!user.getStatus()) {
-                this.session.setAttribute("USER_SESSION", user);
-
-                user = getMyInfo();
-            } else {
-                QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
-                Disable disable = disableMapper.selectOne(disableWrapper.
-                        eq("username", username).
-                        orderByDesc("end_time").
-                        last("limit 1"));
-
-                if (disable.getEndTime() < System.currentTimeMillis()) {
-                    this.session.setAttribute("USER_SESSION", user);
-                    user = getMyInfo();
-
-                    UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
-                    userMapper.update(null, updateWrapper.eq("username", username).
-                            set("status", 0));
-
-                    QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
-                    disableMapper.delete(queryWrapper.eq("username", username));
-                } else {
-                    user.setDisableInfo(disable);
-                }
-            }
+        if (user == null) {
+            return null;
         }
 
+        QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
+        Disable disable = disableMapper.selectOne(disableWrapper.
+                eq("username", username).
+                orderByDesc("end_time").
+                last("limit 1"));
+
+        // 用户被封禁
+        if (disable != null && disable.getEndTime() > System.currentTimeMillis()) {
+            user.setDisableInfo(disable);
+            user.setStatus(true);
+        } else {
+            session.setAttribute("USER_SESSION", user);
+            user = getMyInfo();
+
+            QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
+            disableMapper.delete(queryWrapper.eq("username", username));
+        }
         return user;
     }
 

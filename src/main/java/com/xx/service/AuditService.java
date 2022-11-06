@@ -41,7 +41,6 @@ public class AuditService {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         return blogMapper.update(null, wrapper.
                 eq("id", id).
-                isNull("status").
                 set("status", status));
     }
 
@@ -64,7 +63,18 @@ public class AuditService {
     public Map<String, Object> getUserList(int startIndex, int pageSize) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
         Long total = userMapper.selectCount(wrapper);
-        List<User> userList = userMapper.selectList(wrapper.last("limit " + startIndex + ", " + pageSize));
+
+        List<User> userList = userMapper.selectList(wrapper.
+                last("limit " + startIndex + ", " + pageSize));
+
+        for (User user : userList) {
+            QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
+            Disable disable = disableMapper.selectOne(queryWrapper.eq("username", user.getUsername()).
+                    last("limit 1"));
+            if (disable != null) {
+                user.setStatus(true);
+            }
+        }
         return new HashMap<String, Object>() {{
             put("total", total);
             put("list", userList);
@@ -77,11 +87,6 @@ public class AuditService {
         if (user == null) {
             return false;
         }
-
-        UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-        userMapper.update(null, wrapper.
-                eq("username", username).
-                set("status", 1));
 
         disableMapper.setUserDisableTime(new HashMap<String, Object>() {{
             put("username", username);
@@ -98,11 +103,6 @@ public class AuditService {
         if (user == null) {
             return false;
         }
-
-        UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-        userMapper.update(null, wrapper.
-                eq("username", username).
-                set("status", 0));
 
         QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
         disableMapper.delete(queryWrapper.eq("username", username));
