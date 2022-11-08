@@ -13,4 +13,5 @@ public interface BlogMapper extends BaseMapper<Blog> {
     List<BlogView> getMyStarList(Map<String, Object> map);
     List<BlogView> getMyUpList(Map<String, Object> map);
     List<BlogView> getMyDownList(Map<String, Object> map);
+    long deletedBlogCount();
 }

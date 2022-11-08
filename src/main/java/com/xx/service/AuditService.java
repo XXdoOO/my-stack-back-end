@@ -2,6 +2,7 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.xx.config.FilterConfigurer;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,5 +109,41 @@ public class AuditService {
         disableMapper.delete(queryWrapper.eq("username", username));
 
         return true;
+    }
+
+    public Map<String, Object> getWatchData() {
+        // 获取用户情况，在线、离线（小黑屋）、离线（正常）、已注销
+        Long total = userMapper.selectCount(null);
+        int onlineCount = FilterConfigurer.session.size();
+        long offlineCount = disableMapper.selectCount(null);
+        long offlineCount2 = total - onlineCount - offlineCount;
+        long deletedUserCount = userMapper.getDeletedUserCount();
+        HashMap<String, Object> map = new HashMap<String, Object>() {{
+            put("onlineCount", onlineCount);
+            put("offlineCount", offlineCount);
+            put("offlineCount2", offlineCount2);
+            put("deletedUserCount", deletedUserCount);
+        }};
+
+        // 获取博客情况，已发布、待审核、不通过、已删除
+        QueryWrapper<Blog> blogQueryWrapper = new QueryWrapper<>();
+        QueryWrapper<Blog> blogQueryWrapper2 = new QueryWrapper<>();
+        QueryWrapper<Blog> blogQueryWrapper3 = new QueryWrapper<>();
+        long passCount = blogMapper.selectCount(blogQueryWrapper.eq("status", 1));
+        long auditingCount = blogMapper.selectCount(blogQueryWrapper2.isNull("status"));
+        long noPassCount = blogMapper.selectCount(blogQueryWrapper3.eq("status", 0));
+        long deletedBlogCount = blogMapper.deletedBlogCount();
+
+        HashMap<String, Object> map2 = new HashMap<String, Object>() {{
+            put("passCount", passCount);
+            put("auditingCount", auditingCount);
+            put("noPassCount", noPassCount);
+            put("deletedBlogCount", deletedBlogCount);
+        }};
+
+        return new HashMap<String, Object>() {{
+            put("userStatus", map);
+            put("blogStatus", map2);
+        }};
     }
 }

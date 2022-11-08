@@ -125,5 +125,15 @@ public class AdminController {
 
         return myResponse;
     }
+
+    @ResponseBody
+    @GetMapping("/getWatchData")
+    public MyResponse getWatchData() {
+        MyResponse myResponse = new MyResponse();
+
+        myResponse.setData(auditService.getWatchData());
+
+        return myResponse;
+    }
 }
 

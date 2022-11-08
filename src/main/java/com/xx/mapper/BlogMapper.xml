@@ -27,4 +27,10 @@
           and `logic_delete` = 0
         limit #{startIndex}, #{pageSize};
     </select>
+
+    <select id="deletedBlogCount" resultType="long">
+        select count(*)
+        from blog
+        where logic_delete = 1;
+    </select>
 </mapper>

@@ -16,8 +16,11 @@ create table `user`
 ) comment '用户账号信息';
 
 insert into `user`(`username`, `password`, `identity`)
-values ('admin', 'admin', 1),
-       ('user', 'user', 0);
+values ('admin', 'xx', 1),
+       ('a', 'xx', 0),
+       ('b', 'xx', 0),
+       ('c', 'xx', 0),
+       ('user', 'xx', 0);
 
 create table `disable`
 (
@@ -28,6 +31,10 @@ create table `disable`
     `logic_delete` tinyint(1) default 0                 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`)
 ) comment '用户封号记录';
+
+insert into `disable`(`username`, `end_time`, `reason`)
+values ('a', '2022-11-10 21:54:01', '发布不当评论'),
+       ('b', '2022-11-10 21:54:01', '发布不当评论');
 
 create table `blog`
 (
