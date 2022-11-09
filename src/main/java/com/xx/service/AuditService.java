@@ -117,12 +117,12 @@ public class AuditService {
         int onlineCount = FilterConfigurer.session.size();
         long offlineCount = disableMapper.selectCount(null);
         long offlineCount2 = total - onlineCount - offlineCount;
-        long deletedUserCount = userMapper.getDeletedUserCount();
+        long deletedCount = userMapper.getDeletedUserCount();
         HashMap<String, Object> map = new HashMap<String, Object>() {{
             put("onlineCount", onlineCount);
             put("offlineCount", offlineCount);
             put("offlineCount2", offlineCount2);
-            put("deletedUserCount", deletedUserCount);
+            put("deletedCount", deletedCount);
         }};
 
         // 获取博客情况，已发布、待审核、不通过、已删除
@@ -132,13 +132,13 @@ public class AuditService {
         long passCount = blogMapper.selectCount(blogQueryWrapper.eq("status", 1));
         long auditingCount = blogMapper.selectCount(blogQueryWrapper2.isNull("status"));
         long noPassCount = blogMapper.selectCount(blogQueryWrapper3.eq("status", 0));
-        long deletedBlogCount = blogMapper.deletedBlogCount();
+        long deletedCount2 = blogMapper.deletedBlogCount();
 
         HashMap<String, Object> map2 = new HashMap<String, Object>() {{
             put("passCount", passCount);
             put("auditingCount", auditingCount);
             put("noPassCount", noPassCount);
-            put("deletedBlogCount", deletedBlogCount);
+            put("deletedCount", deletedCount2);
         }};
 
         return new HashMap<String, Object>() {{
