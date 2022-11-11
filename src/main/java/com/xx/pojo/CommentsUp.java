@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @TableName
 public class CommentsUp {
-    private Integer commentsId;
+    private Long commentsId;
     private String username;
 
     @TableLogic

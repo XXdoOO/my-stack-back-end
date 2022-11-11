@@ -27,10 +27,10 @@ public class AdminController {
 
     @ResponseBody
     @PutMapping("/auditBlog")
-    public MyResponse auditBlog(@RequestParam int id, @RequestParam boolean isPass) {
+    public MyResponse auditBlog(@RequestParam long id, @RequestParam boolean isPass) {
         MyResponse myResponse = new MyResponse();
 
-        int result = auditService.auditBlog(id, isPass);
+        long result = auditService.auditBlog(id, isPass);
 
         if (result == 1) {
             myResponse.setMsg("审核成功！");
@@ -56,7 +56,7 @@ public class AdminController {
 
     @ResponseBody
     @GetMapping("/getAuditBlogDetails")
-    public MyResponse getAuditBlogDetails(int id) {
+    public MyResponse getAuditBlogDetails(long id) {
         MyResponse myResponse = new MyResponse();
 
         Blog blogDetails = auditService.getAuditBlogDetails(id);

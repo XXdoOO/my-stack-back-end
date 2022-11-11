@@ -55,7 +55,7 @@ public class BlogService {
     @Value("${cover-img.local-path}")
     private String locPath;
 
-    public Map<String, Object> getBlogListByKeywords(String keywords, String orderBy, int startIndex, int pageSize) {
+    public Map<String, Object> getBlogListByKeywords(String keywords, String orderBy, long startIndex, long pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
         Long total = blogViewMapper.selectCount(wrapper.
@@ -74,7 +74,7 @@ public class BlogService {
         }};
     }
 
-    public Map<String, Object> getBlogListByKeywords2(String keywords, String orderBy, int startIndex, int pageSize) {
+    public Map<String, Object> getBlogListByKeywords2(String keywords, String orderBy, long startIndex, long pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
         Long total = blogViewMapper.selectCount(wrapper.
@@ -92,7 +92,7 @@ public class BlogService {
         }};
     }
 
-    public Map<String, Object> getUserPostBlogList(String username, int startIndex, int pageSize) {
+    public Map<String, Object> getUserPostBlogList(String username, long startIndex, long pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
         Long total = blogViewMapper.selectCount(wrapper.
@@ -111,7 +111,7 @@ public class BlogService {
         }};
     }
 
-    public Map<String, Object> getUserUpBlogList(String username, int startIndex, int pageSize) {
+    public Map<String, Object> getUserUpBlogList(String username, long startIndex, long pageSize) {
         QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
 
         Long total = upMapper.selectCount(upWrapper.eq("username", username));
@@ -132,7 +132,7 @@ public class BlogService {
         }};
     }
 
-    public Map<String, Object> getUserDownBlogList(String username, int startIndex, int pageSize) {
+    public Map<String, Object> getUserDownBlogList(String username, long startIndex, long pageSize) {
         QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
 
         Long total = downMapper.selectCount(downWrapper.eq("username", username));
@@ -153,7 +153,7 @@ public class BlogService {
         }};
     }
 
-    public Blog getBlogDetails(int id) {
+    public Blog getBlogDetails(long id) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         UpdateWrapper<Blog> updateWrapper = new UpdateWrapper<>();
 
@@ -212,7 +212,7 @@ public class BlogService {
         return blog;
     }
 
-    public int postBlog(Blog blog) {
+    public long postBlog(Blog blog) {
         System.out.println(blog.getCoverImg());
         User user = (User) session.getAttribute("USER_SESSION");
         Blog blog1 = new Blog();
@@ -261,11 +261,11 @@ public class BlogService {
         return true;
     }
 
-    public boolean deleteMyBlog(int id) {
+    public boolean deleteMyBlog(long id) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
-        int delete = blogMapper.delete(wrapper.
+        long delete = blogMapper.delete(wrapper.
                 eq("id", id).
                 eq("author_username", username));
 
@@ -314,7 +314,7 @@ public class BlogService {
         return false;
     }
 
-    public boolean upBlog(int id) {
+    public boolean upBlog(long id) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         QueryWrapper<BlogUp> queryWrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
@@ -333,26 +333,26 @@ public class BlogService {
         if (count == 0) {
             System.out.println("顶记录不存在");
             BlogUp up = new BlogUp(id, username, false);
-            int update = blogMapper.update(null, wrapper.
+            long update = blogMapper.update(null, wrapper.
                     setSql("up = up + 1").
                     eq("id", id));
-            int insert = upMapper.insert(up);
+            long insert = upMapper.insert(up);
             return update == 1 && insert == 1;
         }
 
         // 顶记录存在则逻辑删除该记录
         System.out.println("顶记录存在");
         UpdateWrapper<BlogUp> wrapper2 = new UpdateWrapper<>();
-        int update = blogMapper.update(null, wrapper.
+        long update = blogMapper.update(null, wrapper.
                 setSql("up = up - 1").
                 eq("id", id));
-        int update1 = upMapper.delete(wrapper2.
+        long update1 = upMapper.delete(wrapper2.
                 eq("username", username).
                 eq("blog_id", id));
         return update == 1 && update1 == 1;
     }
 
-    public boolean downBlog(int id) {
+    public boolean downBlog(long id) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         QueryWrapper<BlogDown> queryWrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
@@ -371,26 +371,26 @@ public class BlogService {
         if (count == 0) {
             System.out.println("记录不存在");
             BlogDown down = new BlogDown(id, username, false);
-            int update = blogMapper.update(null, wrapper.
+            long update = blogMapper.update(null, wrapper.
                     setSql("down = down + 1").
                     eq("id", id));
-            int insert = downMapper.insert(down);
+            long insert = downMapper.insert(down);
             return update == 1 && insert == 1;
         }
 
         // 踩记录存在则逻辑删除该记录
         System.out.println("记录存在");
         UpdateWrapper<BlogDown> wrapper2 = new UpdateWrapper<>();
-        int update = blogMapper.update(null, wrapper.
+        long update = blogMapper.update(null, wrapper.
                 setSql("down = down - 1").
                 eq("id", id));
-        int update1 = downMapper.delete(wrapper2.
+        long update1 = downMapper.delete(wrapper2.
                 eq("username", username).
                 eq("blog_id", id));
         return update == 1 && update1 == 1;
     }
 
-    public boolean starBlog(int id) {
+    public boolean starBlog(long id) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         QueryWrapper<BlogStar> queryWrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
@@ -409,26 +409,26 @@ public class BlogService {
         if (count == 0) {
             System.out.println("记录不存在");
             BlogStar star = new BlogStar(id, username, false);
-            int update = blogMapper.update(null, wrapper.
+            long update = blogMapper.update(null, wrapper.
                     setSql("star = star + 1").
                     eq("id", id));
-            int insert = starMapper.insert(star);
+            long insert = starMapper.insert(star);
             return update == 1 && insert == 1;
         }
 
         // 收藏记录存在则逻辑删除该记录
         System.out.println("记录存在");
         UpdateWrapper<BlogStar> wrapper2 = new UpdateWrapper<>();
-        int update = blogMapper.update(null, wrapper.
+        long update = blogMapper.update(null, wrapper.
                 setSql("star = star - 1").
                 eq("id", id));
-        int update1 = starMapper.delete(wrapper2.
+        long update1 = starMapper.delete(wrapper2.
                 eq("username", username).
                 eq("blog_id", id));
         return update == 1 && update1 == 1;
     }
 
-    public Map<String, Object> getMyPostList(Integer status, int startIndex, int pageSize) {
+    public Map<String, Object> getMyPostList(Integer status, long startIndex, long pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
@@ -458,7 +458,7 @@ public class BlogService {
         }};
     }
 
-    public Map<String, Object> getMyStarList(int startIndex, int pageSize) {
+    public Map<String, Object> getMyStarList(int startIndex, long pageSize) {
         HashMap<String, Object> map = new HashMap<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
@@ -477,7 +477,7 @@ public class BlogService {
         }};
     }
 
-    public Map<String, Object> getMyUpList(int startIndex, int pageSize) {
+    public Map<String, Object> getMyUpList(int startIndex, long pageSize) {
         HashMap<String, Object> map = new HashMap<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
@@ -496,7 +496,7 @@ public class BlogService {
         }};
     }
 
-    public Map<String, Object> getMyDownList(int startIndex, int pageSize) {
+    public Map<String, Object> getMyDownList(int startIndex, long pageSize) {
         HashMap<String, Object> map = new HashMap<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 

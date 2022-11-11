@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @TableName
 public class BlogDown {
-    private Integer blogId;
+    private Long blogId;
     private String username;
 
     @TableLogic

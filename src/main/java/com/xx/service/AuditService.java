@@ -38,14 +38,14 @@ public class AuditService {
     @Autowired
     private HttpSession session;
 
-    public int auditBlog(int id, boolean status) {
+    public int auditBlog(long id, boolean status) {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         return blogMapper.update(null, wrapper.
                 eq("id", id).
                 set("status", status));
     }
 
-    public Blog getAuditBlogDetails(int id) {
+    public Blog getAuditBlogDetails(long id) {
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
 
         Blog blog = blogMapper.selectOne(wrapper.

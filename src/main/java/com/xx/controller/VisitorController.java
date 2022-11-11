@@ -128,7 +128,7 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getBlogDetails")
-    public MyResponse getBlogDetails(@RequestParam int id) {
+    public MyResponse getBlogDetails(@RequestParam long id) {
         MyResponse myResponse = new MyResponse();
 
         Blog blogDetails = blogService.getBlogDetails(id);
@@ -139,7 +139,7 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getCommentsList")
-    public MyResponse getCommentsList(@RequestParam int id, Boolean orderBy, Integer startIndex, Integer pageSize) {
+    public MyResponse getCommentsList(@RequestParam long id, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
         List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" :

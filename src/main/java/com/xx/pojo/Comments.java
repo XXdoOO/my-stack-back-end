@@ -15,13 +15,13 @@ import java.util.Map;
 @NoArgsConstructor
 @TableName
 public class Comments {
-    private Integer id;
-    private Integer blogId;
-    private Integer parent;
+    private Long id;
+    private Long blogId;
+    private Long parent;
     private String authorUsername;
     private String content;
-    private Integer up;
-    private Integer down;
+    private Long up;
+    private Long down;
     private Long postTime;
 
     @TableField(exist = false)
@@ -34,7 +34,7 @@ public class Comments {
     private Map<String, Object> authorInfo;
 
     @TableField(exist = false)
-    private Integer replyCount;
+    private Long replyCount;
 
     @TableLogic
     private Boolean logicDelete;

@@ -32,7 +32,7 @@ public class CommentsService {
     @Autowired
     private HttpSession session;
 
-    public List<Comments> getCommentsList(int id, String orderBy, int startIndex, int pageSize) {
+    public List<Comments> getCommentsList(long id, String orderBy, int startIndex, int pageSize) {
         QueryWrapper<Comments> wrapper = new QueryWrapper<>();
         QueryWrapper<CommentsUp> commentsUpWrapper = new QueryWrapper<>();
         QueryWrapper<CommentsDown> commentsDownWrapper = new QueryWrapper<>();
@@ -78,7 +78,7 @@ public class CommentsService {
         return comments;
     }
 
-    public int postComments(Comments comments) {
+    public long postComments(Comments comments) {
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
         Comments comments1 = new Comments();
 
@@ -91,7 +91,7 @@ public class CommentsService {
         return comments1.getId();
     }
 
-    public int deleteMyComments(int id) {
+    public int deleteMyComments(long id) {
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
         UpdateWrapper<Comments> wrapper = new UpdateWrapper<>();
 
@@ -100,7 +100,7 @@ public class CommentsService {
                 eq("id", id));
     }
 
-    public boolean upComments(int commentsId) {
+    public boolean upComments(long commentsId) {
         UpdateWrapper<Comments> wrapper = new UpdateWrapper<>();
         QueryWrapper<CommentsUp> queryWrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
@@ -127,7 +127,7 @@ public class CommentsService {
         return update == 1 && update1 == 1;
     }
 
-    public boolean downComments(int commentsId) {
+    public boolean downComments(long commentsId) {
         UpdateWrapper<Comments> wrapper = new UpdateWrapper<>();
         QueryWrapper<CommentsDown> queryWrapper = new QueryWrapper<>();
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();

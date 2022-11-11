@@ -57,7 +57,7 @@ public class UserController {
 
     @ResponseBody
     @DeleteMapping("/deleteMyBlog")
-    public MyResponse deleteMyBlog(int id) {
+    public MyResponse deleteMyBlog(long id) {
         MyResponse myResponse = new MyResponse();
 
         if (blogService.deleteMyBlog(id)) {
@@ -87,7 +87,7 @@ public class UserController {
 
     @ResponseBody
     @PutMapping("/upBlog")
-    public MyResponse upBlog(int id) {
+    public MyResponse upBlog(long id) {
         MyResponse myResponse = new MyResponse();
 
         if (blogService.upBlog(id)) {
@@ -102,7 +102,7 @@ public class UserController {
 
     @ResponseBody
     @PutMapping("/downBlog")
-    public MyResponse downBlog(int id) {
+    public MyResponse downBlog(long id) {
         MyResponse myResponse = new MyResponse();
 
         if (blogService.downBlog(id)) {
@@ -117,7 +117,7 @@ public class UserController {
 
     @ResponseBody
     @PutMapping("/starBlog")
-    public MyResponse starBlog(int id) {
+    public MyResponse starBlog(long id) {
         MyResponse myResponse = new MyResponse();
 
         if (blogService.starBlog(id)) {
@@ -193,7 +193,7 @@ public class UserController {
     public MyResponse postComments(@RequestBody Comments comments) {
         MyResponse myResponse = new MyResponse();
 
-        int commentsId = commentsService.postComments(comments);
+        long commentsId = commentsService.postComments(comments);
         myResponse.setData(commentsId);
         myResponse.setMsg("发布成功！");
 
@@ -202,7 +202,7 @@ public class UserController {
 
     @ResponseBody
     @DeleteMapping("/deleteMyComments")
-    public MyResponse deleteMyComments(int id) {
+    public MyResponse deleteMyComments(long id) {
         MyResponse myResponse = new MyResponse();
 
         if (commentsService.deleteMyComments(id) == 1) {
@@ -216,7 +216,7 @@ public class UserController {
 
     @ResponseBody
     @PutMapping("/upComments")
-    public MyResponse upComments(int id) {
+    public MyResponse upComments(long id) {
         MyResponse myResponse = new MyResponse();
 
         if (commentsService.upComments(id)) {
@@ -231,7 +231,7 @@ public class UserController {
 
     @ResponseBody
     @PutMapping("/downComments")
-    public MyResponse downComments(int id) {
+    public MyResponse downComments(long id) {
         MyResponse myResponse = new MyResponse();
 
         if (commentsService.downComments(id)) {

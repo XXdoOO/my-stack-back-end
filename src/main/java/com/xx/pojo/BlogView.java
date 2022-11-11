@@ -14,14 +14,14 @@ import java.text.ParseException;
 @NoArgsConstructor
 @TableName("blog")
 public class BlogView {
-    private Integer id;
+    private Long id;
     private String title;
     private String description;
     private String cover;
-    private Integer up;
-    private Integer down;
-    private Integer star;
-    private Integer views;
+    private Long up;
+    private Long down;
+    private Long star;
+    private Long views;
     private Boolean status;
     private String authorUsername;
 
