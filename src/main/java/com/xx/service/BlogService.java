@@ -154,7 +154,6 @@ public class BlogService {
     }
 
     public Blog getBlogDetails(long id) {
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
         UpdateWrapper<Blog> updateWrapper = new UpdateWrapper<>();
 
         Blog blog = blogMapper.selectById(id);
@@ -162,6 +161,8 @@ public class BlogService {
         if (blog == null) {
             return null;
         }
+
+        System.out.println(blog.getContent());
 
         if (blog.getStatus() == null || !blog.getStatus()) {
             User user = (User) session.getAttribute("USER_SESSION");
