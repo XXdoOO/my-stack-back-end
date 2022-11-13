@@ -6,8 +6,11 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.config.FilterConfigurer;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
+import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
@@ -35,6 +38,9 @@ public class UserService {
 
     @Autowired
     private HttpSession session;
+
+    @Value("${face-img.local-path}")
+    private String locPath;
 
     public User login(String username, String password) {
         System.out.println("用户：【" + username + "】请求登录");
@@ -124,5 +130,47 @@ public class UserService {
         user.setAuditingCount(auditingCount);
         user.setStarCount(starCount);
         return user;
+    }
+
+    public boolean updateMyInfo(MultipartFile face, String nickname) {
+        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+
+        if (!face.isEmpty() && nickname != null) {
+            if (SaveFile.saveFile(face, locPath, username + ".jpg")) {
+                String avatar = "http://localhost:8080/face/" + username + ".jpg";
+
+                UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+                userMapper.update(null, wrapper.
+                        eq("username", username).
+                        set("nickname", nickname).
+                        set("avatar", avatar));
+
+                return true;
+            }
+        } else if (face.isEmpty()) {
+            UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+            userMapper.update(null, wrapper.
+                    eq("username", username).
+                    set("nickname", nickname));
+        } else if (nickname == null) {
+            if (SaveFile.saveFile(face, locPath, username + ".jpg")) {
+                String avatar = "http://localhost:8080/face/" + username + ".jpg";
+
+                UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+                userMapper.update(null, wrapper.
+                        eq("username", username).
+                        set("avatar", avatar));
+
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteMy() {
+        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+        int i = userMapper.deleteById(username);
+
+        return i == 1;
     }
 }

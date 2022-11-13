@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
+import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -228,7 +229,7 @@ public class BlogService {
         String filename = blog1.getId() + ".jpg";
         String cover = null;
 
-        if (saveFile(blog.getCoverImg(), filename)) {
+        if (SaveFile.saveFile(blog.getCoverImg(), locPath, filename)) {
             cover = "http://localhost:8080/cover/" + filename;
         }
 
@@ -236,30 +237,6 @@ public class BlogService {
 
         blogMapper.update(null, wrapper.set("cover", cover).eq("id", blog1.getId()));
         return blog1.getId();
-    }
-
-    public boolean saveFile(MultipartFile file, String filename) {
-        if (file == null || file.isEmpty()) {
-            return false;
-        }
-        File temp = new File(locPath);
-        if (!temp.exists()) {
-            temp.mkdirs();
-        }
-
-        File localFile = new File(locPath + filename);
-        try {
-            //把上传的文件保存至本地
-            file.transferTo(localFile);
-
-            System.out.println(locPath + filename);
-            System.out.println(file.getOriginalFilename() + " 上传成功");
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
     }
 
     public boolean deleteMyBlog(long id) {
@@ -295,7 +272,7 @@ public class BlogService {
 
         if (count == 1) {
             String filename = blog.getId() + ".jpg";
-            if (saveFile(blog.getCoverImg(), filename)) {
+            if (SaveFile.saveFile(blog.getCoverImg(), locPath, filename)) {
                 blog.setCover("http://localhost:8080/cover/" + filename);
             }
 

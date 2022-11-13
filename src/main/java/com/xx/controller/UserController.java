@@ -159,7 +159,7 @@ public class UserController {
 
         Map<String, Object> map = blogService.getMyStarList(startIndex == null ? 0 : startIndex,
                 pageSize == null ? 10
-                : pageSize);
+                        : pageSize);
         myResponse.setData(map);
         return myResponse;
     }
@@ -183,7 +183,7 @@ public class UserController {
 
         Map<String, Object> map = blogService.getMyDownList(startIndex == null ? 0 : startIndex,
                 pageSize == null ? 10
-                : pageSize);
+                        : pageSize);
         myResponse.setData(map);
         return myResponse;
     }
@@ -231,13 +231,43 @@ public class UserController {
 
     @ResponseBody
     @PutMapping("/downComments")
-    public MyResponse downComments(long id) {
+    public MyResponse downComments(@RequestParam long id) {
         MyResponse myResponse = new MyResponse();
 
         if (commentsService.downComments(id)) {
             myResponse.setMsg("顶成功！");
         } else {
             myResponse.setMsg("顶失败！");
+            myResponse.setCode(Code.FAIL);
+        }
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @PutMapping("/updateMyInfo")
+    public MyResponse updateMyInfo(MultipartFile face, String nickname) {
+        MyResponse myResponse = new MyResponse();
+
+        if (userService.updateMyInfo(face, nickname)) {
+            myResponse.setMsg("修改成功！");
+        } else {
+            myResponse.setMsg("修改失败！");
+            myResponse.setCode(Code.FAIL);
+        }
+
+        return myResponse;
+    }
+
+    @ResponseBody
+    @DeleteMapping("/deleteMy")
+    public MyResponse deleteMy() {
+        MyResponse myResponse = new MyResponse();
+
+        if (userService.deleteMy()) {
+            myResponse.setMsg("注销成功！");
+        } else {
+            myResponse.setMsg("注销失败！");
             myResponse.setCode(Code.FAIL);
         }
 
