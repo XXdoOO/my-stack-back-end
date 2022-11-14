@@ -23,10 +23,10 @@ import java.util.Map;
 
 @Configuration
 public class FilterConfigurer implements WebMvcConfigurer {
-    @Value("${cover-img.request-path}")
+    @Value("${images.request-path}")
     private String reqPath;
 
-    @Value("${cover-img.local-path}")
+    @Value("${images.local-path}")
     private String locPath;
 
     @Override
@@ -40,27 +40,19 @@ public class FilterConfigurer implements WebMvcConfigurer {
         adminInterceptor.addPathPatterns("/admin/**");
     }
 
-    // @Override
-    // public void addCorsMappings(CorsRegistry registry) {
-    //     registry.addMapping("/**")
-    //             .allowedOrigins("*")
-    //             .allowedMethods("POST", "GET", "PUT", "OPTIONS", "DELETE")
-    //             .maxAge(3600)
-    //             .allowCredentials(true);
-    // }
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        System.out.println(locPath);
         File logoDir = new File(locPath);
         boolean flag = false;
         if (!logoDir.exists()) {
             flag = logoDir.mkdirs();
         }
         if (flag) {
-            System.out.println("已成功创建资源 logo 目录：{}" + locPath);
+            System.out.println("已成功创建资源目录：{}" + locPath);
         }
 
-        System.out.println("getAbsolutePath = {}" + logoDir.getAbsolutePath());
+        System.out.println("getAbsolutePath = {}" + logoDir.getAbsolutePath() + File.separator);
         System.out.println("getPath = {}" + logoDir.getPath());
 
         registry.addResourceHandler(reqPath)

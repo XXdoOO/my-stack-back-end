@@ -246,11 +246,13 @@ public class UserController {
 
     @ResponseBody
     @PutMapping("/updateMyInfo")
-    public MyResponse updateMyInfo(MultipartFile face, String nickname) {
+    public MyResponse updateMyInfo(MultipartFile avatar, String nickname) {
         MyResponse myResponse = new MyResponse();
 
-        if (userService.updateMyInfo(face, nickname)) {
+        User user = userService.updateMyInfo(avatar, nickname);
+        if (user != null) {
             myResponse.setMsg("修改成功！");
+            myResponse.setData(user);
         } else {
             myResponse.setMsg("修改失败！");
             myResponse.setCode(Code.FAIL);

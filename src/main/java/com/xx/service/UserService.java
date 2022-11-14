@@ -39,7 +39,7 @@ public class UserService {
     @Autowired
     private HttpSession session;
 
-    @Value("${face-img.local-path}")
+    @Value("${images.local-path}")
     private String locPath;
 
     public User login(String username, String password) {
@@ -132,39 +132,38 @@ public class UserService {
         return user;
     }
 
-    public boolean updateMyInfo(MultipartFile face, String nickname) {
+    public User updateMyInfo(MultipartFile face, String nickname) {
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
-        if (!face.isEmpty() && nickname != null) {
-            if (SaveFile.saveFile(face, locPath, username + ".jpg")) {
-                String avatar = "http://localhost:8080/face/" + username + ".jpg";
+        if (face != null && nickname != null) {
+            if (SaveFile.saveFile(face, locPath + "/avatarImg/", username + ".jpg")) {
+                String avatar = "http://localhost:8080/avatarImg/" + username + ".jpg";
 
                 UpdateWrapper<User> wrapper = new UpdateWrapper<>();
                 userMapper.update(null, wrapper.
                         eq("username", username).
                         set("nickname", nickname).
                         set("avatar", avatar));
-
-                return true;
+                return getMyInfo();
             }
-        } else if (face.isEmpty()) {
+        } else if (face == null && nickname != null) {
             UpdateWrapper<User> wrapper = new UpdateWrapper<>();
             userMapper.update(null, wrapper.
                     eq("username", username).
                     set("nickname", nickname));
-        } else if (nickname == null) {
-            if (SaveFile.saveFile(face, locPath, username + ".jpg")) {
-                String avatar = "http://localhost:8080/face/" + username + ".jpg";
+            return getMyInfo();
+        } else if (face != null) {
+            if (SaveFile.saveFile(face, locPath + "/avatarImg/", username + ".jpg")) {
+                String avatar = "http://localhost:8080/avatarImg/" + username + ".jpg";
 
                 UpdateWrapper<User> wrapper = new UpdateWrapper<>();
                 userMapper.update(null, wrapper.
                         eq("username", username).
                         set("avatar", avatar));
-
-                return true;
+                return getMyInfo();
             }
         }
-        return false;
+        return null;
     }
 
     public boolean deleteMy() {
