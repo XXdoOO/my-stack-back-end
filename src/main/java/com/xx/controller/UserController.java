@@ -193,8 +193,7 @@ public class UserController {
     public MyResponse postComments(@RequestBody Comments comments) {
         MyResponse myResponse = new MyResponse();
 
-        long commentsId = commentsService.postComments(comments);
-        myResponse.setData(commentsId);
+        myResponse.setData(commentsService.postComments(comments));
         myResponse.setMsg("发布成功！");
 
         return myResponse;

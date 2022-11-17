@@ -78,17 +78,23 @@ public class CommentsService {
         return comments;
     }
 
-    public long postComments(Comments comments) {
-        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+    public Comments postComments(Comments comments) {
+        User user = (User) session.getAttribute("USER_SESSION");
         Comments comments1 = new Comments();
 
         comments1.setBlogId(comments.getBlogId());
         comments1.setParent(comments.getParent());
-        comments1.setAuthorUsername(username);
+        comments1.setAuthorUsername(user.getUsername());
         comments1.setContent(comments.getContent());
 
         commentsMapper.insert(comments1);
-        return comments1.getId();
+
+        Comments comment = commentsMapper.selectById(comments1.getId());
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("avatar", user.getAvatar());
+        map.put("nickname", user.getNickname());
+        comment.setAuthorInfo(map);
+        return comment;
     }
 
     public int deleteMyComments(long id) {

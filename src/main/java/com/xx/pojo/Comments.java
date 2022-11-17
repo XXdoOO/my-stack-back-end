@@ -20,8 +20,8 @@ public class Comments {
     private Long parent;
     private String authorUsername;
     private String content;
-    private Long up;
-    private Long down;
+    private Long up = 0L;
+    private Long down = 0L;
     private Long postTime;
 
     @TableField(exist = false)
