@@ -2,6 +2,7 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xx.config.FilterConfigurer;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
@@ -61,19 +62,34 @@ public class AuditService {
         return blog;
     }
 
-    public Map<String, Object> getUserList(int startIndex, int pageSize) {
+    public Map<String, Object> getUserList(User user, int startIndex, int pageSize) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        Long total = userMapper.selectCount(wrapper);
 
+        if (user.getStartTime() != null && user.getEndTime() != null) {
+            wrapper.
+                    gt("register_time", user.getStartTime()).
+                    lt("register_time", user.getEndTime()).
+                    like(StringUtils.isNotBlank(user.getUsername()), "username", user.getUsername()).
+                    like(StringUtils.isNotBlank(user.getNickname()), "nickname", user.getNickname()).
+                    eq(user.getIdentity() != null, "identity", user.getIdentity());
+        } else {
+            wrapper.
+                    like(StringUtils.isNotBlank(user.getUsername()), "username", user.getUsername()).
+                    like(StringUtils.isNotBlank(user.getNickname()), "nickname", user.getNickname()).
+                    eq(user.getIdentity() != null, "identity", user.getIdentity());
+        }
+
+
+        Long total = userMapper.selectCount(wrapper);
         List<User> userList = userMapper.selectList(wrapper.
                 last("limit " + startIndex + ", " + pageSize));
 
-        for (User user : userList) {
+        for (User u : userList) {
             QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
             Disable disable = disableMapper.selectOne(queryWrapper.eq("username", user.getUsername()).
                     last("limit 1"));
             if (disable != null) {
-                user.setStatus(true);
+                u.setStatus(true);
             }
         }
         return new HashMap<String, Object>() {{

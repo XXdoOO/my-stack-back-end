@@ -1,9 +1,6 @@
 package com.xx.pojo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.xx.util.FormatTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,6 +16,7 @@ import java.util.Map;
 @TableName
 public class User {
     @TableId
+    @TableField(condition = SqlCondition.LIKE)
     private String username;
 
     @TableField(select = false)
@@ -27,6 +25,11 @@ public class User {
     private String nickname;
     private String avatar;
     private Long registerTime;
+
+    @TableField(exist = false)
+    private Long startTime;
+    @TableField(exist = false)
+    private Long endTime;
 
     @TableField(exist = false)
     private Boolean status = false;

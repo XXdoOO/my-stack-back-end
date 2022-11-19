@@ -38,6 +38,12 @@ public class BlogView {
     private Boolean isStar = false;
 
     private Long postTime;
+
+    @TableField(exist = false)
+    private Long startTime;
+    @TableField(exist = false)
+    private Long endTime;
+
     @TableLogic
     private Boolean logicDelete;
 

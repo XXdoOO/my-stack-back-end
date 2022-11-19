@@ -21,4 +21,7 @@ public class Code {
 
     // 权限不足
     public final static int AUTHORITY_ERROR = 612;
+
+    // 未登录
+    public final static int NOT_LOGIN = 613;
 }

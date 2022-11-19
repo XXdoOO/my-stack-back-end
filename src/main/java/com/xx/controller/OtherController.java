@@ -12,7 +12,7 @@ public class OtherController {
     @ResponseBody
     @RequestMapping("/handleNotLogin")
     public MyResponse handleNotLogin() {
-        return new MyResponse(Code.AUTHORITY_ERROR, "请登录后操作！", null);
+        return new MyResponse(Code.NOT_LOGIN, "请登录后操作！", null);
     }
 
     @ResponseBody

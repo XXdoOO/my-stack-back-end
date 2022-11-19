@@ -44,10 +44,11 @@ public class AdminController {
 
     @ResponseBody
     @GetMapping("/getBlogByKeywords")
-    public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
+    public MyResponse getBlogByKeywords(@RequestBody BlogView blogView, Boolean orderBy, Integer startIndex,
+                                        Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        Map<String, Object> map = blogService.getBlogListByKeywords2(keywords == null ? "" : keywords,
+        Map<String, Object> map = blogService.getBlogListByKeywords2(blogView,
                 (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
                 pageSize == null ? 10 : pageSize);
         myResponse.setData(map);
@@ -67,10 +68,10 @@ public class AdminController {
 
     @ResponseBody
     @GetMapping("/getUserList")
-    public MyResponse getUserList(Integer startIndex, Integer pageSize) {
+    public MyResponse getUserList(@RequestBody User user, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        Map<String, Object> map = auditService.getUserList(startIndex == null ? 0 : startIndex,
+        Map<String, Object> map = auditService.getUserList(user, startIndex == null ? 0 : startIndex,
                 pageSize == null ? 10 :
                         pageSize);
 

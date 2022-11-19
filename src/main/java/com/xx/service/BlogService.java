@@ -2,6 +2,7 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
 import com.xx.util.SaveFile;
@@ -72,17 +73,32 @@ public class BlogService {
         }};
     }
 
-    public Map<String, Object> getBlogListByKeywords2(String keywords, String orderBy, long startIndex, long pageSize) {
+    public Map<String, Object> getBlogListByKeywords2(BlogView blogView, String orderBy, long startIndex,
+                                                      long pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
-        Long total = blogViewMapper.selectCount(wrapper.
-                and(i -> i.like("title", keywords).or().like("content", keywords)).
-                orderByAsc(orderBy));
+        if (blogView.getStartTime() != null && blogView.getEndTime() != null) {
+            wrapper.
+                    gt("post_time", blogView.getStartTime()).
+                    lt("post_time", blogView.getEndTime()).
+                    like(StringUtils.isNotBlank(blogView.getTitle()), "title", blogView.getTitle()).
+                    like(StringUtils.isNotBlank(blogView.getDescription()), "description", blogView.getDescription()).
+                    like(StringUtils.isNotBlank(blogView.getAuthorNickname()), "username",
+                            blogView.getAuthorNickname()).
+                    eq(blogView.getStatus() != null, "status", blogView.getStatus());
+        } else {
+            wrapper.
+                    like(StringUtils.isNotBlank(blogView.getTitle()), "title", blogView.getTitle()).
+                    like(StringUtils.isNotBlank(blogView.getDescription()), "description", blogView.getDescription()).
+                    like(StringUtils.isNotBlank(blogView.getAuthorNickname()), "username",
+                            blogView.getAuthorNickname()).
+                    eq(blogView.getStatus() != null, "status", blogView.getStatus());
+        }
 
+
+        Long total = blogViewMapper.selectCount(wrapper);
         List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
                 last("limit " + startIndex + ", " + pageSize));
-
-        setOtherInfo(blogViews);
 
         return new HashMap<String, Object>() {{
             put("total", total);
