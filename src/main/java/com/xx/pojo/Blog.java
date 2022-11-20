@@ -32,7 +32,7 @@ public class Blog {
     private Long views;
     private String authorUsername;
     private Long postTime;
-    private Boolean status;
+    private Integer status;
 
     @TableField(exist = false)
     private User authorInfo;

@@ -56,24 +56,45 @@ public class UserService {
             return null;
         }
 
+        if (user.getStatus()) {
+            confirmUserStatus(user);
+            if (!user.getStatus()) {
+                session.setAttribute("USER_SESSION", user);
+                user = getMyInfo();
+            }
+        }
+        session.setAttribute("USER_SESSION", user);
+        user = getMyInfo();
+
+        return user;
+    }
+
+    // 确认用户状态
+    public void confirmUserStatus(User user) {
         QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
         Disable disable = disableMapper.selectOne(disableWrapper.
-                eq("username", username).
+                eq("username", user.getUsername()).
                 orderByDesc("end_time").
                 last("limit 1"));
 
-        // 用户被封禁
+        // 确认用户被封禁
         if (disable != null && disable.getEndTime() > System.currentTimeMillis()) {
             user.setDisableInfo(disable);
+            user.setStatus(false);
+
+            System.out.println("用户封禁解除");
+        } else { // 用户已解封
             user.setStatus(true);
-        } else {
-            session.setAttribute("USER_SESSION", user);
-            user = getMyInfo();
+
+            UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+            userMapper.update(null, wrapper.set("status", false).
+                    eq("username", user.getUsername()));
 
             QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
-            disableMapper.delete(queryWrapper.eq("username", username));
+            disableMapper.delete(queryWrapper.eq("username", user.getUsername()));
+
+            System.out.println("用户已封禁");
         }
-        return user;
     }
 
     public boolean register(String username, String password) {

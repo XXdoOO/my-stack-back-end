@@ -31,8 +31,7 @@ public class User {
     @TableField(exist = false)
     private Long endTime;
 
-    @TableField(exist = false)
-    private Boolean status = false;
+    private Boolean status;
     private Boolean identity;
 
     @TableField(exist = false)

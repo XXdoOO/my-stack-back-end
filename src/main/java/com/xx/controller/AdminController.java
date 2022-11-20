@@ -43,13 +43,16 @@ public class AdminController {
     }
 
     @ResponseBody
-    @GetMapping("/getBlogByKeywords")
-    public MyResponse getBlogByKeywords(@RequestBody BlogView blogView, Boolean orderBy, Integer startIndex,
-                                        Integer pageSize) {
+    @PostMapping("/getBlogList")
+    public MyResponse getBlogList(@RequestBody BlogView blogView, String orderBy, Boolean isAsc,
+                                  Integer startIndex,
+                                  Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        Map<String, Object> map = blogService.getBlogListByKeywords2(blogView,
-                (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
+        Map<String, Object> map = blogService.getBlogList(blogView,
+                (orderBy == null || "".equals(orderBy)) ? "post_time" : orderBy, isAsc == null || isAsc,
+                startIndex == null ? 0 :
+                        startIndex,
                 pageSize == null ? 10 : pageSize);
         myResponse.setData(map);
         return myResponse;
@@ -67,19 +70,38 @@ public class AdminController {
     }
 
     @ResponseBody
-    @GetMapping("/getUserList")
-    public MyResponse getUserList(@RequestBody User user, Integer startIndex, Integer pageSize) {
+    @PostMapping("/getUserList")
+    public MyResponse getUserList(@RequestBody User user, String orderBy, Boolean isAsc, Integer startIndex,
+                                  Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        Map<String, Object> map = auditService.getUserList(user, startIndex == null ? 0 : startIndex,
-                pageSize == null ? 10 :
-                        pageSize);
+        Map<String, Object> map = auditService.getUserList(user, (orderBy == null || "".equals(orderBy)) ? "post_time"
+                        : orderBy, isAsc == null || isAsc,
+                startIndex == null ? 0 :
+                        startIndex,
+                pageSize == null ? 10 : pageSize);
 
         myResponse.setData(map);
         myResponse.setMsg("获取成功！");
 
         return myResponse;
     }
+
+    // @ResponseBody
+    // @PostMapping("/getUserList")
+    // public MyResponse getUserList(@RequestBody User user, String orderBy, Boolean isAsc,
+    //                               Integer startIndex,
+    //                               Integer pageSize) {
+    //     MyResponse myResponse = new MyResponse();
+    //
+    //     Map<String, Object> map = blogService.getUserList(blogView,
+    //             (orderBy == null || "".equals(orderBy)) ? "post_time" : orderBy, isAsc == null || isAsc,
+    //             startIndex == null ? 0 :
+    //                     startIndex,
+    //             pageSize == null ? 10 : pageSize);
+    //     myResponse.setData(map);
+    //     return myResponse;
+    // }
 
     @ResponseBody
     @PutMapping("/disableUser")

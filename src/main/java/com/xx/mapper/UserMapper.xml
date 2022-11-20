@@ -9,4 +9,44 @@
         from user
         where logic_delete = 1
     </select>
+
+    <sql id="getUserList">
+        from user where 1 = 1
+        <choose>
+            <when test="user.startTime != null and user.endTIme != null">
+                and register_time <![CDATA[ >= ]]> from_unixtime(#{user.startTime} / 1000) and
+                register_time <![CDATA[ <= ]]> from_unixtime(#{user.endTime} / 1000)
+            </when>
+            <when test="user.username != null">
+                and username like concat('%',#{user.username},'%')
+            </when>
+            <when test="user.nickname != null">
+                and `nickname` like concat('%',#{user.nickname},'%')
+            </when>
+            <when test="user.identity != null">
+                and `identity` = #{user.identity}
+            </when>
+            <when test="user.status != null">
+                and `status` = #{user.status}
+            </when>
+            <when test="user.logicDelete != null">
+                and `logic_delete` = #{user.logic_delete}
+            </when>
+        </choose>
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+        <if test="!isAsc">desc</if>
+    </sql>
+
+    <select id="getUserList" resultType="User">
+        select *
+        <include refid="getUserList"/>
+        limit #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="getUserListCount" resultType="long">
+        select count(*)
+        <include refid="getUserList"/>
+    </select>
 </mapper>

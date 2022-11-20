@@ -62,27 +62,9 @@ public class AuditService {
         return blog;
     }
 
-    public Map<String, Object> getUserList(User user, int startIndex, int pageSize) {
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
-
-        if (user.getStartTime() != null && user.getEndTime() != null) {
-            wrapper.
-                    gt("register_time", user.getStartTime()).
-                    lt("register_time", user.getEndTime()).
-                    like(StringUtils.isNotBlank(user.getUsername()), "username", user.getUsername()).
-                    like(StringUtils.isNotBlank(user.getNickname()), "nickname", user.getNickname()).
-                    eq(user.getIdentity() != null, "identity", user.getIdentity());
-        } else {
-            wrapper.
-                    like(StringUtils.isNotBlank(user.getUsername()), "username", user.getUsername()).
-                    like(StringUtils.isNotBlank(user.getNickname()), "nickname", user.getNickname()).
-                    eq(user.getIdentity() != null, "identity", user.getIdentity());
-        }
-
-
-        Long total = userMapper.selectCount(wrapper);
-        List<User> userList = userMapper.selectList(wrapper.
-                last("limit " + startIndex + ", " + pageSize));
+    public Map<String, Object> getUserList(User user, String orderBy, Boolean isAsc, int startIndex, int pageSize) {
+        List<User> userList = userMapper.getUserList(user, orderBy, isAsc, startIndex, pageSize);
+        long total = userMapper.getUserListCount(user, orderBy, isAsc, startIndex, pageSize);
 
         for (User u : userList) {
             QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();

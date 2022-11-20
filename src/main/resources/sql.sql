@@ -12,6 +12,7 @@ create table `user`
     `avatar`        varchar(50) default '/img/cover.ac211716.webp' not null comment '头像',
     `register_time` datetime    default current_timestamp          not null comment '注册时间',
     `identity`      tinyint(1)  default 0                          not null comment '身份，0为普通用户，1为管理员',
+    `status`        tinyint(1)  default 0                          not null comment '状态，0为正常，1为异常',
     `logic_delete`  tinyint(1)  default 0                          not null comment '逻辑删除，1为删除'
 ) comment '用户账号信息';
 
@@ -39,7 +40,7 @@ create table `blog`
     `views`           bigint     default 0                 not null comment '浏览量',
     `author_username` varchar(10)                          not null comment '作者用户名',
     `post_time`       datetime   default current_timestamp not null comment '发布时间',
-    `status`          tinyint(1) comment '发布状态，null为审核中，0为未通过审核，1为通过审核',
+    `status`          tinyint(2) default 0 comment '发布状态，0为审核中，1为通过审核，2为未通过审核',
     `logic_delete`    tinyint(1) default 0                 not null comment '逻辑删除，1为删除，即审核不通过',
     foreign key (`author_username`) references `user` (`username`)
 ) auto_increment 0 comment '博客信息';

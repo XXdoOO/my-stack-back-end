@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -73,32 +74,16 @@ public class BlogService {
         }};
     }
 
-    public Map<String, Object> getBlogListByKeywords2(BlogView blogView, String orderBy, long startIndex,
-                                                      long pageSize) {
-        QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
+    public Map<String, Object> getBlogList(BlogView blogView, String orderBy, Boolean isAsc, long startIndex,
+                                           long pageSize) {
 
-        if (blogView.getStartTime() != null && blogView.getEndTime() != null) {
-            wrapper.
-                    gt("post_time", blogView.getStartTime()).
-                    lt("post_time", blogView.getEndTime()).
-                    like(StringUtils.isNotBlank(blogView.getTitle()), "title", blogView.getTitle()).
-                    like(StringUtils.isNotBlank(blogView.getDescription()), "description", blogView.getDescription()).
-                    like(StringUtils.isNotBlank(blogView.getAuthorNickname()), "username",
-                            blogView.getAuthorNickname()).
-                    eq(blogView.getStatus() != null, "status", blogView.getStatus());
-        } else {
-            wrapper.
-                    like(StringUtils.isNotBlank(blogView.getTitle()), "title", blogView.getTitle()).
-                    like(StringUtils.isNotBlank(blogView.getDescription()), "description", blogView.getDescription()).
-                    like(StringUtils.isNotBlank(blogView.getAuthorNickname()), "username",
-                            blogView.getAuthorNickname()).
-                    eq(blogView.getStatus() != null, "status", blogView.getStatus());
+        List<BlogView> blogViews = blogMapper.getBlogList(blogView, orderBy, isAsc, startIndex, pageSize);
+
+        for (BlogView view : blogViews) {
+            view.setAuthorNickname(userMapper.selectById(view.getAuthorUsername()).getNickname());
         }
 
-
-        Long total = blogViewMapper.selectCount(wrapper);
-        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
-                last("limit " + startIndex + ", " + pageSize));
+        long total = blogMapper.getBlogListCount(blogView, "post_time", isAsc, startIndex, pageSize);
 
         return new HashMap<String, Object>() {{
             put("total", total);
@@ -178,7 +163,7 @@ public class BlogService {
 
         System.out.println(blog.getContent());
 
-        if (blog.getStatus() == null || !blog.getStatus()) {
+        if (blog.getStatus() == 0 || blog.getStatus() == 2) {
             User user = (User) session.getAttribute("USER_SESSION");
 
             if (user != null && user.getUsername().equals(blog.getAuthorUsername())) {
@@ -311,7 +296,7 @@ public class BlogService {
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
         Blog blog = blogMapper.selectById(id);
-        if (blog == null || blog.getStatus() == null || !blog.getStatus()) {
+        if (blog == null || blog.getStatus() == 0 || blog.getStatus() == 2) {
             return false;
         }
 
@@ -349,7 +334,7 @@ public class BlogService {
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
         Blog blog = blogMapper.selectById(id);
-        if (blog == null || blog.getStatus() == null || !blog.getStatus()) {
+        if (blog == null || blog.getStatus() == 0 || blog.getStatus() == 2) {
             return false;
         }
 
@@ -387,7 +372,7 @@ public class BlogService {
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
         Blog blog = blogMapper.selectById(id);
-        if (blog == null || blog.getStatus() == null || !blog.getStatus()) {
+        if (blog == null || blog.getStatus() == 0 || blog.getStatus() == 2) {
             return false;
         }
 

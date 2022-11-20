@@ -33,4 +33,46 @@
         from blog
         where logic_delete = 1;
     </select>
+
+    <sql id="getBlogList">
+        from blog where 1 = 1
+        <choose>
+            <when test="blogView.startTime != null and blogView.endTIme != null">
+                and post_time <![CDATA[ >= ]]> from_unixtime(#{blogView.startTime} / 1000) and
+                post_time
+                <![CDATA[ <= ]]> from_unixtime(#{blogView.endTime} / 1000)
+            </when>
+            <when test="blogView.title != null">
+                and title like concat('%',#{blogView.title},'%')
+            </when>
+            <when test="blogView.description != null">
+                and `description` like concat('%',#{blogView.description},'%')
+            </when>
+            <when test="blogView.status != null">
+                and `status` = #{blogView.status}
+            </when>
+            <when test="blogView.logicDelete != null">
+                and `logic_delete` = #{blogView.logic_delete}
+            </when>
+            <when test="blogView.authorNickname != null">
+                and `author_username` in (select username from user where nickname like
+                concat('%',#{blogView.authorNickname},'%'))
+            </when>
+        </choose>
+        <if test="orderBy != null">
+            order by #{orderBy}
+        </if>
+        <if test="!isAsc">desc</if>
+    </sql>
+
+    <select id="getBlogList" resultType="BlogView">
+        select *
+        <include refid="getBlogList"/>
+        limit #{startIndex}, #{pageSize};
+    </select>
+
+    <select id="getBlogListCount" resultType="long">
+        select count(*)
+        <include refid="getBlogList"/>
+    </select>
 </mapper>
