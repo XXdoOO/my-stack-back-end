@@ -18,7 +18,8 @@ public class Comments {
     private Long id;
     private Long blogId;
     private Long parent;
-    private String authorUsername;
+    private String senderUsername;
+    private String receiveUsername;
     private String content;
     private Long up = 0L;
     private Long down = 0L;

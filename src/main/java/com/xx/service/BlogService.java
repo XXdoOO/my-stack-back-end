@@ -2,7 +2,6 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
 import com.xx.util.SaveFile;
@@ -10,13 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Transactional
@@ -48,6 +42,12 @@ public class BlogService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
+
+    @Autowired
+    private BlogCategoryMapper blogCategoryMapper;
 
     @Autowired
     private HttpSession session;
@@ -161,8 +161,6 @@ public class BlogService {
             return null;
         }
 
-        System.out.println(blog.getContent());
-
         if (blog.getStatus() == 0 || blog.getStatus() == 2) {
             User user = (User) session.getAttribute("USER_SESSION");
 
@@ -199,6 +197,15 @@ public class BlogService {
             blog.setIsDown(downCount == 1);
             blog.setIsStar(starCount == 1);
         }
+
+
+        QueryWrapper<BlogCategory> wrapper = new QueryWrapper<>();
+        List<BlogCategory> blogCategories = blogCategoryMapper.selectList(wrapper.eq("blog_id", blog.getId()));
+        ArrayList<String> categories = new ArrayList<>();
+        for (BlogCategory blogCategory : blogCategories) {
+            categories.add(blogCategory.getCategoryName());
+        }
+        blog.setCategories(categories);
 
         HashMap<String, List<Comments>> map = new HashMap<>();
         // 默认获取最多五条热评，最多十条新评

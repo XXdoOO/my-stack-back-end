@@ -47,7 +47,7 @@ public class CommentsService {
 
         if (userSession == null) {
             for (Comments comment : comments) {
-                User user = userMapper.selectById(comment.getAuthorUsername());
+                User user = userMapper.selectById(comment.getSenderUsername());
 
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("avatar", user.getAvatar());
@@ -58,7 +58,7 @@ public class CommentsService {
             for (Comments comment : comments) {
                 String username = ((User) userSession).getUsername();
 
-                User user = userMapper.selectById(comment.getAuthorUsername());
+                User user = userMapper.selectById(comment.getSenderUsername());
                 Long upCount = commentsUpMapper.selectCount(commentsUpWrapper.
                         eq("username", username).
                         eq("comments_id", comment.getId()));
@@ -84,7 +84,7 @@ public class CommentsService {
 
         comments1.setBlogId(comments.getBlogId());
         comments1.setParent(comments.getParent());
-        comments1.setAuthorUsername(user.getUsername());
+        comments1.setSenderUsername(user.getUsername());
         comments1.setContent(comments.getContent());
 
         commentsMapper.insert(comments1);

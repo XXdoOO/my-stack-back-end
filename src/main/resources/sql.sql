@@ -41,7 +41,7 @@ create table `blog`
     `author_username` varchar(10)                          not null comment '作者用户名',
     `post_time`       datetime   default current_timestamp not null comment '发布时间',
     `status`          tinyint(2) default 0 comment '发布状态，0为审核中，1为通过审核，2为未通过审核',
-    `logic_delete`    tinyint(1) default 0                 not null comment '逻辑删除，1为删除，即审核不通过',
+    `logic_delete`    tinyint(1) default 0                 not null comment '逻辑删除，1为删除',
     foreign key (`author_username`) references `user` (`username`)
 ) auto_increment 0 comment '博客信息';
 # 审核中               status = null and logic_delete = 0;
@@ -80,17 +80,18 @@ create table `blog_down`
 
 create table `comments`
 (
-    `id`              bigint auto_increment primary key    not null comment 'id',
-    `blog_id`         bigint                               not null comment '所属博客id',
-    `parent`          bigint comment '父级评论，null则为一级评论，!null则为二级评论',
-    `author_username` varchar(10)                          not null comment '评论者的username',
-    `content`         varchar(100)                         not null comment '评论内容',
-    `up`              bigint     default 0                 not null comment '顶',
-    `down`            bigint     default 0                 not null comment '踩',
-    `post_time`       datetime   default current_timestamp not null comment '发布时间',
-    `logic_delete`    tinyint(1) default 0                 not null comment '逻辑删除，1为删除',
+    `id`               bigint auto_increment primary key    not null comment 'id',
+    `blog_id`          bigint                               not null comment '所属博客id',
+    `parent`           bigint comment '父级评论，null则为一级评论，!null则为二级评论',
+    `sender_username`  varchar(10)                          not null comment '评论者的username',
+    `receive_username` varchar(10)                          not null comment '接收者的username，为空则回复的是根评论',
+    `content`          varchar(100)                         not null comment '评论内容',
+    `up`               bigint     default 0                 not null comment '顶',
+    `down`             bigint     default 0                 not null comment '踩',
+    `post_time`        datetime   default current_timestamp not null comment '发布时间',
+    `logic_delete`     tinyint(1) default 0                 not null comment '逻辑删除，1为删除',
     foreign key (`blog_id`) references `blog` (`id`),
-    foreign key (`author_username`) references `user` (`username`)
+    foreign key (`sender_username`) references `user` (`username`)
 ) auto_increment 0 comment '评论信息';
 
 create table `comments_up`
@@ -110,6 +111,31 @@ create table `comments_down`
     foreign key (`username`) references `user` (`username`),
     foreign key (`comments_id`) references `comments` (`id`)
 ) comment '评论-踩关系';
+
+create table category
+(
+    `name`         varchar(20) primary key not null comment '名称',
+    `logic_delete` tinyint(1) default 0    not null
+) comment '分类';
+
+create table blog_category
+(
+    `blog_id`       bigint               not null comment '博客id',
+    `category_name` varchar(20)          not null comment '分类名称',
+    `logic_delete`  tinyint(1) default 0 not null
+) comment '博客和分类关系';
+
+insert into category(`name`)
+values ('java'),
+       ('javascript'),
+       ('vue'),
+       ('css'),
+       ('html'),
+       ('typescript'),
+       ('jquery'),
+       ('springboot'),
+       ('mybatisplus'),
+       ('python');
 
 insert into user(username, password, nickname, register_time, identity, logic_delete)
 values ('admin', 'xx', '我是管理员', '2022-11-09 21:59:56', 1, 0),
