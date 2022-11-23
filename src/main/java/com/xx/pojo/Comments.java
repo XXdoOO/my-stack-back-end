@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -36,6 +37,9 @@ public class Comments {
 
     @TableField(exist = false)
     private Long replyCount;
+
+    @TableField(exist = false)
+    private List<Comments> children;
 
     @TableLogic
     private Boolean logicDelete;

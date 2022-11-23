@@ -43,6 +43,21 @@ public class CommentsService {
                 orderByDesc(orderBy).
                 last("limit " + startIndex + ", " + pageSize));
 
+        QueryWrapper<Comments> commentsWrapper = new QueryWrapper<>();
+        for (Comments comment : comments) {
+            List<Comments> children = commentsMapper.selectList(commentsWrapper.eq("parent", comment.getId()));
+            for (Comments c : children) {
+                User user = userMapper.selectById(c.getSenderUsername());
+
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("avatar", user.getAvatar());
+                map.put("nickname", user.getNickname());
+                c.setAuthorInfo(map);
+            }
+
+            comment.setChildren(children);
+        }
+
         Object userSession = session.getAttribute("USER_SESSION");
 
         if (userSession == null) {
@@ -78,6 +93,7 @@ public class CommentsService {
         return comments;
     }
 
+
     public Comments postComments(Comments comments) {
         User user = (User) session.getAttribute("USER_SESSION");
         Comments comments1 = new Comments();
@@ -85,6 +101,7 @@ public class CommentsService {
         comments1.setBlogId(comments.getBlogId());
         comments1.setParent(comments.getParent());
         comments1.setSenderUsername(user.getUsername());
+        comments1.setReceiveUsername(comments.getReceiveUsername());
         comments1.setContent(comments.getContent());
 
         commentsMapper.insert(comments1);

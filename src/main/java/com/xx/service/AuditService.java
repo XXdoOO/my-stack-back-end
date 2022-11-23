@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,9 @@ public class AuditService {
 
     @Autowired
     private DisableMapper disableMapper;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     @Autowired
     private HttpSession session;
@@ -143,5 +147,17 @@ public class AuditService {
             put("userStatus", map);
             put("blogStatus", map2);
         }};
+    }
+
+    public List<String> getAllCategories() {
+        List<Category> categories = categoryMapper.selectList(null);
+
+        ArrayList<String> strings = new ArrayList<>();
+
+        for (Category category : categories) {
+            strings.add(category.getName());
+        }
+
+        return strings;
     }
 }

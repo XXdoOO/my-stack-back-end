@@ -84,14 +84,15 @@ create table `comments`
     `blog_id`          bigint                               not null comment '所属博客id',
     `parent`           bigint comment '父级评论，null则为一级评论，!null则为二级评论',
     `sender_username`  varchar(10)                          not null comment '评论者的username',
-    `receive_username` varchar(10)                          not null comment '接收者的username，为空则回复的是根评论',
+    `receive_username` varchar(10) comment '接收者的username，为null则回复的是根评论',
     `content`          varchar(100)                         not null comment '评论内容',
     `up`               bigint     default 0                 not null comment '顶',
     `down`             bigint     default 0                 not null comment '踩',
     `post_time`        datetime   default current_timestamp not null comment '发布时间',
     `logic_delete`     tinyint(1) default 0                 not null comment '逻辑删除，1为删除',
     foreign key (`blog_id`) references `blog` (`id`),
-    foreign key (`sender_username`) references `user` (`username`)
+    foreign key (`sender_username`) references `user` (`username`),
+    foreign key (`receive_username`) references `user` (`username`)
 ) auto_increment 0 comment '评论信息';
 
 create table `comments_up`
