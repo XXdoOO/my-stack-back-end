@@ -53,6 +53,10 @@ public class CommentsService {
                 map.put("avatar", user.getAvatar());
                 map.put("nickname", user.getNickname());
                 c.setAuthorInfo(map);
+
+                if (c.getReceiveUsername() != null) {
+                    c.setReceiveNickname(userMapper.selectById(c.getReceiveUsername()).getNickname());
+                }
             }
 
             comment.setChildren(children);

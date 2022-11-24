@@ -21,6 +21,9 @@ public class Comments {
     private Long parent;
     private String senderUsername;
     private String receiveUsername;
+
+    @TableField(exist = false)
+    private String receiveNickname;
     private String content;
     private Long up = 0L;
     private Long down = 0L;
