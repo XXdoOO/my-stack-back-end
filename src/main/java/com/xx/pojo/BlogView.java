@@ -22,7 +22,7 @@ public class BlogView {
     private Long down;
     private Long star;
     private Long views;
-    private Boolean status;
+    private Integer status;
     private String authorUsername;
 
     @TableField(exist = false)

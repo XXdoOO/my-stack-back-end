@@ -34,8 +34,6 @@ public class CommentsService {
 
     public List<Comments> getCommentsList(long id, String orderBy, int startIndex, int pageSize) {
         QueryWrapper<Comments> wrapper = new QueryWrapper<>();
-        QueryWrapper<CommentsUp> commentsUpWrapper = new QueryWrapper<>();
-        QueryWrapper<CommentsDown> commentsDownWrapper = new QueryWrapper<>();
 
         List<Comments> comments = commentsMapper.selectList(wrapper.
                 eq("blog_id", id).
@@ -44,37 +42,38 @@ public class CommentsService {
                 last("limit " + startIndex + ", " + pageSize));
 
         QueryWrapper<Comments> commentsWrapper = new QueryWrapper<>();
+
+        setCommentsInfo(comments);
         for (Comments comment : comments) {
             List<Comments> children = commentsMapper.selectList(commentsWrapper.eq("parent", comment.getId()));
-            for (Comments c : children) {
-                User user = userMapper.selectById(c.getSenderUsername());
-
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("avatar", user.getAvatar());
-                map.put("nickname", user.getNickname());
-                c.setAuthorInfo(map);
-
-                if (c.getReceiveUsername() != null) {
-                    c.setReceiveNickname(userMapper.selectById(c.getReceiveUsername()).getNickname());
-                }
-            }
+            setCommentsInfo(children);
 
             comment.setChildren(children);
         }
 
+
+        return comments;
+    }
+
+    public void setCommentsInfo(List<Comments> comments) {
         Object userSession = session.getAttribute("USER_SESSION");
 
-        if (userSession == null) {
-            for (Comments comment : comments) {
+        for (Comments comment : comments) {
+            if (comment.getReceiveUsername() != null) {
+                comment.setReceiveNickname(userMapper.selectById(comment.getReceiveUsername()).getNickname());
+            }
+
+            if (userSession == null) {
                 User user = userMapper.selectById(comment.getSenderUsername());
 
                 HashMap<String, Object> map = new HashMap<>();
                 map.put("avatar", user.getAvatar());
                 map.put("nickname", user.getNickname());
                 comment.setAuthorInfo(map);
-            }
-        } else {
-            for (Comments comment : comments) {
+
+            } else {
+                QueryWrapper<CommentsUp> commentsUpWrapper = new QueryWrapper<>();
+                QueryWrapper<CommentsDown> commentsDownWrapper = new QueryWrapper<>();
                 String username = ((User) userSession).getUsername();
 
                 User user = userMapper.selectById(comment.getSenderUsername());
@@ -93,8 +92,6 @@ public class CommentsService {
                 comment.setIsDown(downCount != 0);
             }
         }
-
-        return comments;
     }
 
 
