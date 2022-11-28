@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 public class UserService {
@@ -106,6 +107,10 @@ public class UserService {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
+
+        // 随机头像
+        String avatar = "http://localhost:8080/avatarImg/" + (new Random().nextInt(48) + 1) + ".jpg";
+        user.setAvatar(avatar);
 
         return userMapper.insert(user) == 1;
     }

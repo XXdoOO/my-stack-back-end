@@ -6,10 +6,10 @@ use blog_management_system;
 
 create table `user`
 (
-    `username`      varchar(10) primary key                        not null comment '用户名',
-    `password`      varchar(10)                                    not null comment '密码',
-    `nickname`      varchar(20) default '用户昵称'                     not null comment '昵称',
-    `avatar`        varchar(50) default '/img/cover.ac211716.webp' not null comment '头像',
+    `username`      varchar(16) primary key                        not null comment '用户名',
+    `password`      varchar(16)                                    not null comment '密码',
+    `nickname`      varchar(32) default '用户昵称'                     not null comment '昵称',
+    `avatar`        varchar(64) default '/img/cover.ac211716.webp' not null comment '头像',
     `register_time` datetime    default current_timestamp          not null comment '注册时间',
     `identity`      tinyint(1)  default 0                          not null comment '身份，0为普通用户，1为管理员',
     `status`        tinyint(1)  default 0                          not null comment '状态，0为正常，1为异常',
@@ -18,10 +18,10 @@ create table `user`
 
 create table `disable`
 (
-    `username`     varchar(10)                          not null comment '用户名',
+    `username`     varchar(16)                          not null comment '用户名',
     `start_time`   datetime   default current_timestamp not null comment '封号起始时间',
     `end_time`     datetime                             not null comment '封号结束时间',
-    `reason`       varchar(100)                         not null comment '封号原因',
+    `reason`       varchar(128)                         not null comment '封号原因',
     `logic_delete` tinyint(1) default 0                 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`)
 ) comment '用户封号记录';
@@ -30,15 +30,15 @@ create table `disable`
 create table `blog`
 (
     `id`              bigint auto_increment primary key    not null comment 'id',
-    `title`           varchar(50)                          not null comment '标题',
-    `description`     varchar(200) comment '描述',
+    `title`           varchar(64)                          not null comment '标题',
+    `description`     varchar(256) comment '描述',
     `cover`           text comment '特色图片',
     `content`         mediumtext                           not null comment '内容',
     `up`              bigint     default 0                 not null comment '顶',
     `down`            bigint     default 0                 not null comment '踩',
     `star`            bigint     default 0                 not null comment '收藏数',
     `views`           bigint     default 0                 not null comment '浏览量',
-    `author_username` varchar(10)                          not null comment '作者用户名',
+    `author_username` varchar(16)                          not null comment '作者用户名',
     `post_time`       datetime   default current_timestamp not null comment '发布时间',
     `status`          tinyint(2) default 0 comment '发布状态，0为审核中，1为通过审核，2为未通过审核',
     `logic_delete`    tinyint(1) default 0                 not null comment '逻辑删除，1为删除',
@@ -53,7 +53,7 @@ create table `blog`
 
 create table `blog_star`
 (
-    `username`     varchar(10)          not null comment '用户名',
+    `username`     varchar(16)          not null comment '用户名',
     `blog_id`      bigint               not null comment '博客id',
     `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
@@ -62,7 +62,7 @@ create table `blog_star`
 
 create table `blog_up`
 (
-    `username`     varchar(10)          not null comment '用户名',
+    `username`     varchar(16)          not null comment '用户名',
     `blog_id`      bigint               not null comment '博客id',
     `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
@@ -71,7 +71,7 @@ create table `blog_up`
 
 create table `blog_down`
 (
-    `username`     varchar(10)          not null comment '用户名',
+    `username`     varchar(16)          not null comment '用户名',
     `blog_id`      bigint               not null comment '博客id',
     `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
@@ -83,9 +83,9 @@ create table `comments`
     `id`               bigint auto_increment primary key    not null comment 'id',
     `blog_id`          bigint                               not null comment '所属博客id',
     `parent`           bigint comment '父级评论，null则为一级评论，!null则为二级评论',
-    `sender_username`  varchar(10)                          not null comment '评论者的username',
-    `receive_username` varchar(10) comment '接收者的username，为null则回复的是根评论',
-    `content`          varchar(100)                         not null comment '评论内容',
+    `sender_username`  varchar(16)                          not null comment '评论者的username',
+    `receive_username` varchar(16) comment '接收者的username，为null则回复的是根评论',
+    `content`          varchar(128)                         not null comment '评论内容',
     `up`               bigint     default 0                 not null comment '顶',
     `down`             bigint     default 0                 not null comment '踩',
     `post_time`        datetime   default current_timestamp not null comment '发布时间',
@@ -97,7 +97,7 @@ create table `comments`
 
 create table `comments_up`
 (
-    `username`     varchar(10)          not null comment '用户名',
+    `username`     varchar(16)          not null comment '用户名',
     `comments_id`  bigint               not null comment '评论id',
     `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
@@ -106,7 +106,7 @@ create table `comments_up`
 
 create table `comments_down`
 (
-    `username`     varchar(10)          not null comment '用户名',
+    `username`     varchar(16)          not null comment '用户名',
     `comments_id`  bigint               not null comment '评论id',
     `logic_delete` tinyint(1) default 0 not null comment '逻辑删除，1为删除',
     foreign key (`username`) references `user` (`username`),
@@ -115,14 +115,14 @@ create table `comments_down`
 
 create table category
 (
-    `name`         varchar(20) primary key not null comment '名称',
+    `name`         varchar(16) primary key not null comment '名称',
     `logic_delete` tinyint(1) default 0    not null
 ) comment '分类';
 
 create table blog_category
 (
     `blog_id`       bigint               not null comment '博客id',
-    `category_name` varchar(20)          not null comment '分类名称',
+    `category_name` varchar(16)          not null comment '分类名称',
     `logic_delete`  tinyint(1) default 0 not null
 ) comment '博客和分类关系';
 
