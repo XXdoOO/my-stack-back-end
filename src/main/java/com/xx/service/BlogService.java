@@ -503,6 +503,10 @@ public class BlogService {
 
         if (userSession == null) {
             System.out.println("用户未登录");
+            for (BlogView blogView : blogViews) {
+                User user = userMapper.selectById(blogView.getAuthorUsername());
+                blogView.setAuthorNickname(user.getNickname());
+            }
             return;
         }
         System.out.println("用户已登录");
