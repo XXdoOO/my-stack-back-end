@@ -234,8 +234,8 @@ public class BlogService {
         String filename = blog1.getId() + ".jpg";
         String cover = null;
 
-        if (SaveFile.saveFile(blog.getCoverImg(), locPath + "/coverImg/", filename)) {
-            cover = "http://localhost:8080/cover/" + filename;
+        if (SaveFile.saveFile(blog.getCoverImg(), locPath + "/cover/", filename)) {
+            cover = "/cover/" + filename;
         }
 
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
@@ -277,8 +277,8 @@ public class BlogService {
 
         if (count == 1) {
             String filename = blog.getId() + ".jpg";
-            if (SaveFile.saveFile(blog.getCoverImg(), locPath + "/coverImg/", filename)) {
-                blog.setCover("http://localhost:8080/cover/" + filename);
+            if (SaveFile.saveFile(blog.getCoverImg(), locPath + "/cover/", filename)) {
+                blog.setCover("/cover/" + filename);
             }
 
             UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();

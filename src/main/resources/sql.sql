@@ -6,14 +6,14 @@ use blog_management_system;
 
 create table `user`
 (
-    `username`      varchar(16) primary key                        not null comment '用户名',
-    `password`      varchar(16)                                    not null comment '密码',
-    `nickname`      varchar(32) default '用户昵称'                     not null comment '昵称',
-    `avatar`        varchar(64) default '/img/cover.ac211716.webp' not null comment '头像',
-    `register_time` datetime    default current_timestamp          not null comment '注册时间',
-    `identity`      tinyint(1)  default 0                          not null comment '身份，0为普通用户，1为管理员',
-    `status`        tinyint(1)  default 0                          not null comment '状态，0为正常，1为异常',
-    `logic_delete`  tinyint(1)  default 0                          not null comment '逻辑删除，1为删除'
+    `username`      varchar(16) primary key               not null comment '用户名',
+    `password`      varchar(16)                           not null comment '密码',
+    `nickname`      varchar(32) default '用户昵称'            not null comment '昵称',
+    `avatar`        varchar(64) default '/avatar/4.jpg'   not null comment '头像',
+    `register_time` datetime    default current_timestamp not null comment '注册时间',
+    `identity`      tinyint(1)  default 0                 not null comment '身份，0为普通用户，1为管理员',
+    `status`        tinyint(1)  default 0                 not null comment '状态，0为正常，1为异常',
+    `logic_delete`  tinyint(1)  default 0                 not null comment '逻辑删除，1为删除'
 ) comment '用户账号信息';
 
 create table `disable`

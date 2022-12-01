@@ -1,15 +1,29 @@
 package com.xx.controller;
 
+import com.google.code.kaptcha.Constants;
+import com.google.code.kaptcha.Producer;
 import com.xx.pojo.*;
 import com.xx.service.BlogService;
 import com.xx.service.CommentsService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import com.xx.util.Code;
+import com.xx.util.VerCodeGenerate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +41,23 @@ public class VisitorController {
 
     @ResponseBody
     @PostMapping("login")
-    public MyResponse login(@RequestParam String username, @RequestParam String password) {
+    public MyResponse login(@RequestParam String username, @RequestParam String password, @RequestParam String code,
+                            HttpSession session) {
         MyResponse myResponse = new MyResponse();
+
+        HashMap<String, Object> map =
+                (HashMap<String, Object>) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
+
+        if (System.currentTimeMillis() - ((long) map.get(
+                "createTime")) >= 60000) {
+            myResponse.setData("验证码已过期！");
+            myResponse.setCode(Code.FAIL);
+            return myResponse;
+        } else if (!((String) map.get("code")).equalsIgnoreCase(code)) {
+            myResponse.setData("验证码错误！");
+            myResponse.setCode(Code.FAIL);
+            return myResponse;
+        }
 
         User userInfo = userService.getUserInfo(username);
 
@@ -146,5 +175,65 @@ public class VisitorController {
                 "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
         myResponse.setData(commentsList);
         return myResponse;
+    }
+
+    @Resource
+    private JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String from;
+
+    @ResponseBody
+    @RequestMapping("sendEmail")
+    public MyResponse commonEmail(ToEmail toEmail) {
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setFrom(from);
+
+        message.setTo(toEmail.getTos());
+
+        message.setSubject("您本次的验证码是");
+
+        String verCode = VerCodeGenerate.generateVerCode();
+
+
+
+        message.setText("尊敬的用户,您好:\n"
+                + "\n本次请求的邮件验证码为:" + verCode + ",本验证码 5 分钟内效，请及时输入。（请勿泄露此验证码）\n"
+                + "\n如非本人操作，请忽略该邮件。\n(这是一封通过自动发送的邮件，请不要直接回复）");
+
+        mailSender.send(message);
+
+        return new MyResponse();
+    }
+
+    @Autowired
+    private Producer captchaProducer;
+
+    @RequestMapping("/kaptcha")
+    public void getKaptchaImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        HttpSession session = request.getSession();
+        response.setDateHeader("Expires", 0);
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setContentType("image/jpeg");
+
+        String capText = captchaProducer.createText();
+
+        HashMap<String, Object> map = new HashMap<String, Object>() {{
+            put("createTime", System.currentTimeMillis());
+            put("code", capText);
+        }};
+        session.setAttribute(Constants.KAPTCHA_SESSION_KEY, map);
+        //向客户端写出
+        BufferedImage bi = captchaProducer.createImage(capText);
+        ServletOutputStream out = response.getOutputStream();
+        ImageIO.write(bi, "jpg", out);
+        try {
+            out.flush();
+        } finally {
+            out.close();
+        }
     }
 }

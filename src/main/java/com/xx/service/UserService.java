@@ -109,7 +109,7 @@ public class UserService {
         user.setPassword(password);
 
         // 随机头像
-        String avatar = "http://localhost:8080/avatarImg/" + (new Random().nextInt(48) + 1) + ".jpg";
+        String avatar = "/avatar/" + (new Random().nextInt(48) + 1) + ".jpg";
         user.setAvatar(avatar);
 
         return userMapper.insert(user) == 1;
@@ -163,8 +163,8 @@ public class UserService {
         String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
 
         if (face != null && nickname != null) {
-            if (SaveFile.saveFile(face, locPath + "/avatarImg/", username + ".jpg")) {
-                String avatar = "http://localhost:8080/avatarImg/" + username + ".jpg";
+            if (SaveFile.saveFile(face, locPath + "/avatar/", username + ".jpg")) {
+                String avatar = "/avatar/" + username + ".jpg";
 
                 UpdateWrapper<User> wrapper = new UpdateWrapper<>();
                 userMapper.update(null, wrapper.
@@ -180,8 +180,8 @@ public class UserService {
                     set("nickname", nickname));
             return getMyInfo();
         } else if (face != null) {
-            if (SaveFile.saveFile(face, locPath + "/avatarImg/", username + ".jpg")) {
-                String avatar = "http://localhost:8080/avatarImg/" + username + ".jpg";
+            if (SaveFile.saveFile(face, locPath + "/avatar/", username + ".jpg")) {
+                String avatar = "/avatar/" + username + ".jpg";
 
                 UpdateWrapper<User> wrapper = new UpdateWrapper<>();
                 userMapper.update(null, wrapper.
