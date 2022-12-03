@@ -44,13 +44,11 @@ public class UserService {
     @Value("${images.local-path}")
     private String locPath;
 
-    public User login(String username, String password) {
-        System.out.println("用户：【" + username + "】请求登录");
-
+    public User login(String email, String password) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
 
         User user = userMapper.selectOne(wrapper.
-                eq("username", username).
+                eq("email", email).
                 eq("password", password));
 
         if (user == null) {
@@ -59,6 +57,7 @@ public class UserService {
 
         if (user.getStatus()) {
             confirmUserStatus(user);
+
             if (!user.getStatus()) {
                 session.setAttribute("USER_SESSION", user);
                 user = getMyInfo();
@@ -70,42 +69,42 @@ public class UserService {
         return user;
     }
 
-    // 确认用户状态
     public void confirmUserStatus(User user) {
         QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
         Disable disable = disableMapper.selectOne(disableWrapper.
-                eq("username", user.getUsername()).
+                eq("username", user.getId()).
                 orderByDesc("end_time").
                 last("limit 1"));
 
         // 确认用户被封禁
         if (disable != null && disable.getEndTime() > System.currentTimeMillis()) {
             user.setDisableInfo(disable);
-            user.setStatus(false);
-
-            System.out.println("用户封禁解除");
-        } else { // 用户已解封
             user.setStatus(true);
+        } else { // 用户已解封
+            user.setStatus(false);
 
             UpdateWrapper<User> wrapper = new UpdateWrapper<>();
             userMapper.update(null, wrapper.set("status", false).
-                    eq("username", user.getUsername()));
+                    eq("id", user.getId()));
 
             QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
-            disableMapper.delete(queryWrapper.eq("username", user.getUsername()));
-
-            System.out.println("用户已封禁");
+            disableMapper.delete(queryWrapper.eq("user_id", user.getId()));
         }
     }
 
-    public boolean register(String username, String password) {
-        User result = userMapper.selectById(username);
-        if (result != null) {
+    public boolean isExistUser(String email) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        return userMapper.selectCount(wrapper.eq("email", email)) > 0;
+    }
+
+
+    public boolean register(String email, String password) {
+        if ( isExistUser(email)) {
             return false;
         }
 
         User user = new User();
-        user.setUsername(username);
+        user.setEmail(email);
         user.setPassword(password);
 
         // 随机头像
@@ -116,21 +115,21 @@ public class UserService {
     }
 
     public void logout() {
-        session.removeAttribute("USER_SESSION");
+        session.invalidate();
     }
 
-    public User getUserInfo(String username) {
-        QueryWrapper<Blog> blogWrapper = new QueryWrapper<>();
-        QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
-        QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
-
-        User user = userMapper.selectById(username);
+    public User getUserInfo(long id) {
+        User user = userMapper.selectById(id);
 
         if (user != null) {
-            long passCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).
+            QueryWrapper<Blog> blogWrapper = new QueryWrapper<>();
+            QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
+            QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
+
+            long passCount = blogMapper.selectCount(blogWrapper.eq("author_id", id).
                     eq("status", 1));
-            long upCount = blogUpMapper.selectCount(upWrapper.eq("username", username));
-            long downCount = blogDownMapper.selectCount(downWrapper.eq("username", username));
+            long upCount = blogUpMapper.selectCount(upWrapper.eq("id", id));
+            long downCount = blogDownMapper.selectCount(downWrapper.eq("id", id));
 
             user.setPassCount(passCount);
             user.setUpCount(upCount);
@@ -145,58 +144,58 @@ public class UserService {
         QueryWrapper<Blog> blogWrapper2 = new QueryWrapper<>();
         QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
 
-        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
 
-        long noPassCount = blogMapper.selectCount(blogWrapper.eq("author_username", username).eq("status", 0));
-        long auditingCount = blogMapper.selectCount(blogWrapper2.eq("author_username", username).isNull("status"));
-        long starCount = blogStarMapper.selectCount(starWrapper.eq("username", username));
+        long noPassCount = blogMapper.selectCount(blogWrapper.eq("author_id", id).eq("status", 0));
+        long auditingCount = blogMapper.selectCount(blogWrapper2.eq("author_id", id).eq("status", 0));
+        long starCount = blogStarMapper.selectCount(starWrapper.eq("user_id", id));
 
-        User user = getUserInfo(username);
+        User user = getUserInfo(id);
 
         user.setNoPassCount(noPassCount);
         user.setAuditingCount(auditingCount);
         user.setStarCount(starCount);
         return user;
     }
-
-    public User updateMyInfo(MultipartFile face, String nickname) {
-        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
-
-        if (face != null && nickname != null) {
-            if (SaveFile.saveFile(face, locPath + "/avatar/", username + ".jpg")) {
-                String avatar = "/avatar/" + username + ".jpg";
-
-                UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-                userMapper.update(null, wrapper.
-                        eq("username", username).
-                        set("nickname", nickname).
-                        set("avatar", avatar));
-                return getMyInfo();
-            }
-        } else if (face == null && nickname != null) {
-            UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-            userMapper.update(null, wrapper.
-                    eq("username", username).
-                    set("nickname", nickname));
-            return getMyInfo();
-        } else if (face != null) {
-            if (SaveFile.saveFile(face, locPath + "/avatar/", username + ".jpg")) {
-                String avatar = "/avatar/" + username + ".jpg";
-
-                UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-                userMapper.update(null, wrapper.
-                        eq("username", username).
-                        set("avatar", avatar));
-                return getMyInfo();
-            }
-        }
-        return null;
-    }
-
-    public boolean deleteMy() {
-        String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
-        int i = userMapper.deleteById(username);
-
-        return i == 1;
-    }
+    //
+    // public User updateMyInfo(MultipartFile face, String nickname) {
+    //     String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+    //
+    //     if (face != null && nickname != null) {
+    //         if (SaveFile.saveFile(face, locPath + "/avatar/", username + ".jpg")) {
+    //             String avatar = "/avatar/" + username + ".jpg";
+    //
+    //             UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+    //             userMapper.update(null, wrapper.
+    //                     eq("username", username).
+    //                     set("nickname", nickname).
+    //                     set("avatar", avatar));
+    //             return getMyInfo();
+    //         }
+    //     } else if (face == null && nickname != null) {
+    //         UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+    //         userMapper.update(null, wrapper.
+    //                 eq("username", username).
+    //                 set("nickname", nickname));
+    //         return getMyInfo();
+    //     } else if (face != null) {
+    //         if (SaveFile.saveFile(face, locPath + "/avatar/", username + ".jpg")) {
+    //             String avatar = "/avatar/" + username + ".jpg";
+    //
+    //             UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+    //             userMapper.update(null, wrapper.
+    //                     eq("username", username).
+    //                     set("avatar", avatar));
+    //             return getMyInfo();
+    //         }
+    //     }
+    //     return null;
+    // }
+    //
+    // public boolean deleteMy() {
+    //     String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
+    //     int i = userMapper.deleteById(username);
+    //
+    //     return i == 1;
+    // }
 }

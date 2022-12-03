@@ -12,12 +12,12 @@ public class OtherController {
     @ResponseBody
     @RequestMapping("/handleNotLogin")
     public MyResponse handleNotLogin() {
-        return new MyResponse(Code.NOT_LOGIN, "请登录后操作！", null);
+        return MyResponse.unauthorized("用户未登录");
     }
 
     @ResponseBody
     @RequestMapping("/handleNotPermission")
     public MyResponse handleNotPermission() {
-        return new MyResponse(Code.AUTHORITY_ERROR, "您无权访问该接口！", null);
+        return MyResponse.unauthorized();
     }
 }

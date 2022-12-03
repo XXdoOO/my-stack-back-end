@@ -23,7 +23,7 @@ public class BlogView {
     private Long star;
     private Long views;
     private Integer status;
-    private String authorUsername;
+    private Long authorId;
 
     @TableField(exist = false)
     private String authorNickname;

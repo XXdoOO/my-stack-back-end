@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @TableName
 public class CommentsDown {
     private Long commentsId;
-    private String username;
+    private Long userId;
 
     @TableLogic
     private Boolean logicDelete;

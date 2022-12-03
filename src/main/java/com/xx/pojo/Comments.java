@@ -19,8 +19,8 @@ public class Comments {
     private Long id;
     private Long blogId;
     private Long parent;
-    private String senderUsername;
-    private String receiveUsername;
+    private Long senderId;
+    private Long receiveId;
 
     @TableField(exist = false)
     private String receiveNickname;

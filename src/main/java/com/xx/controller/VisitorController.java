@@ -2,13 +2,13 @@ package com.xx.controller;
 
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
-import com.xx.pojo.*;
-import com.xx.service.BlogService;
-import com.xx.service.CommentsService;
+// import com.xx.service.BlogService;
+// import com.xx.service.CommentsService;
+import com.xx.pojo.User;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
-import com.xx.util.Code;
 import com.xx.util.VerCodeGenerate;
+import com.xx.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -19,13 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/")
@@ -34,149 +31,154 @@ public class VisitorController {
     private UserService userService;
 
     @Autowired
-    private BlogService blogService;
+    private HttpSession session;
 
-    @Autowired
-    private CommentsService commentsService;
+    // @Autowired
+    // private BlogService blogService;
+    //
+    // @Autowired
+    // private CommentsService commentsService;
 
     @ResponseBody
     @PostMapping("login")
-    public MyResponse login(@RequestParam String username, @RequestParam String password, @RequestParam String code,
-                            HttpSession session) {
-        MyResponse myResponse = new MyResponse();
+    public MyResponse login(@RequestBody UserVo userVo) {
 
         HashMap<String, Object> map =
                 (HashMap<String, Object>) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
 
-        if (System.currentTimeMillis() - ((long) map.get(
+        String email = userVo.getEmail();
+        String password = userVo.getPassword();
+        String code = userVo.getCode();
+
+        if (map == null || System.currentTimeMillis() - ((long) map.get(
                 "createTime")) >= 60000) {
-            myResponse.setData("验证码已过期！");
-            myResponse.setCode(Code.FAIL);
-            return myResponse;
+            return MyResponse.fail("验证码已过期");
         } else if (!((String) map.get("code")).equalsIgnoreCase(code)) {
-            myResponse.setData("验证码错误！");
-            myResponse.setCode(Code.FAIL);
-            return myResponse;
+            System.out.println(code);
+            System.out.println(map.get("code"));
+            return MyResponse.fail("验证码错误");
         }
 
-        User userInfo = userService.getUserInfo(username);
-
-        if (userInfo == null) {
-            myResponse.setMsg("用户不存在！");
-            myResponse.setCode(Code.USER_NOT_EXIST);
+        if (!userService.isExistUser(email)) {
+            return MyResponse.fail("用户不存在");
         } else {
-            User user = userService.login(username, password);
+            User user = userService.login(email, password);
 
             if (user == null) {
-                myResponse.setMsg("用户名或密码错误！");
-                myResponse.setCode(Code.USER_ERROR);
+                return MyResponse.fail("用户名或密码错误");
             } else if (user.getStatus()) {
-                myResponse.setData(user.getDisableInfo());
-                myResponse.setMsg("用户已被封禁！");
-                myResponse.setCode(Code.USER_DISABLE);
+                return MyResponse.error("用户已被封禁", user.getDisableInfo());
             } else {
-                myResponse.setData(user);
-                myResponse.setMsg("登录成功");
+                return MyResponse.success("登录成功", user);
             }
         }
-        return myResponse;
     }
 
     @ResponseBody
     @PostMapping("register")
-    public MyResponse register(@RequestParam String username, @RequestParam String password) {
-        MyResponse myResponse = new MyResponse();
+    public MyResponse register(@RequestBody UserVo userVo) {
+        HashMap<String, Object> map =
+                (HashMap<String, Object>) session.getAttribute("EMAIL_CODE");
 
-        if (userService.register(username, password)) {
-            myResponse.setMsg("注册成功！");
+        String email = userVo.getEmail();
+        String password = userVo.getPassword();
+        String code = userVo.getCode();
+
+        if (map == null || System.currentTimeMillis() - ((long) map.get(
+                "createTime")) >= 300000) {
+            return MyResponse.fail("验证码已过期");
+        } else if (map.get("email").equals(email) && !((String) map.get("code")).equalsIgnoreCase(code)) {
+            return MyResponse.fail("邮箱或验证码错误");
         } else {
-            myResponse.setMsg("用户已存在！");
-            myResponse.setCode(Code.USER_ALREADY_EXIST);
+            if (userService.register(email, password)) {
+                return MyResponse.success("注册成功");
+            } else {
+                return MyResponse.fail("用户已存在");
+            }
         }
-
-        return myResponse;
     }
 
-    @ResponseBody
-    @GetMapping("getBlogByKeywords")
-    public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
-        MyResponse myResponse = new MyResponse();
-
-        Map<String, Object> map = blogService.getBlogListByKeywords(keywords == null ? "" : keywords,
-                (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
-                pageSize == null ? 10 : pageSize);
-        myResponse.setData(map);
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("getUserInfo")
-    public MyResponse getUserInfo(@RequestParam String username) {
-        MyResponse myResponse = new MyResponse();
-
-        User user = userService.getUserInfo(username);
-        myResponse.setData(user);
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("getUserPostBlogList")
-    public MyResponse getUserBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
-        MyResponse myResponse = new MyResponse();
-
-        Map<String, Object> map = blogService.getUserPostBlogList(username, startIndex == null ? 0 :
-                        startIndex,
-                pageSize == null ? 10 : pageSize);
-        myResponse.setData(map);
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("getUserUpBlogList")
-    public MyResponse getUserUpBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
-        MyResponse myResponse = new MyResponse();
-
-        Map<String, Object> map = blogService.getUserUpBlogList(username, startIndex == null ? 0 :
-                        startIndex,
-                pageSize == null ? 10 : pageSize);
-        myResponse.setData(map);
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("getUserDownBlogList")
-    public MyResponse getUserDownBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
-        MyResponse myResponse = new MyResponse();
-
-        Map<String, Object> map = blogService.getUserDownBlogList(username, startIndex == null ? 0 :
-                        startIndex,
-                pageSize == null ? 10 : pageSize);
-        myResponse.setData(map);
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("getBlogDetails")
-    public MyResponse getBlogDetails(@RequestParam long id) {
-        MyResponse myResponse = new MyResponse();
-
-        Blog blogDetails = blogService.getBlogDetails(id);
-
-        myResponse.setData(blogDetails);
-        return myResponse;
-    }
-
-    @ResponseBody
-    @GetMapping("getCommentsList")
-    public MyResponse getCommentsList(@RequestParam long id, Boolean orderBy, Integer startIndex, Integer pageSize) {
-        MyResponse myResponse = new MyResponse();
-
-        List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" :
-                "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
-        myResponse.setData(commentsList);
-        return myResponse;
-    }
-
+    //
+    // @ResponseBody
+    // @GetMapping("getBlogByKeywords")
+    // public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
+    //     MyResponse myResponse = new MyResponse();
+    //
+    //     Map<String, Object> map = blogService.getBlogListByKeywords(keywords == null ? "" : keywords,
+    //             (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
+    //             pageSize == null ? 10 : pageSize);
+    //     myResponse.setData(map);
+    //     return myResponse;
+    // }
+    //
+    // @ResponseBody
+    // @GetMapping("getUserInfo")
+    // public MyResponse getUserInfo(@RequestParam String username) {
+    //     MyResponse myResponse = new MyResponse();
+    //
+    //     User user = userService.getUserInfo(username);
+    //     myResponse.setData(user);
+    //     return myResponse;
+    // }
+    //
+    // @ResponseBody
+    // @GetMapping("getUserPostBlogList")
+    // public MyResponse getUserBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
+    //     MyResponse myResponse = new MyResponse();
+    //
+    //     Map<String, Object> map = blogService.getUserPostBlogList(username, startIndex == null ? 0 :
+    //                     startIndex,
+    //             pageSize == null ? 10 : pageSize);
+    //     myResponse.setData(map);
+    //     return myResponse;
+    // }
+    //
+    // @ResponseBody
+    // @GetMapping("getUserUpBlogList")
+    // public MyResponse getUserUpBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
+    //     MyResponse myResponse = new MyResponse();
+    //
+    //     Map<String, Object> map = blogService.getUserUpBlogList(username, startIndex == null ? 0 :
+    //                     startIndex,
+    //             pageSize == null ? 10 : pageSize);
+    //     myResponse.setData(map);
+    //     return myResponse;
+    // }
+    //
+    // @ResponseBody
+    // @GetMapping("getUserDownBlogList")
+    // public MyResponse getUserDownBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
+    //     MyResponse myResponse = new MyResponse();
+    //
+    //     Map<String, Object> map = blogService.getUserDownBlogList(username, startIndex == null ? 0 :
+    //                     startIndex,
+    //             pageSize == null ? 10 : pageSize);
+    //     myResponse.setData(map);
+    //     return myResponse;
+    // }
+    //
+    // @ResponseBody
+    // @GetMapping("getBlogDetails")
+    // public MyResponse getBlogDetails(@RequestParam long id) {
+    //     MyResponse myResponse = new MyResponse();
+    //
+    //     Blog blogDetails = blogService.getBlogDetails(id);
+    //
+    //     myResponse.setData(blogDetails);
+    //     return myResponse;
+    // }
+    //
+    // @ResponseBody
+    // @GetMapping("getCommentsList")
+    // public MyResponse getCommentsList(@RequestParam long id, Boolean orderBy, Integer startIndex, Integer pageSize) {
+    //     MyResponse myResponse = new MyResponse();
+    //
+    //     List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" :
+    //             "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
+    //     myResponse.setData(commentsList);
+    //     return myResponse;
+    // }
+    //
     @Resource
     private JavaMailSender mailSender;
 
@@ -184,18 +186,20 @@ public class VisitorController {
     private String from;
 
     @ResponseBody
-    @RequestMapping("sendEmail")
-    public MyResponse commonEmail(ToEmail toEmail) {
+    @RequestMapping("sendCode")
+    public MyResponse commonEmail(@RequestParam String email) {
+        String regex = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
+        if (!email.matches(regex)) {
+            return MyResponse.fail("邮箱格式错误");
+        }
+
         SimpleMailMessage message = new SimpleMailMessage();
 
         message.setFrom(from);
-
-        message.setTo(toEmail.getTos());
-
+        message.setTo(email);
         message.setSubject("您本次的验证码是");
 
         String verCode = VerCodeGenerate.generateVerCode();
-
 
 
         message.setText("尊敬的用户,您好:\n"
@@ -204,15 +208,20 @@ public class VisitorController {
 
         mailSender.send(message);
 
-        return new MyResponse();
+        HashMap<String, Object> map = new HashMap<String, Object>() {{
+            put("createTime", System.currentTimeMillis());
+            put("email", email);
+            put("code", verCode);
+        }};
+        session.setAttribute("EMAIL_CODE", map);
+        return MyResponse.success("发送成功");
     }
 
     @Autowired
     private Producer captchaProducer;
 
     @RequestMapping("/kaptcha")
-    public void getKaptchaImage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        HttpSession session = request.getSession();
+    public void getKaptchaImage(HttpServletResponse response) throws Exception {
         response.setDateHeader("Expires", 0);
         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");

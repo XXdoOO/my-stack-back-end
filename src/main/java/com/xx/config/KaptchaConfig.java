@@ -14,7 +14,7 @@ public class KaptchaConfig {
         DefaultKaptcha captchaProducer = new DefaultKaptcha();
         Properties properties = new Properties();
         properties.setProperty("kaptcha.border", "yes");
-        properties.setProperty("kaptcha.border.color", "black");
+        properties.setProperty("kaptcha.border.color", "white");
         properties.setProperty("kaptcha.textproducer.font.color", "64,160,255");
         properties.setProperty("kaptcha.image.width", "160");
         properties.setProperty("kaptcha.image.height", "60");
@@ -22,7 +22,7 @@ public class KaptchaConfig {
         properties.setProperty("kaptcha.session.key", "code");
         properties.setProperty("kaptcha.textproducer.char.length", "4");
         properties.setProperty("kaptcha.textproducer.font.names", "宋体,楷体,微软雅黑");
-        properties.setProperty("kaptcha.obscurificator.impl", "com.google.code.kaptcha.impl.ShadowGimpy");
+        // properties.setProperty("kaptcha.obscurificator.impl", "com.google.code.kaptcha.impl.ShadowGimpy");
         Config config = new Config(properties);
         captchaProducer.setConfig(config);
         return captchaProducer;

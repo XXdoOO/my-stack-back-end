@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @TableName
 public class BlogStar {
     private Long blogId;
-    private String username;
+    private Long userId;
 
     @TableLogic()
     private Boolean logicDelete;

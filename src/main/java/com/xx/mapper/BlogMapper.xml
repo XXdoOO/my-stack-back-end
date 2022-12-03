@@ -55,7 +55,7 @@
                 and `logic_delete` = #{blogView.logic_delete}
             </when>
             <when test="blogView.authorNickname != null">
-                and `author_username` in (select username from user where nickname like
+                and `author_username` in (select username from userVo where nickname like
                 concat('%',#{blogView.authorNickname},'%'))
             </when>
         </choose>

@@ -30,7 +30,7 @@ public class Blog {
     private Long down;
     private Long star;
     private Long views;
-    private String authorUsername;
+    private Long authorId;
     private Long postTime;
     private Integer status;
 

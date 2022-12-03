@@ -16,8 +16,9 @@ import java.util.Map;
 @TableName
 public class User {
     @TableId
-    @TableField(condition = SqlCondition.LIKE)
-    private String username;
+    private Long id;
+
+    private String email;
 
     @TableField(select = false)
     private String password;

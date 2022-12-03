@@ -15,7 +15,7 @@ import java.text.ParseException;
 public class Disable {
     private Long startTime;
     private Long endTime;
-    private String username;
+    private Long userId;
     private String reason;
 
     @TableLogic
