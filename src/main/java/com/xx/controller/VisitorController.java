@@ -33,8 +33,8 @@ public class VisitorController {
     @Autowired
     private HttpSession session;
 
-    // @Autowired
-    // private BlogService blogService;
+    @Autowired
+    private BlogService blogService;
     //
     // @Autowired
     // private CommentsService commentsService;
@@ -52,10 +52,10 @@ public class VisitorController {
 
         if (map == null || System.currentTimeMillis() - ((long) map.get(
                 "createTime")) >= 60000) {
+            session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
             return MyResponse.fail("验证码已过期");
         } else if (!((String) map.get("code")).equalsIgnoreCase(code)) {
-            System.out.println(code);
-            System.out.println(map.get("code"));
+            session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
             return MyResponse.fail("验证码错误");
         }
 
@@ -65,7 +65,7 @@ public class VisitorController {
             User user = userService.login(email, password);
 
             if (user == null) {
-                return MyResponse.fail("用户名或密码错误");
+                return MyResponse.fail("邮箱或密码错误");
             } else if (user.getStatus()) {
                 return MyResponse.error("用户已被封禁", user.getDisableInfo());
             } else {
@@ -87,7 +87,7 @@ public class VisitorController {
         if (map == null || System.currentTimeMillis() - ((long) map.get(
                 "createTime")) >= 300000) {
             return MyResponse.fail("验证码已过期");
-        } else if (map.get("email").equals(email) && !((String) map.get("code")).equalsIgnoreCase(code)) {
+        } else if (map.get("email").equals(email) && !map.get("code").equals(code)) {
             return MyResponse.fail("邮箱或验证码错误");
         } else {
             if (userService.register(email, password)) {
@@ -98,18 +98,18 @@ public class VisitorController {
         }
     }
 
-    //
-    // @ResponseBody
-    // @GetMapping("getBlogByKeywords")
-    // public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
-    //     MyResponse myResponse = new MyResponse();
-    //
-    //     Map<String, Object> map = blogService.getBlogListByKeywords(keywords == null ? "" : keywords,
-    //             (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
-    //             pageSize == null ? 10 : pageSize);
-    //     myResponse.setData(map);
-    //     return myResponse;
-    // }
+
+    @ResponseBody
+    @GetMapping("getBlogByKeywords")
+    public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
+        MyResponse myResponse = new MyResponse();
+
+        Map<String, Object> map = blogService.getBlogListByKeywords(keywords == null ? "" : keywords,
+                (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
+                pageSize == null ? 10 : pageSize);
+        myResponse.setData(map);
+        return myResponse;
+    }
     //
     // @ResponseBody
     // @GetMapping("getUserInfo")
@@ -191,6 +191,10 @@ public class VisitorController {
         String regex = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
         if (!email.matches(regex)) {
             return MyResponse.fail("邮箱格式错误");
+        }
+
+        if (userService.isExistUser(email)) {
+            return MyResponse.fail("用户已存在");
         }
 
         SimpleMailMessage message = new SimpleMailMessage();

@@ -62,9 +62,10 @@ public class UserService {
                 session.setAttribute("USER_SESSION", user);
                 user = getMyInfo();
             }
+        } else {
+            session.setAttribute("USER_SESSION", user);
+            user = getMyInfo();
         }
-        session.setAttribute("USER_SESSION", user);
-        user = getMyInfo();
 
         return user;
     }
@@ -99,7 +100,7 @@ public class UserService {
 
 
     public boolean register(String email, String password) {
-        if ( isExistUser(email)) {
+        if (isExistUser(email)) {
             return false;
         }
 
@@ -128,8 +129,8 @@ public class UserService {
 
             long passCount = blogMapper.selectCount(blogWrapper.eq("author_id", id).
                     eq("status", 1));
-            long upCount = blogUpMapper.selectCount(upWrapper.eq("id", id));
-            long downCount = blogDownMapper.selectCount(downWrapper.eq("id", id));
+            long upCount = blogUpMapper.selectCount(upWrapper.eq("blog_id", id));
+            long downCount = blogDownMapper.selectCount(downWrapper.eq("blog_id", id));
 
             user.setPassCount(passCount);
             user.setUpCount(upCount);
