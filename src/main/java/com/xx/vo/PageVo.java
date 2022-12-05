@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserVo {
-    private String email;
-    private String password;
-    private String code;
+public class PageVo {
+    private long pageNum = 1;
+    private long pageSize = 10;
 }

@@ -2,6 +2,8 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
 import com.xx.util.SaveFile;
@@ -52,30 +54,36 @@ public class BlogService {
     @Autowired
     private HttpSession session;
 
-    private final User user = (User) session.getAttribute("USER_SESSION");
-
     @Value("${images.local-path}")
     private String locPath;
 
-    public Map<String, Object> getBlogListByKeywords(String keywords, String orderBy, long startIndex, long pageSize) {
+    public IPage<BlogView> getBlogListByKeywords(String keywords) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
-        Long total = blogViewMapper.selectCount(wrapper.
+//        Long total = blogViewMapper.selectCount(wrapper.
+//                eq("status", 1).
+//                and(i -> i.like("title", keywords).or().
+//                        like("content", keywords)).or().
+//                like("description", keywords).
+//                orderByAsc(orderBy));
+//
+//        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
+//                last("limit " + startIndex + ", " + pageSize));
+
+//        setOtherInfo(blogViews);
+
+        wrapper.
                 eq("status", 1).
                 and(i -> i.like("title", keywords).or().
                         like("content", keywords)).or().
-                like("description", keywords).
-                orderByAsc(orderBy));
+                like("description", keywords);
 
-        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
-                last("limit " + startIndex + ", " + pageSize));
-
-        setOtherInfo(blogViews);
-
-        return new HashMap<String, Object>() {{
-            put("total", total);
-            put("list", blogViews);
-        }};
+        Page<BlogView> page = new Page<>(1, 2);
+        return blogViewMapper.selectPage(page, wrapper);
+//        return new HashMap<String, Object>() {{
+//            put("total", total);
+//            put("list", blogViews);
+//        }};
     }
 
     // public Map<String, Object> getBlogList(BlogView blogView, String orderBy, Boolean isAsc, long startIndex,
