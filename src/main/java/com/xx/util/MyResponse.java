@@ -22,6 +22,10 @@ public class MyResponse {
         return success(msg, null);
     }
 
+    public static MyResponse success(Object data) {
+        return success("请求成功", data);
+    }
+
     public static MyResponse success(String msg, Object data) {
         return new MyResponse(Code.SUCCESS, msg, data);
     }

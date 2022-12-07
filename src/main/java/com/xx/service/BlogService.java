@@ -2,8 +2,10 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
+import com.xx.util.MyResponse;
 import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,25 +59,22 @@ public class BlogService {
     @Value("${images.local-path}")
     private String locPath;
 
-    public Map<String, Object> getBlogListByKeywords(String keywords, String orderBy, long startIndex, long pageSize) {
+    public MyResponse getBlogListByKeywords(String keywords, String orderBy, Long pageNum, Long pageSize) {
         QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 
-        Long total = blogViewMapper.selectCount(wrapper.
-                eq("status", 1).
+        wrapper.eq("status", 1).
                 and(i -> i.like("title", keywords).or().
                         like("content", keywords)).or().
                 like("description", keywords).
-                orderByAsc(orderBy));
+                orderByAsc(orderBy);
 
-        List<BlogView> blogViews = blogViewMapper.selectList(wrapper.
-                last("limit " + startIndex + ", " + pageSize));
+        Page<BlogView> blogViewPage = blogViewMapper.selectPage(new Page<>(pageNum == null ? 1 : pageNum,
+                        pageSize == null ? 10 : pageSize),
+                wrapper);
 
-        setOtherInfo(blogViews);
+        // setOtherInfo(blogViews);
 
-        return new HashMap<String, Object>() {{
-            put("total", total);
-            put("list", blogViews);
-        }};
+        return MyResponse.success(blogViewPage);
     }
 
     // public Map<String, Object> getBlogList(BlogView blogView, String orderBy, Boolean isAsc, long startIndex,
