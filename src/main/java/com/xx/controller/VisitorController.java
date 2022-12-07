@@ -1,10 +1,13 @@
 package com.xx.controller;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
 // import com.xx.service.CommentsService;
+import com.xx.pojo.BlogView;
 import com.xx.pojo.User;
+import com.xx.service.BlogService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import com.xx.util.VerCodeGenerate;
@@ -104,12 +107,11 @@ public class VisitorController {
     public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
         MyResponse myResponse = new MyResponse();
 
-        Map<String, Object> map = blogService.getBlogListByKeywords(keywords == null ? "" : keywords,
-                (orderBy == null || !orderBy) ? "up" : "post_time", startIndex == null ? 0 : startIndex,
-                pageSize == null ? 10 : pageSize);
-        myResponse.setData(map);
+        IPage<BlogView> list = blogService.getBlogListByKeywords(keywords);
+        myResponse.setData(list);
         return myResponse;
     }
+
     //
     // @ResponseBody
     // @GetMapping("getUserInfo")
