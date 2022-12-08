@@ -11,7 +11,7 @@ import com.xx.service.BlogService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import com.xx.util.VerCodeGenerate;
-import com.xx.vo.UserVo;
+import com.xx.pojo.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;

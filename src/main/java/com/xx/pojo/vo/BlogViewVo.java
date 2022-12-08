@@ -1,4 +1,4 @@
-package com.xx.vo;
+package com.xx.pojo.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
