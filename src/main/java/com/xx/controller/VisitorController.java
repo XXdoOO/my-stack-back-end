@@ -7,6 +7,7 @@ import com.google.code.kaptcha.Producer;
 // import com.xx.service.CommentsService;
 import com.xx.pojo.BlogView;
 import com.xx.pojo.User;
+import com.xx.pojo.dto.UserDTO;
 import com.xx.service.BlogService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
@@ -44,7 +45,7 @@ public class VisitorController {
 
     @ResponseBody
     @PostMapping("login")
-    public MyResponse login(@RequestBody UserVo userVo) {
+    public MyResponse login(@RequestBody UserDTO userDTO) {
 
         HashMap<String, Object> map =
                 (HashMap<String, Object>) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);

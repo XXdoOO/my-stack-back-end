@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.mapper.*;
 import com.xx.pojo.*;
-import com.xx.pojo.Blog;
+import com.xx.pojo.vo.BlogVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -117,7 +117,7 @@ public class UserService {
         User user = userMapper.selectById(id);
 
         if (user != null) {
-            QueryWrapper<Blog> blogWrapper = new QueryWrapper<>();
+            QueryWrapper<BlogVo> blogWrapper = new QueryWrapper<>();
             QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
             QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
 
@@ -135,8 +135,8 @@ public class UserService {
     }
 
     public User getMyInfo() {
-        QueryWrapper<Blog> blogWrapper = new QueryWrapper<>();
-        QueryWrapper<Blog> blogWrapper2 = new QueryWrapper<>();
+        QueryWrapper<BlogVo> blogWrapper = new QueryWrapper<>();
+        QueryWrapper<BlogVo> blogWrapper2 = new QueryWrapper<>();
         QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
 
         Long id = ((User) session.getAttribute("USER_SESSION")).getId();

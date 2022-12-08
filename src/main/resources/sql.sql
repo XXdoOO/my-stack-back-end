@@ -12,13 +12,13 @@ create table `user`
     `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
     `email`       varchar(32)                                                               not null comment '邮箱',
     `password`    varchar(16)                                                               not null comment '密码',
-    `nickname`    varchar(32)         default '用户昵称'                                    not null comment '昵称',
+    `nickname`    varchar(32)         default '用户昵称'                                        not null comment '昵称',
     `avatar`      varchar(64)         default '/avatar/4.jpg'                               not null comment '头像',
     `is_admin`    tinyint(1) unsigned default 0                                             not null comment '身份，0为普通用户，1为管理员',
     `is_disable`  tinyint(1) unsigned default 0                                             not null comment '状态，0为正常，1为异常',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_delete`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除'
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除'
 ) comment '用户账号信息';
 
 create table `disable`
@@ -29,7 +29,7 @@ create table `disable`
     `reason`      varchar(128)                                                              not null comment '封号原因',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_delete`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
     foreign key (`user_id`) references `user` (`id`)
 ) comment '用户封号记录';
 
@@ -49,7 +49,7 @@ create table `blog`
     `status`      tinyint(2) unsigned default 0 comment '发布状态，0为审核中，1为通过审核，2为未通过审核',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_delete`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
     foreign key (`author_id`) references `user` (`id`)
 ) comment '博客信息';
 
@@ -65,7 +65,7 @@ create table `comment`
     `down`        bigint unsigned     default 0                                             not null comment '踩',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_delete`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
     foreign key (`blog_id`) references `blog` (`id`),
     foreign key (`sender_id`) references `user` (`id`),
     foreign key (`receive_id`) references `user` (`id`)
@@ -78,7 +78,7 @@ create table `star`
     `blog_id`     bigint unsigned                                                           not null comment '博客id',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_delete`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
     foreign key (`user_id`) references `user` (`id`),
     foreign key (`blog_id`) references `blog` (`id`)
 ) comment '收藏关系';
@@ -91,7 +91,7 @@ create table `up`
     `comment_id`  bigint unsigned                                                           not null comment '评论id',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_delete`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
     foreign key (`user_id`) references `user` (`id`),
     foreign key (`blog_id`) references `blog` (`id`),
     foreign key (`comment_id`) references `comment` (`id`)
@@ -105,7 +105,7 @@ create table `down`
     `comment_id`  bigint unsigned                                                           not null comment '博客id',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_delete`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
     foreign key (`user_id`) references `user` (`id`),
     foreign key (`blog_id`) references `blog` (`id`),
     foreign key (`comment_id`) references `comment` (`id`)
@@ -117,7 +117,7 @@ create table category
     `name`        varchar(16)                                                               not null comment '名称',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_delete`   tinyint(1) unsigned default 0                                             not null
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null
 ) comment '分类';
 
 create table blog_category
@@ -127,7 +127,7 @@ create table blog_category
     `category_name` varchar(16)                                                               not null comment '分类名称',
     `update_time`   datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time`   datetime            default current_timestamp                             not null comment '创建时间',
-    `is_delete`     tinyint(1) unsigned default 0                                             not null
+    `is_deleted`    tinyint(1) unsigned default 0                                             not null
 ) comment '博客和分类关系';
 
 insert into category(`name`)
@@ -142,7 +142,7 @@ values ('java'),
        ('mybatisplus'),
        ('python');
 
-insert into user(email, password, nickname, create_time, is_admin, is_delete)
+insert into user(email, password, nickname, create_time, is_admin, is_deleted)
 values ('1972524359@qq.com', 'xx', '我是管理员', '2022-11-09 21:59:56', 1, 0),
        ('1172524359@qq.com', 'xx', '该用户已注销', '2022-12-09 21:59:56', 0, 1),
        ('1272524359@qq.com', 'xx', '夹狗屎', '2022-01-09 21:59:56', 0, 0),

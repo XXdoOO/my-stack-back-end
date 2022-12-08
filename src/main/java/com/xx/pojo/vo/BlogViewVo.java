@@ -12,42 +12,20 @@ import java.text.ParseException;
 
 @Data
 @NoArgsConstructor
-@TableName("blog")
 public class BlogViewVo {
     private Long id;
     private String title;
     private String description;
     private String cover;
-    private Long up;
-    private Long down;
-    private Long star;
-    private Long views;
+    private long up;
+    private long down;
+    private long star;
+    private long views;
     private Integer status;
-    private Long authorId;
-
-    @TableField(exist = false)
+    private long authorId;
     private String authorNickname;
-
-    @TableField(exist = false)
-    private Boolean isUp = false;
-
-    @TableField(exist = false)
-    private Boolean isDown = false;
-
-    @TableField(exist = false)
-    private Boolean isStar = false;
-
-    private Long postTime;
-
-    @TableField(exist = false)
-    private Long startTime;
-    @TableField(exist = false)
-    private Long endTime;
-
-    @TableLogic
-    private Boolean logicDelete;
-
-    public void setPostTime(Timestamp postTime) throws ParseException {
-        this.postTime = FormatTime.timestampToLong(postTime);
-    }
+    private boolean isUp;
+    private boolean isDown;
+    private boolean isStar;
+    private Timestamp createTime;
 }

@@ -1,4 +1,4 @@
-package com.xx.pojo;
+package com.xx.pojo.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
@@ -20,47 +20,23 @@ import java.util.Map;
 
 @Data
 @NoArgsConstructor
-@TableName
-
-public class Blog {
+public class BlogVo {
     private Long id;
     private String title;
     private String description;
     private String cover;
     private String content;
-    private Long up;
-    private Long down;
-    private Long star;
-    private Long views;
-    private Long authorId;
-    private Long postTime;
+    private long up;
+    private long down;
+    private long star;
+    private long views;
     private Integer status;
-
-    @TableField(exist = false)
     private User authorInfo;
-
-    @TableField(exist = false)
     private List<String> categories;
-
-    @TableField(exist = false)
-    private Map<String, List<Comments>> commentsList;
-
-    @TableField(exist = false)
-    private Boolean isUp = false;
-
-    @TableField(exist = false)
-    private Boolean isDown = false;
-
-    @TableField(exist = false)
-    private Boolean isStar = false;
-
-    @TableField(exist = false)
-    private MultipartFile coverImg;
-
-    @TableLogic
-    private Boolean logicDelete;
-
-    public void setPostTime(Timestamp postTime) throws ParseException {
-        this.postTime = FormatTime.timestampToLong(postTime);
-    }
+    private List<Comments> commentsList;
+    private boolean isUp;
+    private boolean isDown;
+    private boolean isStar;
+    // private MultipartFile coverImg;
+    private Timestamp createTime;
 }

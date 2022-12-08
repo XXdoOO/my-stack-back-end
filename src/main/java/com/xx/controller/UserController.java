@@ -1,6 +1,6 @@
 // package com.xx.controller;
 //
-// import com.xx.pojo.Blog;
+// import com.xx.pojo.vo.Blog;
 // import com.xx.pojo.BlogView;
 // import com.xx.pojo.Comments;
 // import com.xx.pojo.User;

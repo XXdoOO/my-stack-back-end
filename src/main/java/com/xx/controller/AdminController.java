@@ -1,7 +1,7 @@
 // package com.xx.controller;
 //
 // import com.xx.config.FilterConfigurer;
-// import com.xx.pojo.Blog;
+// import com.xx.pojo.vo.Blog;
 // import com.xx.pojo.BlogView;
 // import com.xx.pojo.User;
 // import com.xx.service.AuditService;
