@@ -6,6 +6,8 @@ import com.xx.mapper.*;
 import com.xx.pojo.entity.Disable;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.BlogVo;
+import com.xx.pojo.vo.UserVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,7 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-//    @Autowired
+    //    @Autowired
 //    private BlogMapper blogMapper;
 //
 //    @Autowired
@@ -30,8 +32,8 @@ public class UserService {
 //    @Autowired
 //    private BlogDownMapper blogDownMapper;
 //
-//    @Autowired
-//    private DisableMapper disableMapper;
+    @Autowired
+    private DisableMapper disableMapper;
 
     @Autowired
     private HttpSession session;
@@ -39,7 +41,7 @@ public class UserService {
     @Value("${images.local-path}")
     private String locPath;
 
-    public User login(String email, String password) {
+    public UserVo login(String email, String password) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
 
         User user = userMapper.selectOne(wrapper.
@@ -50,12 +52,21 @@ public class UserService {
             return null;
         }
 
+        UserVo userVo = new UserVo();
+
+        userVo.setId(user.getId());
+        userVo.setEmail(user.getEmail());
+        userVo.setAvatar(user.getAvatar());
+        userVo.setCreateTime(user.getCreateTime());
+        userVo.setDisable(user.getDisable());
+        userVo.setAdmin(user.getAdmin());
+
         if (user.getDisable()) {
-//            confirmUserStatus(user);
+            userVo.setDisableInfo(getUserDisableInfo(user.getId()));
 
             if (!user.getDisable()) {
                 session.setAttribute("USER_SESSION", user);
-//                user = getMyInfo();
+               ;
             }
         } else {
             session.setAttribute("USER_SESSION", user);
@@ -65,28 +76,26 @@ public class UserService {
         return user;
     }
 
-//    public void confirmUserStatus(User user) {
-//        QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
-//        Disable disable = disableMapper.selectOne(disableWrapper.
-//                eq("username", user.getId()).
-//                orderByDesc("end_time").
-//                last("limit 1"));
-//
-//        // 确认用户被封禁
-//        if (disable != null && disable.getEndTime() > System.currentTimeMillis()) {
-//            user.setDisableInfo(disable);
-//            user.setStatus(true);
-//        } else { // 用户已解封
-//            user.setStatus(false);
-//
-//            UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-//            userMapper.update(null, wrapper.set("status", false).
-//                    eq("id", user.getId()));
-//
-//            QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
-//            disableMapper.delete(queryWrapper.eq("user_id", user.getId()));
-//        }
-//    }
+    public Disable getUserDisableInfo(long id) {
+        QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
+        Disable disable = disableMapper.selectOne(disableWrapper.
+                eq("user_id", id).
+                orderByDesc("end_time").
+                last("limit 1"));
+
+        // 确认用户被封禁
+        if (disable != null && disable.getEndTime() > System.currentTimeMillis()) {
+            return disable;
+        } else { // 用户已解封
+            UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+            userMapper.update(null, wrapper.set("status", false).
+                    eq("id", id));
+
+            QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
+            disableMapper.delete(queryWrapper.eq("user_id", id));
+            return null;
+        }
+    }
 
     public boolean isExistUser(String email) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();

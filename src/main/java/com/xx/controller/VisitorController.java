@@ -6,6 +6,7 @@ import com.google.code.kaptcha.Producer;
 // import com.xx.service.CommentsService;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.User;
+import com.xx.pojo.vo.UserVo;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import com.xx.util.VerCodeGenerate;
@@ -59,11 +60,11 @@ public class VisitorController {
         if (!userService.isExistUser(userDTO.getEmail())) {
             return MyResponse.fail("用户不存在");
         } else {
-            User user = userService.login(userDTO.getEmail(), userDTO.getPassword());
+            UserVo user = userService.login(userDTO.getEmail(), userDTO.getPassword());
 
             if (user == null) {
                 return MyResponse.fail("邮箱或密码错误");
-            } else if (user.getDisable()) {
+            } else if (user.isDisable()) {
                 return MyResponse.error("用户已被封禁", user.getDisable());
             } else {
                 return MyResponse.success("登录成功", user);

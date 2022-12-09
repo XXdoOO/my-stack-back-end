@@ -4,49 +4,33 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xx.mapper.UserMapper">
-    <select id="getDeletedUserCount" resultType="long">
-        select count(*)
-        from userVo
-        where logic_delete = 1
+    <select id="getMyInfo" resultType="UserPo">
+        select u.nickname,
+               count(b.status = 0) as auditing_count,
+               count(b.status = 1) as pass_count,
+               count(b.status = 2) as no_pass_count,
+               count(up.blog_id)   as up_count,
+               count(down.blog_id) as down_count,
+               count(star.blog_id) as star_count
+        from user u
+                 left join blog b on u.id = b.author_id and b.is_deleted = 0
+                 left join up on b.id = up.blog_id and up.is_deleted = 0
+                 left join down on b.id = down.blog_id and down.is_deleted = 0
+                 left join star on b.id = star.blog_id and star.is_deleted = 0
+        where u.id = #{id}
+          and u.is_deleted = 0
     </select>
 
-    <sql id="getUserList">
-        from userVo where 1 = 1
-        <choose>
-            <when test="userVo.startTime != null and userVo.endTIme != null">
-                and register_time <![CDATA[ >= ]]> from_unixtime(#{userVo.startTime} / 1000) and
-                register_time <![CDATA[ <= ]]> from_unixtime(#{userVo.endTime} / 1000)
-            </when>
-            <when test="userVo.username != null">
-                and username like concat('%',#{userVo.username},'%')
-            </when>
-            <when test="userVo.nickname != null">
-                and `nickname` like concat('%',#{userVo.nickname},'%')
-            </when>
-            <when test="userVo.identity != null">
-                and `identity` = #{userVo.identity}
-            </when>
-            <when test="userVo.status != null">
-                and `status` = #{userVo.status}
-            </when>
-            <when test="userVo.logicDelete != null">
-                and `logic_delete` = #{userVo.logic_delete}
-            </when>
-        </choose>
-        <if test="orderBy != null">
-            order by #{orderBy}
-        </if>
-        <if test="!isAsc">desc</if>
-    </sql>
-
-    <select id="getUserList" resultType="User">
-        select *
-        <include refid="getUserList"/>
-        limit #{startIndex}, #{pageSize};
-    </select>
-
-    <select id="getUserListCount" resultType="long">
-        select count(*)
-        <include refid="getUserList"/>
+    <select id="getUserInfo" resultType="UserPo">
+        select u.nickname,
+               count(b.status = 1) as pass_count,
+               count(up.blog_id)   as up_count,
+               count(down.blog_id) as down_count
+        from user u
+                 left join blog b on u.id = b.author_id and b.is_deleted = 0
+                 left join up on b.id = up.blog_id and up.is_deleted = 0
+                 left join down on b.id = down.blog_id and down.is_deleted = 0
+        where u.id = #{id}
+          and u.is_deleted = 0
     </select>
 </mapper>
