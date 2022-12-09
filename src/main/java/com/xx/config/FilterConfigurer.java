@@ -52,8 +52,8 @@ public class FilterConfigurer implements WebMvcConfigurer {
             System.out.println("已成功创建资源目录：{}" + locPath);
         }
 
-        System.out.println("getAbsolutePath = {}" + logoDir.getAbsolutePath() + File.separator);
-        System.out.println("getPath = {}" + logoDir.getPath());
+        System.out.println("getAbsolutePath = " + logoDir.getAbsolutePath() + File.separator);
+        System.out.println("getPath = " + logoDir.getPath());
 
         registry.addResourceHandler(reqPath)
                 .addResourceLocations("file:" + logoDir.getAbsolutePath() + File.separator);

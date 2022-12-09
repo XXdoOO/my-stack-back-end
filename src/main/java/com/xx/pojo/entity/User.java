@@ -2,7 +2,9 @@ package com.xx.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
+@Data
 @TableName(value = "user")
 public class User extends BaseEntity{
     @TableField(value = "email")
@@ -15,8 +17,8 @@ public class User extends BaseEntity{
     private String avatar;
 
     @TableField(value = "is_admin")
-    private String admin;
+    private Boolean admin;
 
     @TableField(value = "is_disable")
-    private String disable;
+    private Boolean disable;
 }

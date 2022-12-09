@@ -1,13 +1,10 @@
 package com.xx;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.xx.mapper.CommentsMapper;
-import com.xx.pojo.Comments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
-import java.util.Map;
 
 @SpringBootTest
 public class Test {

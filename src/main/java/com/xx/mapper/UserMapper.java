@@ -1,8 +1,7 @@
 package com.xx.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.xx.pojo.BlogView;
-import com.xx.pojo.User;
+import com.xx.pojo.entity.User;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 

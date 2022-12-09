@@ -1,6 +1,6 @@
 package com.xx.filter;
 
-import com.xx.pojo.User;
+import com.xx.pojo.entity.User;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,7 +13,7 @@ public class AdminFilter implements HandlerInterceptor {
         try {
             HttpSession session = request.getSession();
 
-            Boolean identity = ((User) session.getAttribute("USER_SESSION")).getIdentity();
+            Boolean identity = ((User) session.getAttribute("USER_SESSION")).getAdmin();
 
             System.out.println("User拦截器：" + identity);
             if (identity) {

@@ -3,7 +3,8 @@ package com.xx.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.mapper.*;
-import com.xx.pojo.*;
+import com.xx.pojo.entity.Disable;
+import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.BlogVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,20 +18,20 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
-    private BlogMapper blogMapper;
-
-    @Autowired
-    private BlogStarMapper blogStarMapper;
-
-    @Autowired
-    private BlogUpMapper blogUpMapper;
-
-    @Autowired
-    private BlogDownMapper blogDownMapper;
-
-    @Autowired
-    private DisableMapper disableMapper;
+//    @Autowired
+//    private BlogMapper blogMapper;
+//
+//    @Autowired
+//    private BlogStarMapper blogStarMapper;
+//
+//    @Autowired
+//    private BlogUpMapper blogUpMapper;
+//
+//    @Autowired
+//    private BlogDownMapper blogDownMapper;
+//
+//    @Autowired
+//    private DisableMapper disableMapper;
 
     @Autowired
     private HttpSession session;
@@ -49,43 +50,43 @@ public class UserService {
             return null;
         }
 
-        if (user.getStatus()) {
-            confirmUserStatus(user);
+        if (user.getDisable()) {
+//            confirmUserStatus(user);
 
-            if (!user.getStatus()) {
+            if (!user.getDisable()) {
                 session.setAttribute("USER_SESSION", user);
-                user = getMyInfo();
+//                user = getMyInfo();
             }
         } else {
             session.setAttribute("USER_SESSION", user);
-            user = getMyInfo();
+//            user = getMyInfo();
         }
 
         return user;
     }
 
-    public void confirmUserStatus(User user) {
-        QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
-        Disable disable = disableMapper.selectOne(disableWrapper.
-                eq("username", user.getId()).
-                orderByDesc("end_time").
-                last("limit 1"));
-
-        // 确认用户被封禁
-        if (disable != null && disable.getEndTime() > System.currentTimeMillis()) {
-            user.setDisableInfo(disable);
-            user.setStatus(true);
-        } else { // 用户已解封
-            user.setStatus(false);
-
-            UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-            userMapper.update(null, wrapper.set("status", false).
-                    eq("id", user.getId()));
-
-            QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
-            disableMapper.delete(queryWrapper.eq("user_id", user.getId()));
-        }
-    }
+//    public void confirmUserStatus(User user) {
+//        QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
+//        Disable disable = disableMapper.selectOne(disableWrapper.
+//                eq("username", user.getId()).
+//                orderByDesc("end_time").
+//                last("limit 1"));
+//
+//        // 确认用户被封禁
+//        if (disable != null && disable.getEndTime() > System.currentTimeMillis()) {
+//            user.setDisableInfo(disable);
+//            user.setStatus(true);
+//        } else { // 用户已解封
+//            user.setStatus(false);
+//
+//            UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+//            userMapper.update(null, wrapper.set("status", false).
+//                    eq("id", user.getId()));
+//
+//            QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
+//            disableMapper.delete(queryWrapper.eq("user_id", user.getId()));
+//        }
+//    }
 
     public boolean isExistUser(String email) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
@@ -108,50 +109,50 @@ public class UserService {
 
         return userMapper.insert(user) == 1;
     }
-
-    public void logout() {
-        session.invalidate();
-    }
-
-    public User getUserInfo(long id) {
-        User user = userMapper.selectById(id);
-
-        if (user != null) {
-            QueryWrapper<BlogVo> blogWrapper = new QueryWrapper<>();
-            QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
-            QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
-
-            long passCount = blogMapper.selectCount(blogWrapper.eq("author_id", id).
-                    eq("status", 1));
-            long upCount = blogUpMapper.selectCount(upWrapper.eq("blog_id", id));
-            long downCount = blogDownMapper.selectCount(downWrapper.eq("blog_id", id));
-
-            user.setPassCount(passCount);
-            user.setUpCount(upCount);
-            user.setDownCount(downCount);
-        }
-
-        return user;
-    }
-
-    public User getMyInfo() {
-        QueryWrapper<BlogVo> blogWrapper = new QueryWrapper<>();
-        QueryWrapper<BlogVo> blogWrapper2 = new QueryWrapper<>();
-        QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
-
-        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
-
-        long noPassCount = blogMapper.selectCount(blogWrapper.eq("author_id", id).eq("status", 0));
-        long auditingCount = blogMapper.selectCount(blogWrapper2.eq("author_id", id).eq("status", 0));
-        long starCount = blogStarMapper.selectCount(starWrapper.eq("user_id", id));
-
-        User user = getUserInfo(id);
-
-        user.setNoPassCount(noPassCount);
-        user.setAuditingCount(auditingCount);
-        user.setStarCount(starCount);
-        return user;
-    }
+//
+//    public void logout() {
+//        session.invalidate();
+//    }
+//
+//    public User getUserInfo(long id) {
+//        User user = userMapper.selectById(id);
+//
+//        if (user != null) {
+//            QueryWrapper<BlogVo> blogWrapper = new QueryWrapper<>();
+//            QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
+//            QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
+//
+//            long passCount = blogMapper.selectCount(blogWrapper.eq("author_id", id).
+//                    eq("status", 1));
+//            long upCount = blogUpMapper.selectCount(upWrapper.eq("blog_id", id));
+//            long downCount = blogDownMapper.selectCount(downWrapper.eq("blog_id", id));
+//
+//            user.setPassCount(passCount);
+//            user.setUpCount(upCount);
+//            user.setDownCount(downCount);
+//        }
+//
+//        return user;
+//    }
+//
+//    public User getMyInfo() {
+//        QueryWrapper<BlogVo> blogWrapper = new QueryWrapper<>();
+//        QueryWrapper<BlogVo> blogWrapper2 = new QueryWrapper<>();
+//        QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
+//
+//        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
+//
+//        long noPassCount = blogMapper.selectCount(blogWrapper.eq("author_id", id).eq("status", 0));
+//        long auditingCount = blogMapper.selectCount(blogWrapper2.eq("author_id", id).eq("status", 0));
+//        long starCount = blogStarMapper.selectCount(starWrapper.eq("user_id", id));
+//
+//        User user = getUserInfo(id);
+//
+//        user.setNoPassCount(noPassCount);
+//        user.setAuditingCount(auditingCount);
+//        user.setStarCount(starCount);
+//        return user;
+//    }
     //
     // public User updateMyInfo(MultipartFile face, String nickname) {
     //     String username = ((User) session.getAttribute("USER_SESSION")).getUsername();

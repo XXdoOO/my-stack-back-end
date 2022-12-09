@@ -1,22 +1,12 @@
 package com.xx.pojo.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableLogic;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.xx.pojo.Comments;
-import com.xx.pojo.User;
-import com.xx.util.FormatTime;
+import com.xx.pojo.entity.Comment;
+import com.xx.pojo.entity.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -33,7 +23,7 @@ public class BlogVo {
     private Integer status;
     private User authorInfo;
     private List<String> categories;
-    private List<Comments> commentsList;
+    private List<Comment> commentsList;
     private boolean isUp;
     private boolean isDown;
     private boolean isStar;

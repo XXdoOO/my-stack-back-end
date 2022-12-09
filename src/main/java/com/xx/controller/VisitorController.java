@@ -1,23 +1,21 @@
 package com.xx.controller;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
 // import com.xx.service.CommentsService;
-import com.xx.pojo.BlogView;
-import com.xx.pojo.User;
 import com.xx.pojo.dto.UserDTO;
-import com.xx.service.BlogService;
+import com.xx.pojo.entity.User;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import com.xx.util.VerCodeGenerate;
-import com.xx.pojo.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -28,7 +26,7 @@ import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
-@Controller
+@RestController
 @RequestMapping("/")
 public class VisitorController {
     @Autowired
@@ -37,41 +35,36 @@ public class VisitorController {
     @Autowired
     private HttpSession session;
 
-    @Autowired
-    private BlogService blogService;
+//    @Autowired
+//    private BlogService blogService;
     //
     // @Autowired
     // private CommentsService commentsService;
 
     @ResponseBody
     @PostMapping("login")
-    public MyResponse login(@RequestBody UserDTO userDTO) {
-
+    public MyResponse login(@RequestBody @Validated UserDTO userDTO) {
         HashMap<String, Object> map =
                 (HashMap<String, Object>) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
-
-        String email = userVo.getEmail();
-        String password = userVo.getPassword();
-        String code = userVo.getCode();
 
         if (map == null || System.currentTimeMillis() - ((long) map.get(
                 "createTime")) >= 60000) {
             session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
             return MyResponse.fail("验证码已过期");
-        } else if (!((String) map.get("code")).equalsIgnoreCase(code)) {
+        } else if (!((String) map.get("code")).equalsIgnoreCase(userDTO.getCode())) {
             session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
             return MyResponse.fail("验证码错误");
         }
 
-        if (!userService.isExistUser(email)) {
+        if (!userService.isExistUser(userDTO.getEmail())) {
             return MyResponse.fail("用户不存在");
         } else {
-            User user = userService.login(email, password);
+            User user = userService.login(userDTO.getEmail(), userDTO.getPassword());
 
             if (user == null) {
                 return MyResponse.fail("邮箱或密码错误");
-            } else if (user.getStatus()) {
-                return MyResponse.error("用户已被封禁", user.getDisableInfo());
+            } else if (user.getDisable()) {
+                return MyResponse.error("用户已被封禁", user.getDisable());
             } else {
                 return MyResponse.success("登录成功", user);
             }
@@ -80,13 +73,13 @@ public class VisitorController {
 
     @ResponseBody
     @PostMapping("register")
-    public MyResponse register(@RequestBody UserVo userVo) {
+    public MyResponse register(@RequestBody UserDTO userDTO) {
         HashMap<String, Object> map =
                 (HashMap<String, Object>) session.getAttribute("EMAIL_CODE");
 
-        String email = userVo.getEmail();
-        String password = userVo.getPassword();
-        String code = userVo.getCode();
+        String email = userDTO.getEmail();
+        String password = userDTO.getPassword();
+        String code = userDTO.getCode();
 
         if (map == null || System.currentTimeMillis() - ((long) map.get(
                 "createTime")) >= 300000) {
@@ -103,15 +96,15 @@ public class VisitorController {
     }
 
 
-    @ResponseBody
-    @GetMapping("getBlogByKeywords")
-    public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
-        MyResponse myResponse = new MyResponse();
-
-        IPage<BlogView> list = blogService.getBlogListByKeywords(keywords);
-        myResponse.setData(list);
-        return myResponse;
-    }
+//    @ResponseBody
+//    @GetMapping("getBlogByKeywords")
+//    public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
+//        MyResponse myResponse = new MyResponse();
+//
+//        IPage<BlogView> list = blogService.getBlogListByKeywords(keywords);
+//        myResponse.setData(list);
+//        return myResponse;
+//    }
 
     //
     // @ResponseBody

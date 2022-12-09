@@ -1,6 +1,6 @@
 package com.xx.filter;
 
-import com.xx.pojo.User;
+import com.xx.pojo.entity.User;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
