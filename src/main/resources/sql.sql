@@ -122,12 +122,14 @@ create table category
 
 create table blog_category
 (
-    `id`            bigint unsigned auto_increment primary key                                not null comment 'id',
-    `blog_id`       bigint                                                                    not null comment '博客id',
-    `category_name` varchar(16)                                                               not null comment '分类名称',
-    `update_time`   datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
-    `create_time`   datetime            default current_timestamp                             not null comment '创建时间',
-    `is_deleted`    tinyint(1) unsigned default 0                                             not null
+    `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
+    `blog_id`     bigint unsigned                                                           not null comment '博客id',
+    `category_id` bigint unsigned                                                           not null comment '分类id',
+    `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
+    `create_time` datetime            default current_timestamp                             not null comment '创建时间',
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null,
+    foreign key (`category_id`) references `category` (`id`)
+
 ) comment '博客和分类关系';
 
 insert into category(`name`)

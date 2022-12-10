@@ -1,43 +1,25 @@
-//package com.xx.service;
+// package com.xx.service;
 //
-//import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-//import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-//import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-//import com.xx.mapper.*;
-//import com.xx.pojo.*;
-//import com.xx.util.MyResponse;
-//import com.xx.util.SaveFile;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
+// import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+// import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+// import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+// import com.xx.mapper.*;
+// import com.xx.pojo.*;
+// import com.xx.util.MyResponse;
+// import com.xx.util.SaveFile;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Value;
+// import org.springframework.stereotype.Service;
+// import org.springframework.transaction.annotation.Transactional;
 //
-//import javax.servlet.http.HttpSession;
-//import java.util.*;
+// import javax.servlet.http.HttpSession;
+// import java.util.*;
 //
-//@Transactional
-//@Service
-//public class BlogService {
+// @Transactional
+// @Service
+// public class BlogService {
 //    @Autowired
 //    private BlogMapper blogMapper;
-//
-//    @Autowired
-//    private BlogViewMapper blogViewMapper;
-//
-//    @Autowired
-//    private BlogStarMapper starMapper;
-//
-//    @Autowired
-//    private BlogUpMapper upMapper;
-//
-//    @Autowired
-//    private BlogDownMapper downMapper;
-//
-//    @Autowired
-//    private CommentsMapper commentsMapper;
-//
-//    // @Autowired
-//    // private CommentsService commentsService;
 //
 //    @Autowired
 //    private UserService userService;
@@ -46,18 +28,12 @@
 //    private UserMapper userMapper;
 //
 //    @Autowired
-//    private CategoryMapper categoryMapper;
-//
-//    @Autowired
-//    private BlogCategoryMapper blogCategoryMapper;
-//
-//    @Autowired
 //    private HttpSession session;
 //
 //    @Value("${images.local-path}")
 //    private String locPath;
 //
-//    public MyResponse getBlogListByKeywords(String keywords, String orderBy, Long pageNum, Long pageSize) {
+//    public MyResponse getBlogListByKeywords(String keywords, ) {
 //        QueryWrapper<BlogView> wrapper = new QueryWrapper<>();
 //
 //        wrapper.eq("status", 1).
@@ -537,4 +513,4 @@
 //    //         blogView.setIsStar(starCount == 1);
 //    //     }
 //    // }
-//}
+// }

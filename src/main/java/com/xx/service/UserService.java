@@ -3,16 +3,25 @@ package com.xx.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.mapper.*;
+import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.Disable;
 import com.xx.pojo.entity.User;
+import com.xx.pojo.po.UserPo;
 import com.xx.pojo.vo.BlogVo;
 import com.xx.pojo.vo.UserVo;
+import com.xx.util.SaveFile;
+import com.xx.util.VerCodeGenerate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.Random;
 
 @Service
@@ -37,6 +46,13 @@ public class UserService {
 
     @Autowired
     private HttpSession session;
+
+    @Resource
+    private JavaMailSender mailSender;
+
+    @Value("${spring.mail.username}")
+    private String from;
+
 
     @Value("${images.local-path}")
     private String locPath;
@@ -65,15 +81,23 @@ public class UserService {
             userVo.setDisableInfo(getUserDisableInfo(user.getId()));
 
             if (!user.getDisable()) {
+                user.setDisable(false);
                 session.setAttribute("USER_SESSION", user);
-               ;
             }
         } else {
             session.setAttribute("USER_SESSION", user);
-//            user = getMyInfo();
+            UserPo userInfo = userMapper.getMyInfo(user.getId());
+
+            userVo.setNickname(userInfo.getNickname());
+            userVo.setAuditingCount(userInfo.getAuditingCount());
+            userVo.setPassCount(userInfo.getPassCount());
+            userVo.setNoPassCount(userInfo.getNoPassCount());
+            userVo.setUpCount(userInfo.getUpCount());
+            userVo.setDownCount(userInfo.getDownCount());
+            userVo.setStarCount(userInfo.getStarCount());
         }
 
-        return user;
+        return userVo;
     }
 
     public Disable getUserDisableInfo(long id) {
@@ -118,89 +142,74 @@ public class UserService {
 
         return userMapper.insert(user) == 1;
     }
-//
-//    public void logout() {
-//        session.invalidate();
-//    }
-//
-//    public User getUserInfo(long id) {
-//        User user = userMapper.selectById(id);
-//
-//        if (user != null) {
-//            QueryWrapper<BlogVo> blogWrapper = new QueryWrapper<>();
-//            QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
-//            QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
-//
-//            long passCount = blogMapper.selectCount(blogWrapper.eq("author_id", id).
-//                    eq("status", 1));
-//            long upCount = blogUpMapper.selectCount(upWrapper.eq("blog_id", id));
-//            long downCount = blogDownMapper.selectCount(downWrapper.eq("blog_id", id));
-//
-//            user.setPassCount(passCount);
-//            user.setUpCount(upCount);
-//            user.setDownCount(downCount);
-//        }
-//
-//        return user;
-//    }
-//
-//    public User getMyInfo() {
-//        QueryWrapper<BlogVo> blogWrapper = new QueryWrapper<>();
-//        QueryWrapper<BlogVo> blogWrapper2 = new QueryWrapper<>();
-//        QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
-//
-//        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
-//
-//        long noPassCount = blogMapper.selectCount(blogWrapper.eq("author_id", id).eq("status", 0));
-//        long auditingCount = blogMapper.selectCount(blogWrapper2.eq("author_id", id).eq("status", 0));
-//        long starCount = blogStarMapper.selectCount(starWrapper.eq("user_id", id));
-//
-//        User user = getUserInfo(id);
-//
-//        user.setNoPassCount(noPassCount);
-//        user.setAuditingCount(auditingCount);
-//        user.setStarCount(starCount);
-//        return user;
-//    }
-    //
-    // public User updateMyInfo(MultipartFile face, String nickname) {
-    //     String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
-    //
-    //     if (face != null && nickname != null) {
-    //         if (SaveFile.saveFile(face, locPath + "/avatar/", username + ".jpg")) {
-    //             String avatar = "/avatar/" + username + ".jpg";
-    //
-    //             UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-    //             userMapper.update(null, wrapper.
-    //                     eq("username", username).
-    //                     set("nickname", nickname).
-    //                     set("avatar", avatar));
-    //             return getMyInfo();
-    //         }
-    //     } else if (face == null && nickname != null) {
-    //         UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-    //         userMapper.update(null, wrapper.
-    //                 eq("username", username).
-    //                 set("nickname", nickname));
-    //         return getMyInfo();
-    //     } else if (face != null) {
-    //         if (SaveFile.saveFile(face, locPath + "/avatar/", username + ".jpg")) {
-    //             String avatar = "/avatar/" + username + ".jpg";
-    //
-    //             UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-    //             userMapper.update(null, wrapper.
-    //                     eq("username", username).
-    //                     set("avatar", avatar));
-    //             return getMyInfo();
-    //         }
-    //     }
-    //     return null;
-    // }
-    //
-    // public boolean deleteMy() {
-    //     String username = ((User) session.getAttribute("USER_SESSION")).getUsername();
-    //     int i = userMapper.deleteById(username);
-    //
-    //     return i == 1;
-    // }
+
+    public void logout() {
+        session.invalidate();
+    }
+
+    public UserVo getUserInfo(long id) {
+        UserPo userInfo = userMapper.getUserInfo(id);
+
+        UserVo userVo = new UserVo();
+
+        userVo.setNickname(userInfo.getNickname());
+        userVo.setPassCount(userInfo.getPassCount());
+        userVo.setUpCount(userInfo.getUpCount());
+        userVo.setDownCount(userInfo.getDownCount());
+        return userVo;
+    }
+
+    public boolean updateMyInfo(UserDTO userDTO) {
+        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
+
+        User user = new User();
+        // user.setEmail(userDTO.getEmail());
+        // user.setPassword(userDTO.getPassword());
+        user.setNickname(userDTO.getNickname());
+
+        MultipartFile avatar = userDTO.getAvatar();
+        if (avatar != null) {
+            SaveFile.saveFile(avatar, locPath + "/avatar/", id + ".jpg");
+
+            user.setAvatar("/avatar/" + id + ".jpg");
+        }
+
+        return userMapper.updateById(user) == 1;
+    }
+
+    public boolean deleteSelf() {
+        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
+
+        return userMapper.deleteById(id) == 1;
+    }
+
+    public void sendRegisterCode(String email){
+        String code = sendEmailCode(email);
+
+        HashMap<String, Object> map = new HashMap<String, Object>() {{
+            put("createTime", System.currentTimeMillis());
+            put("email", email);
+            put("code", code);
+        }};
+        session.setAttribute("REGISTER_CODE", map);
+    }
+
+    public String sendEmailCode(String email) {
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        message.setFrom(from);
+        message.setTo(email);
+        message.setSubject("您本次的验证码是");
+
+        String verCode = VerCodeGenerate.generateVerCode();
+
+
+        message.setText("尊敬的用户,您好:\n"
+                + "\n本次请求的邮件验证码为:" + verCode + ",本验证码 5 分钟内效，请及时输入。（请勿泄露此验证码）\n"
+                + "\n如非本人操作，请忽略该邮件。\n(这是一封通过自动发送的邮件，请不要直接回复）");
+
+        mailSender.send(message);
+
+        return verCode;
+    }
 }

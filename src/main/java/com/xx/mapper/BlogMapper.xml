@@ -4,75 +4,48 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xx.mapper.BlogMapper">
-    <select id="getMyStarList" parameterType="map" resultType="BlogView">
-        select *
-        from `blog`
-        where `id` in (select `blog_id` from `blog_star` where `logic_delete` = 0 and `username` = #{username})
-          and `logic_delete` = 0
-        limit #{startIndex}, #{pageSize};
-    </select>
-
-    <select id="getMyUpList" parameterType="map" resultType="BlogView">
-        select *
-        from `blog`
-        where `id` in (select `blog_id` from `blog_up` where `logic_delete` = 0 and `username` = #{username})
-          and `logic_delete` = 0
-        limit #{startIndex}, #{pageSize};
-    </select>
-
-    <select id="getMyDownList" parameterType="map" resultType="BlogView">
-        select *
-        from `blog`
-        where `id` in (select `blog_id` from `blog_down` where `logic_delete` = 0 and `username` = #{username})
-          and `logic_delete` = 0
-        limit #{startIndex}, #{pageSize};
-    </select>
-
-    <select id="deletedBlogCount" resultType="long">
-        select count(*)
-        from blog
-        where logic_delete = 1;
-    </select>
-
-    <sql id="getBlogList">
-        from blog where 1 = 1
-        <choose>
-            <when test="blogView.startTime != null and blogView.endTIme != null">
-                and post_time <![CDATA[ >= ]]> from_unixtime(#{blogView.startTime} / 1000) and
-                post_time
-                <![CDATA[ <= ]]> from_unixtime(#{blogView.endTime} / 1000)
-            </when>
-            <when test="blogView.title != null">
-                and title like concat('%',#{blogView.title},'%')
-            </when>
-            <when test="blogView.description != null">
-                and `description` like concat('%',#{blogView.description},'%')
-            </when>
-            <when test="blogView.status != null">
-                and `status` = #{blogView.status}
-            </when>
-            <when test="blogView.logicDelete != null">
-                and `logic_delete` = #{blogView.logic_delete}
-            </when>
-            <when test="blogView.authorNickname != null">
-                and `author_username` in (select username from userVo where nickname like
-                concat('%',#{blogView.authorNickname},'%'))
-            </when>
-        </choose>
-        <if test="orderBy != null">
-            order by #{orderBy}
+    <select id="getBlogList" resultMap="BlogView">
+        select b.id,
+        b.title,
+        b.description,
+        b.cover,
+        b.up,
+        b.down,
+        b.star,
+        b.views,
+        b.create_time,
+        c.id as category_id,
+        c.name as category
+        <if test="userId != null">
+            ,
+            if((select count(up.id) from up where up.user_id = #{userId}) > 0, 1, 0) as is_up,
+            if((select count(down.id) from down where down.user_id = #{userId}) > 0, 1, 0) as is_down,
+            if((select count(star.id) from star where star.user_id = #{userId}) > 0, 1, 0) as is_star
         </if>
-        <if test="!isAsc">desc</if>
-    </sql>
-
-    <select id="getBlogList" resultType="BlogView">
-        select *
-        <include refid="getBlogList"/>
-        limit #{startIndex}, #{pageSize};
+        from blog b
+        left join blog_category bc on b.id = bc.blog_id
+        left join category c on c.id = bc.category_id
+        where (b.title like concat('%', #{keywords}, '%')
+        or b.description like concat('%', #{keywords}, '%')
+        or b.content like concat('%', #{keywords}, '%'))
+        group by b.id, b.title, b.description, b.cover, b.up, b.down, b.star, b.views, b.create_time, category_id,
+        category
     </select>
-
-    <select id="getBlogListCount" resultType="long">
-        select count(*)
-        <include refid="getBlogList"/>
-    </select>
+    <resultMap id="BlogView" type="BlogViewPo">
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="cover" property="cover"/>
+        <result column="up" property="up"/>
+        <result column="down" property="down"/>
+        <result column="star" property="star"/>
+        <result column="views" property="views"/>
+        <result column="is_up" property="isUp"/>
+        <result column="is_down" property="isDown"/>
+        <result column="is_star" property="isStar"/>
+        <result column="create_time" property="createTime"/>
+        <collection property="categories" ofType="Category">
+            <result column="category_id" property="id"/>
+            <result column="category" property="name"/>
+        </collection>
+    </resultMap>
 </mapper>

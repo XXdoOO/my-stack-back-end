@@ -1,11 +1,14 @@
 package com.xx.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
 // import com.xx.service.CommentsService;
+import com.xx.mapper.BlogMapper;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.User;
+import com.xx.pojo.po.BlogViewPo;
 import com.xx.pojo.vo.UserVo;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
@@ -26,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -42,11 +46,28 @@ public class VisitorController {
     // @Autowired
     // private CommentsService commentsService;
 
+    @Resource
+    private BlogMapper blogMapper;
+
     @ResponseBody
     @PostMapping("login")
-    public MyResponse login(@RequestBody @Validated UserDTO userDTO) {
+    public MyResponse login(@RequestBody UserDTO userDTO) {
         HashMap<String, Object> map =
                 (HashMap<String, Object>) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
+
+        String email = userDTO.getEmail();
+        String password = userDTO.getPassword();
+        String code = userDTO.getCode();
+
+        if (StringUtils.isNotBlank(email)) {
+            return MyResponse.error("邮箱为空或格式错误");
+        }
+        if (StringUtils.isNotBlank(password)) {
+            return MyResponse.error("密码为空或格式错误");
+        }
+        if (StringUtils.isNotBlank(code) && code.length() == 4) {
+            return MyResponse.error("验证码为空或格式错误");
+        }
 
         if (map == null || System.currentTimeMillis() - ((long) map.get(
                 "createTime")) >= 60000) {
@@ -65,7 +86,7 @@ public class VisitorController {
             if (user == null) {
                 return MyResponse.fail("邮箱或密码错误");
             } else if (user.isDisable()) {
-                return MyResponse.error("用户已被封禁", user.getDisable());
+                return MyResponse.error("用户已被封禁", user.getDisableInfo());
             } else {
                 return MyResponse.success("登录成功", user);
             }
@@ -76,11 +97,22 @@ public class VisitorController {
     @PostMapping("register")
     public MyResponse register(@RequestBody UserDTO userDTO) {
         HashMap<String, Object> map =
-                (HashMap<String, Object>) session.getAttribute("EMAIL_CODE");
+                (HashMap<String, Object>) session.getAttribute("REGISTER_CODE");
 
         String email = userDTO.getEmail();
         String password = userDTO.getPassword();
         String code = userDTO.getCode();
+
+        if (StringUtils.isNotBlank(email)) {
+            return MyResponse.error("邮箱为空或格式错误");
+        }
+        if (StringUtils.isNotBlank(password)) {
+            return MyResponse.error("密码为空或格式错误");
+        }
+        if (StringUtils.isNotBlank(code) && code.length() == 6) {
+            return MyResponse.error("验证码为空或格式错误");
+        }
+
 
         if (map == null || System.currentTimeMillis() - ((long) map.get(
                 "createTime")) >= 300000) {
@@ -97,26 +129,22 @@ public class VisitorController {
     }
 
 
-//    @ResponseBody
-//    @GetMapping("getBlogByKeywords")
-//    public MyResponse getBlogByKeywords(String keywords, Boolean orderBy, Integer startIndex, Integer pageSize) {
-//        MyResponse myResponse = new MyResponse();
-//
-//        IPage<BlogView> list = blogService.getBlogListByKeywords(keywords);
-//        myResponse.setData(list);
-//        return myResponse;
-//    }
+    @ResponseBody
+    @GetMapping("getBlogByKeywords")
+    public MyResponse getBlogByKeywords(Long userId, String keywords) {
+        // PageHelper.startPage(1, 10);
+        List<BlogViewPo> blogList = blogMapper.getBlogList(userId, keywords);
 
-    //
-    // @ResponseBody
-    // @GetMapping("getUserInfo")
-    // public MyResponse getUserInfo(@RequestParam String username) {
-    //     MyResponse myResponse = new MyResponse();
-    //
-    //     User user = userService.getUserInfo(username);
-    //     myResponse.setData(user);
-    //     return myResponse;
-    // }
+        return MyResponse.success(blogList);
+    }
+
+
+    @ResponseBody
+    @GetMapping("getUserInfo")
+    public MyResponse getUserInfo(@RequestParam Long id) {
+        return MyResponse.success(userService.getUserInfo(id));
+    }
+
     //
     // @ResponseBody
     // @GetMapping("getUserPostBlogList")
@@ -176,12 +204,6 @@ public class VisitorController {
     //     return myResponse;
     // }
     //
-    @Resource
-    private JavaMailSender mailSender;
-
-    @Value("${spring.mail.username}")
-    private String from;
-
     @ResponseBody
     @RequestMapping("sendCode")
     public MyResponse commonEmail(@RequestParam String email) {
@@ -194,27 +216,7 @@ public class VisitorController {
             return MyResponse.fail("用户已存在");
         }
 
-        SimpleMailMessage message = new SimpleMailMessage();
-
-        message.setFrom(from);
-        message.setTo(email);
-        message.setSubject("您本次的验证码是");
-
-        String verCode = VerCodeGenerate.generateVerCode();
-
-
-        message.setText("尊敬的用户,您好:\n"
-                + "\n本次请求的邮件验证码为:" + verCode + ",本验证码 5 分钟内效，请及时输入。（请勿泄露此验证码）\n"
-                + "\n如非本人操作，请忽略该邮件。\n(这是一封通过自动发送的邮件，请不要直接回复）");
-
-        mailSender.send(message);
-
-        HashMap<String, Object> map = new HashMap<String, Object>() {{
-            put("createTime", System.currentTimeMillis());
-            put("email", email);
-            put("code", verCode);
-        }};
-        session.setAttribute("EMAIL_CODE", map);
+        userService.sendRegisterCode(email);
         return MyResponse.success("发送成功");
     }
 

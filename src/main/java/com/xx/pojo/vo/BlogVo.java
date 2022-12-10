@@ -27,6 +27,5 @@ public class BlogVo {
     private boolean isUp;
     private boolean isDown;
     private boolean isStar;
-    // private MultipartFile coverImg;
     private Timestamp createTime;
 }

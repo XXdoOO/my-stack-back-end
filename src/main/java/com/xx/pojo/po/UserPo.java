@@ -6,7 +6,6 @@ import lombok.Data;
 @Data
 public class UserPo {
     private String nickname;
-    private Disable disableInfo;
     private long passCount;
     private long noPassCount;
     private long auditingCount;
