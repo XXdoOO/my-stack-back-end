@@ -1,6 +1,8 @@
 package com.xx.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
@@ -131,11 +133,19 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getBlogByKeywords")
-    public MyResponse getBlogByKeywords(Long userId, String keywords) {
-        // PageHelper.startPage(1, 10);
-        List<BlogViewPo> blogList = blogMapper.getBlogList(userId, keywords);
+    public MyResponse getBlogByKeywords(String keywords) {
+        PageHelper.startPage(1, 10);
 
-        return MyResponse.success(blogList);
+        User user = (User) session.getAttribute("USER_SESSION");
+
+        Long userId = null;
+        if (user != null) {
+            userId = user.getId();
+        }
+
+        List<BlogViewPo> blogList = blogMapper.getBlogList(userId, StringUtils.isBlank(keywords) ? "" : keywords);
+
+        return MyResponse.success(new PageInfo<>(blogList));
     }
 
 

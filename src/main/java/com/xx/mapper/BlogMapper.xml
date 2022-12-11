@@ -5,7 +5,8 @@
 
 <mapper namespace="com.xx.mapper.BlogMapper">
     <select id="getBlogList" resultMap="BlogView">
-        select b.id,
+        select
+        b.id,
         b.title,
         b.description,
         b.cover,
@@ -13,9 +14,7 @@
         b.down,
         b.star,
         b.views,
-        b.create_time,
-        c.id as category_id,
-        c.name as category
+        b.create_time
         <if test="userId != null">
             ,
             if((select count(up.id) from up where up.user_id = #{userId}) > 0, 1, 0) as is_up,
@@ -23,15 +22,13 @@
             if((select count(star.id) from star where star.user_id = #{userId}) > 0, 1, 0) as is_star
         </if>
         from blog b
-        left join blog_category bc on b.id = bc.blog_id
-        left join category c on c.id = bc.category_id
         where (b.title like concat('%', #{keywords}, '%')
         or b.description like concat('%', #{keywords}, '%')
         or b.content like concat('%', #{keywords}, '%'))
-        group by b.id, b.title, b.description, b.cover, b.up, b.down, b.star, b.views, b.create_time, category_id,
-        category
+        group by b.id, b.title, b.description, b.cover, b.up, b.down, b.star, b.views, b.create_time
     </select>
     <resultMap id="BlogView" type="BlogViewPo">
+        <id column="id" property="id"/>
         <result column="title" property="title"/>
         <result column="description" property="description"/>
         <result column="cover" property="cover"/>
@@ -43,9 +40,15 @@
         <result column="is_down" property="isDown"/>
         <result column="is_star" property="isStar"/>
         <result column="create_time" property="createTime"/>
-        <collection property="categories" ofType="Category">
-            <result column="category_id" property="id"/>
-            <result column="category" property="name"/>
+        <collection property="categories" column="id" ofType="Category" select="getCategories">
         </collection>
     </resultMap>
+
+    <select id="getCategories" resultType="Category">
+        select c.id, c.name
+        from category c,
+             blog_category bc
+        where c.id = bc.category_id
+          and bc.blog_id = #{id}
+    </select>
 </mapper>

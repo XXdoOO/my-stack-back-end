@@ -16,9 +16,9 @@ public class BlogViewPo {
     private long down;
     private long star;
     private long views;
-    private Boolean isUp;
-    private Boolean isDown;
-    private Boolean isStar;
+    private Boolean isUp = false;
+    private Boolean isDown = false;
+    private Boolean isStar = false;
     private List<Category> categories;
     private Timestamp createTime;
 }
