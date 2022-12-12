@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xx.mapper.BlogMapper">
-    <select id="getBlogList" resultMap="BlogView">
+    <select id="getBlogListByKeywords" resultMap="BlogView">
         select
         b.id,
         b.title,
@@ -14,20 +14,33 @@
         b.down,
         b.star,
         b.views,
-        b.create_time
+        b.status,
+        b.create_time,
+        b.author_id,
+        u.nickname as author_nickname
+        <if test="userId == null">
+            ,
+            0 as is_up,
+            0 as is_down,
+            0 as is_star
+        </if>
         <if test="userId != null">
             ,
             if((select count(up.id) from up where up.user_id = #{userId}) > 0, 1, 0) as is_up,
             if((select count(down.id) from down where down.user_id = #{userId}) > 0, 1, 0) as is_down,
             if((select count(star.id) from star where star.user_id = #{userId}) > 0, 1, 0) as is_star
         </if>
-        from blog b
-        where (b.title like concat('%', #{keywords}, '%')
-        or b.description like concat('%', #{keywords}, '%')
-        or b.content like concat('%', #{keywords}, '%'))
+        from blog b left join user u on u.id = b.author_id
+        <where>
+            <if test="keywords != null and keywords != ''">
+                (b.title like concat('%', #{keywords}, '%')
+                or b.description like concat('%', #{keywords}, '%')
+                or b.content like concat('%', #{keywords}, '%'))
+            </if>
+        </where>
         group by b.id, b.title, b.description, b.cover, b.up, b.down, b.star, b.views, b.create_time
     </select>
-    <resultMap id="BlogView" type="BlogViewPo">
+    <resultMap id="BlogView" type="BlogViewVo">
         <id column="id" property="id"/>
         <result column="title" property="title"/>
         <result column="description" property="description"/>
@@ -36,9 +49,12 @@
         <result column="down" property="down"/>
         <result column="star" property="star"/>
         <result column="views" property="views"/>
+        <result column="status" property="status"/>
         <result column="is_up" property="isUp"/>
         <result column="is_down" property="isDown"/>
         <result column="is_star" property="isStar"/>
+        <result column="author_id" property="authorId"/>
+        <result column="author_nickname" property="authorNickname"/>
         <result column="create_time" property="createTime"/>
         <collection property="categories" column="id" ofType="Category" select="getCategories">
         </collection>

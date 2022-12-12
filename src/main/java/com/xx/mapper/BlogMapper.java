@@ -12,5 +12,5 @@ import java.util.List;
 
 @Repository
 public interface BlogMapper extends BaseMapper<Blog> {
-    List<BlogViewPo> getBlogList(Long userId, String keywords);
+    List<BlogViewVo> getBlogListByKeywords(Long userId, String keywords);
 }

@@ -12,6 +12,7 @@ import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.po.BlogViewPo;
 import com.xx.pojo.vo.UserVo;
+import com.xx.service.BlogService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import com.xx.util.VerCodeGenerate;
@@ -42,8 +43,8 @@ public class VisitorController {
     @Autowired
     private HttpSession session;
 
-//    @Autowired
-//    private BlogService blogService;
+    @Autowired
+    private BlogService blogService;
     //
     // @Autowired
     // private CommentsService commentsService;
@@ -133,19 +134,10 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getBlogByKeywords")
-    public MyResponse getBlogByKeywords(String keywords) {
+    public MyResponse getBlogByKeywords(String keywords, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(1, 10);
 
-        User user = (User) session.getAttribute("USER_SESSION");
-
-        Long userId = null;
-        if (user != null) {
-            userId = user.getId();
-        }
-
-        List<BlogViewPo> blogList = blogMapper.getBlogList(userId, StringUtils.isBlank(keywords) ? "" : keywords);
-
-        return MyResponse.success(new PageInfo<>(blogList));
+        return MyResponse.success(new PageInfo<>(blogService.getBlogListByKeywords(keywords)));
     }
 
 
