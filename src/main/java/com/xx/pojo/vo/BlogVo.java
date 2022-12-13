@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -21,11 +22,11 @@ public class BlogVo {
     private long star;
     private long views;
     private Integer status;
-    private User authorInfo;
+    private UserVo authorInfo;
     private List<String> categories;
     private List<Comment> commentsList;
     private boolean isUp;
     private boolean isDown;
     private boolean isStar;
-    private Timestamp createTime;
+    private Date createTime;
 }

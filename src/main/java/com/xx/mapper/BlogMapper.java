@@ -13,4 +13,6 @@ import java.util.List;
 @Repository
 public interface BlogMapper extends BaseMapper<Blog> {
     List<BlogViewVo> getBlogListByKeywords(Long userId, String keywords);
+
+    Blog getBlogDetails(long id);
 }

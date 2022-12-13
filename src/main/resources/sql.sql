@@ -87,8 +87,8 @@ create table `up`
 (
     `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
     `user_id`     bigint unsigned                                                           not null comment '用户名',
-    `blog_id`     bigint unsigned                                                           not null comment '博客id',
-    `comment_id`  bigint unsigned                                                           not null comment '评论id',
+    `blog_id`     bigint unsigned comment '博客id',
+    `comment_id`  bigint unsigned comment '评论id',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
     `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
@@ -101,8 +101,8 @@ create table `down`
 (
     `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
     `user_id`     bigint unsigned                                                           not null comment '用户名',
-    `blog_id`     bigint unsigned                                                           not null comment '博客id',
-    `comment_id`  bigint unsigned                                                           not null comment '博客id',
+    `blog_id`     bigint unsigned comment '博客id',
+    `comment_id`  bigint unsigned comment '博客id',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
     `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',

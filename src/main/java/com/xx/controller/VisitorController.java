@@ -184,16 +184,16 @@ public class VisitorController {
     //     return myResponse;
     // }
     //
-    // @ResponseBody
-    // @GetMapping("getBlogDetails")
-    // public MyResponse getBlogDetails(@RequestParam long id) {
-    //     MyResponse myResponse = new MyResponse();
-    //
-    //     Blog blogDetails = blogService.getBlogDetails(id);
-    //
-    //     myResponse.setData(blogDetails);
-    //     return myResponse;
-    // }
+    @ResponseBody
+    @GetMapping("getBlogDetails")
+    public MyResponse getBlogDetails(@RequestParam long id) {
+        MyResponse myResponse = new MyResponse();
+
+        Blog blogDetails = blogService.getBlogDetails(id);
+
+        myResponse.setData(blogDetails);
+        return myResponse;
+    }
     //
     // @ResponseBody
     // @GetMapping("getCommentsList")

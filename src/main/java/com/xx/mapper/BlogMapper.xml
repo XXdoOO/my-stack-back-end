@@ -18,12 +18,6 @@
         b.create_time,
         b.author_id,
         u.nickname as author_nickname
-        <if test="userId == null">
-            ,
-            0 as is_up,
-            0 as is_down,
-            0 as is_star
-        </if>
         <if test="userId != null">
             ,
             if((select count(up.id) from up where up.user_id = #{userId}) > 0, 1, 0) as is_up,
@@ -59,7 +53,6 @@
         <collection property="categories" column="id" ofType="Category" select="getCategories">
         </collection>
     </resultMap>
-
     <select id="getCategories" resultType="Category">
         select c.id, c.name
         from category c,
@@ -67,4 +60,63 @@
         where c.id = bc.category_id
           and bc.blog_id = #{id}
     </select>
+
+    <select id="getBlogDetails" resultMap="BlogDetails">
+        select b.id,
+        b.title,
+        b.description,
+        b.cover,
+        b.content,
+        b.up,
+        b.down,
+        b.star,
+        b.views,
+        b.status,
+        b.create_time,
+        u.id as u_id,
+        u.nickname as u_nickname,
+        u.avatar as u_avatar,
+        u.is_admin as u_is_admin,
+        u.is_disable as u_is_disable,
+        u.create_time as u_create_time,
+        count(up.id) as up_count,
+        count(down.id) as down_count,
+        (select count(*) from blog where blog.author_id = u.id and blog.status = 1) as pass_count,
+        <if test="userId != null">
+            ,
+            if((select count(up.id) from up where up.user_id = #{userId}) > 0, 1, 0) as is_up,
+            if((select count(down.id) from down where down.user_id = #{userId}) > 0, 1, 0) as is_down,
+            if((select count(star.id) from star where star.user_id = #{userId}) > 0, 1, 0) as is_star
+        </if>
+        from blog b
+        left join user u on b.author_id = u.id
+        left join up on b.author_id = up.user_id and b.id = up.blog_id
+        left join down on b.author_id = down.user_id and b.id = down.blog_id
+    </select>
+    <resultMap id="BlogDetails" type="BlogVo">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="description" property="description"/>
+        <result column="cover" property="cover"/>
+        <result column="content" property="content"/>
+        <result column="up" property="up"/>
+        <result column="down" property="down"/>
+        <result column="star" property="star"/>
+        <result column="views" property="views"/>
+        <result column="status" property="status"/>
+        <result column="is_up" property="isUp"/>
+        <result column="is_down" property="isDown"/>
+        <result column="is_star" property="isStar"/>
+        <result column="create_time" property="createTime"/>
+        <association property="authorInfo">
+            <id column="u_id" property="id"/>
+            <result column="u_nickname" property="nickname"/>
+            <result column="u_avatar" property="avatar"/>
+            <result column="u_is_admin" property="u_is_disable"/>
+            <result column="u_is_disable" property="u_is_disable"/>
+            <result column="u_create_time" property="u_create_time"/>
+        </association>
+        <collection property="categories" column="id" ofType="Category" select="getCategories">
+        </collection>
+    </resultMap>
 </mapper>

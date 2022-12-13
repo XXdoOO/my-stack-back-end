@@ -16,13 +16,13 @@ public class UserVo {
     private String nickname;
     private String avatar;
     private Timestamp createTime;
-    private boolean disable;
-    private boolean admin;
+    private Boolean isDisable;
+    private Boolean isAdmin;
     private Disable disableInfo;
-    private long passCount;
+    private Long passCount;
     private Long noPassCount;
     private Long auditingCount;
-    private long upCount;
-    private long downCount;
+    private Long upCount;
+    private Long downCount;
     private Long starCount;
 }
