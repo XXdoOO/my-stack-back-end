@@ -20,4 +20,10 @@ public class OtherController {
     public MyResponse handleNotPermission() {
         return MyResponse.unauthorized();
     }
+
+    @ResponseBody
+    @RequestMapping("/handleMismatch")
+    public MyResponse handleMismatch() {
+        return MyResponse.unauthorized("不匹配");
+    }
 }

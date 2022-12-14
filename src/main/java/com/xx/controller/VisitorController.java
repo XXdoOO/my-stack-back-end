@@ -143,9 +143,9 @@ public class VisitorController {
 
 
     @ResponseBody
-    @GetMapping("getUserInfo")
-    public MyResponse getUserInfo(@RequestParam Long id) {
-        return MyResponse.success(userService.getUserInfo(id));
+    @GetMapping("user/{userId}")
+    public MyResponse getUserInfo(@PathVariable Long userId) {
+        return MyResponse.success(userService.getUserInfo(userId));
     }
 
     //
@@ -186,9 +186,9 @@ public class VisitorController {
     // }
     //
     @ResponseBody
-    @GetMapping("getBlogDetails")
-    public MyResponse getBlogDetails(@RequestParam long id) {
-        return MyResponse.success(blogService.getBlogDetails(id));
+    @GetMapping("blog/{blogId}")
+    public MyResponse getBlogDetails(@PathVariable long blogId) {
+        return MyResponse.success(blogService.getBlogDetails(blogId));
     }
 
 
