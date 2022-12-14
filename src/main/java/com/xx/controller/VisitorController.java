@@ -6,7 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
-// import com.xx.service.CommentsService;
+import com.xx.service.CommentsService;
 import com.xx.mapper.BlogMapper;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.User;
@@ -46,9 +46,9 @@ public class VisitorController {
 
     @Autowired
     private BlogService blogService;
-    //
-    // @Autowired
-    // private CommentsService commentsService;
+
+    @Autowired
+    private CommentsService commentsService;
 
     @Resource
     private BlogMapper blogMapper;
@@ -191,18 +191,13 @@ public class VisitorController {
         return MyResponse.success(blogService.getBlogDetails(id));
     }
 
-    //
-    // @ResponseBody
-    // @GetMapping("getCommentsList")
-    // public MyResponse getCommentsList(@RequestParam long id, Boolean orderBy, Integer startIndex, Integer pageSize) {
-    //     MyResponse myResponse = new MyResponse();
-    //
-    //     List<Comments> commentsList = commentsService.getCommentsList(id, (orderBy == null || !orderBy) ? "up" :
-    //             "time", startIndex == null ? 0 : startIndex, pageSize == null ? 10 : pageSize);
-    //     myResponse.setData(commentsList);
-    //     return myResponse;
-    // }
-    //
+
+    @ResponseBody
+    @GetMapping("getCommentsList")
+    public MyResponse getCommentsList(@RequestParam long blogId, String orderBy) {
+        return MyResponse.success(commentsService.getCommentsList(blogId, orderBy));
+    }
+
     @ResponseBody
     @RequestMapping("sendCode")
     public MyResponse commonEmail(@RequestParam String email) {

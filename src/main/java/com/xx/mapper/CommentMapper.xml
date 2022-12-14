@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xx.mapper.CommentMapper">
+    <select id="getCommentList" resultType="CommentVo">
+        select c.id,
+        c.blog_id,
+        c.parent,
+        c.sender_id,
+        c.receive_id,
+        c.content,
+        (select count(r.id) from record r where r.comment_id = c.id and r.type = 0) as up_count,
+        (select count(r.id) from record r where r.comment_id = c.id and r.type = 1) as down_count
+        <if test="userId != null">
+            ,
+            if((select count(r.id) from record r where r.user_id = #{userId} and r.comment_id = c.id and r.type = 0) >
+            0,1, 0) as is_up,
+            if((select count(r.id) from record r where r.user_id = #{userId} and r.comment_id = c.id and r.type = 1) >
+            0,1, 0) as is_down
+        </if>
+        from comment c
+        <if test="orderBy != null and orderBy != ''">
+            group by #{groupBy}
+        </if>
+    </select>
+</mapper>

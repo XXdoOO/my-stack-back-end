@@ -19,11 +19,4 @@ public class Comment extends BaseEntity {
 
     @TableField(value = "content")
     private String content;
-
-    @TableField(value = "up")
-    private Long up;
-
-    @TableField(value = "down")
-    private Long down;
-
 }

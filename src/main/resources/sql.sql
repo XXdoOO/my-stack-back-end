@@ -41,10 +41,6 @@ create table `blog`
     `description` varchar(256) comment '描述',
     `cover`       text comment '特色图片',
     `content`     mediumtext                                                                not null comment '内容',
-    `up`          bigint unsigned     default 0                                             not null comment '顶',
-    `down`        bigint unsigned     default 0                                             not null comment '踩',
-    `star`        bigint unsigned     default 0                                             not null comment '收藏数',
-    `views`       bigint unsigned     default 0                                             not null comment '浏览量',
     `author_id`   bigint unsigned                                                           not null comment '作者用户名',
     `status`      tinyint(2) unsigned default 0 comment '发布状态，0为审核中，1为通过审核，2为未通过审核',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
@@ -61,8 +57,6 @@ create table `comment`
     `sender_id`   bigint unsigned                                                           not null comment '评论者的id',
     `receive_id`  bigint unsigned comment '接收者的id，为null则回复的是根评论',
     `content`     varchar(128)                                                              not null comment '评论内容',
-    `up`          bigint unsigned     default 0                                             not null comment '顶',
-    `down`        bigint unsigned     default 0                                             not null comment '踩',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
     `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
@@ -71,45 +65,19 @@ create table `comment`
     foreign key (`receive_id`) references `user` (`id`)
 ) comment '评论信息';
 
-create table `star`
+create table `record`
 (
     `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
     `user_id`     bigint unsigned                                                           not null comment '用户名',
-    `blog_id`     bigint unsigned                                                           not null comment '博客id',
+    `blog_id`     bigint unsigned comment '博客id',
+    `comment_id`  bigint unsigned comment '评论id',
+    `type`        int unsigned                                                              not null comment '记录类型，0为up，1为down，2为star，3为views',
     `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time` datetime            default current_timestamp                             not null comment '创建时间',
     `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
     foreign key (`user_id`) references `user` (`id`),
     foreign key (`blog_id`) references `blog` (`id`)
 ) comment '收藏关系';
-
-create table `up`
-(
-    `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
-    `user_id`     bigint unsigned                                                           not null comment '用户名',
-    `blog_id`     bigint unsigned comment '博客id',
-    `comment_id`  bigint unsigned comment '评论id',
-    `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
-    `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
-    foreign key (`user_id`) references `user` (`id`),
-    foreign key (`blog_id`) references `blog` (`id`),
-    foreign key (`comment_id`) references `comment` (`id`)
-) comment '顶关系';
-
-create table `down`
-(
-    `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
-    `user_id`     bigint unsigned                                                           not null comment '用户名',
-    `blog_id`     bigint unsigned comment '博客id',
-    `comment_id`  bigint unsigned comment '博客id',
-    `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
-    `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
-    foreign key (`user_id`) references `user` (`id`),
-    foreign key (`blog_id`) references `blog` (`id`),
-    foreign key (`comment_id`) references `comment` (`id`)
-) comment '踩关系';
 
 create table category
 (

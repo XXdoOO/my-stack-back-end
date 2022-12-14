@@ -4,26 +4,38 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xx.mapper.BlogMapper">
+    <sql id="recordCount">
+        (select count(r.id) from record r where r.blog_id = b.id and r.type = 0)
+        as up,
+        (select count(r.id) from record r where r.blog_id = b.id and r.type = 1) as down,
+        (select count(r.id) from record r where r.blog_id = b.id and r.type = 2) as star,
+        (select count(r.id) from record r where r.blog_id = b.id and r.type = 3) as views,
+    </sql>
+
+    <sql id="isRecord">
+        <if test="userId != null">
+            ,
+            if((select count(r.id) from record r where r.user_id = #{userId} and r.blog_id = b.id and r.type = 0) > 0,
+            1, 0) as is_up,
+            if((select count(r.id) from record r where r.user_id = #{userId} and r.blog_id = b.id and r.type = 1) > 0,
+            1, 0) as is_down,
+            if((select count(r.id) from record r where r.user_id = #{userId} and r.blog_id = b.id and r.type = 2) > 0,
+            1, 0) as is_star
+        </if>
+    </sql>
+
     <select id="getBlogListByKeywords" resultMap="BlogView">
         select
         b.id,
         b.title,
         b.description,
         b.cover,
-        b.up,
-        b.down,
-        b.star,
-        b.views,
+        <include refid="recordCount"/>
         b.status,
         b.create_time,
         b.author_id,
         u.nickname as author_nickname
-        <if test="userId != null">
-            ,
-            if((select count(up.id) from up where up.user_id = #{userId}) > 0, 1, 0) as is_up,
-            if((select count(down.id) from down where down.user_id = #{userId}) > 0, 1, 0) as is_down,
-            if((select count(star.id) from star where star.user_id = #{userId}) > 0, 1, 0) as is_star
-        </if>
+        <include refid="isRecord"/>
         from blog b left join user u on u.id = b.author_id
         <where>
             <if test="keywords != null and keywords != ''">
@@ -32,7 +44,7 @@
                 or b.content like concat('%', #{keywords}, '%'))
             </if>
         </where>
-        group by b.id, b.title, b.description, b.cover, b.up, b.down, b.star, b.views, b.create_time
+        group by b.id, b.title, b.description, b.cover, b.create_time
     </select>
     <resultMap id="BlogView" type="BlogViewVo">
         <id column="id" property="id"/>
@@ -53,7 +65,7 @@
         <collection property="categories" column="id" ofType="Category" select="getCategories">
         </collection>
     </resultMap>
-    <select id="getCategories" resultType="Category">
+    <select id="getCategories" resultType="CategoryVo">
         select c.id as id, c.name as name
         from category c,
              blog_category bc
@@ -67,10 +79,7 @@
         b.description,
         b.cover,
         b.content,
-        b.up,
-        b.down,
-        b.star,
-        b.views,
+        <include refid="recordCount"/>
         b.status,
         b.create_time,
         u.id as u_id,
@@ -79,15 +88,13 @@
         u.is_admin as u_is_admin,
         u.is_disable as u_is_disable,
         u.create_time as u_create_time,
-        (select count(up.id) from up where up.user_id = b.author_id) as up_count,
-        (select count(down.id) from down where down.user_id = b.author_id) as down_count,
-        (select count(blog.id) from blog where blog.author_id = b.author_id and blog.status = 1) as pass_count
-        <if test="userId != null">
-            ,
-            if((select count(up.id) from up where up.user_id = #{userId}) > 0, 1, 0) as is_up,
-            if((select count(down.id) from down where down.user_id = #{userId}) > 0, 1, 0) as is_down,
-            if((select count(star.id) from star where star.user_id = #{userId}) > 0, 1, 0) as is_star
-        </if>
+        (select count(r.id) from record r where r.user_id = b.author_id and r.blog_id is not null and r.type = 0) as
+        up_count,
+        (select count(r.id) from record r where r.user_id = b.author_id and r.blog_id is not null and r.type = 1) as
+        down_count,
+        (select count(blog.id) from blog where blog.author_id = b.author_id and blog.status = 1 and blog.is_deleted =
+        false) as pass_count
+        <include refid="isRecord"/>
         from blog b
         left join user u on b.author_id = u.id
         where b.id = #{id}
@@ -118,7 +125,7 @@
             <result column="u_is_disable" property="isDisable"/>
             <result column="u_create_time" property="createTime"/>
         </association>
-        <collection property="categories" column="id" ofType="Category" select="getCategories">
+        <collection property="categories" column="id" ofType="CategoryVo" select="getCategories">
         </collection>
     </resultMap>
 </mapper>
