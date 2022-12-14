@@ -7,6 +7,7 @@ import com.xx.mapper.*;
 import com.xx.pojo.*;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.BlogViewVo;
+import com.xx.pojo.vo.BlogVo;
 import com.xx.util.MyResponse;
 import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,72 +125,16 @@ public class BlogService {
     //     }};
     // }
     //
-    // public Blog getBlogDetails(long id) {
-    //     UpdateWrapper<Blog> updateWrapper = new UpdateWrapper<>();
-    //
-    //     Blog blog = blogMapper.selectById(id);
-    //
-    //     if (blog == null) {
-    //         return null;
-    //     }
-    //
-    //     if (blog.getStatus() == 0 || blog.getStatus() == 2) {
-    //         User user = (User) session.getAttribute("USER_SESSION");
-    //
-    //         if (user != null && user.getId().equals(blog.getAuthorId())) {
-    //             blog.setAuthorInfo(userService.getUserInfo(blog.getAuthorId().toString()));
-    //             return blog;
-    //         }
-    //         return null;
-    //     }
-    //
-    //     blogMapper.update(null, updateWrapper.
-    //             setSql("views = views + 1").
-    //             eq("status", 1).
-    //             eq("id", id));
-    //
-    //     Object userSession = session.getAttribute("USER_SESSION");
-    //
-    //
-    //     blog.setAuthorInfo(userService.getUserInfo(blog.getAuthorId().toString()));
-    //
-    //     if (userSession != null) {
-    //         String username = ((User) userSession).getId();
-    //         QueryWrapper<BlogUp> upWrapper = new QueryWrapper<>();
-    //         QueryWrapper<BlogDown> downWrapper = new QueryWrapper<>();
-    //         QueryWrapper<BlogStar> starWrapper = new QueryWrapper<>();
-    //         Long upCount = upMapper.selectCount(upWrapper.eq("blog_id", blog.getId()).
-    //                 eq("username", username));
-    //         Long downCount = downMapper.selectCount(downWrapper.eq("blog_id", blog.getId()).
-    //                 eq("username", username));
-    //         Long starCount = starMapper.selectCount(starWrapper.eq("blog_id", blog.getId()).
-    //                 eq("username", username));
-    //
-    //         blog.setIsUp(upCount == 1);
-    //         blog.setIsDown(downCount == 1);
-    //         blog.setIsStar(starCount == 1);
-    //     }
-    //
-    //
-    //     QueryWrapper<BlogCategory> wrapper = new QueryWrapper<>();
-    //     List<BlogCategory> blogCategories = blogCategoryMapper.selectList(wrapper.eq("blog_id", blog.getId()));
-    //     ArrayList<String> categories = new ArrayList<>();
-    //     for (BlogCategory blogCategory : blogCategories) {
-    //         categories.add(blogCategory.getCategoryName());
-    //     }
-    //     blog.setCategories(categories);
-    //
-    //     HashMap<String, List<Comments>> map = new HashMap<>();
-    //     // 默认获取最多五条热评，最多十条新评
-    //     List<Comments> hotComments = commentsService.getCommentsList(blog.getId(), "up", 0, 5);
-    //     List<Comments> newComments = commentsService.getCommentsList(blog.getId(), "post_time", 0, 10);
-    //
-    //     map.put("hotComments", hotComments);
-    //     map.put("newComments", newComments);
-    //     blog.setCommentsList(map);
-    //
-    //     return blog;
-    // }
+    public BlogVo getBlogDetails(long id) {
+        User user = (User) session.getAttribute("USER_SESSION");
+
+        Long userId = null;
+        if (user != null) {
+            userId = user.getId();
+        }
+
+        return blogMapper.getBlogDetails(id, userId);
+    }
     //
     // public long postBlog(Blog blog) {
     //     System.out.println(blog.getCoverImg());

@@ -54,7 +54,7 @@
         </collection>
     </resultMap>
     <select id="getCategories" resultType="Category">
-        select c.id, c.name
+        select c.id as id, c.name as name
         from category c,
              blog_category bc
         where c.id = bc.category_id
@@ -79,9 +79,9 @@
         u.is_admin as u_is_admin,
         u.is_disable as u_is_disable,
         u.create_time as u_create_time,
-        count(up.id) as up_count,
-        count(down.id) as down_count,
-        (select count(*) from blog where blog.author_id = u.id and blog.status = 1) as pass_count,
+        (select count(up.id) from up where up.user_id = b.author_id) as up_count,
+        (select count(down.id) from down where down.user_id = b.author_id) as down_count,
+        (select count(blog.id) from blog where blog.author_id = b.author_id and blog.status = 1) as pass_count
         <if test="userId != null">
             ,
             if((select count(up.id) from up where up.user_id = #{userId}) > 0, 1, 0) as is_up,
@@ -90,8 +90,7 @@
         </if>
         from blog b
         left join user u on b.author_id = u.id
-        left join up on b.author_id = up.user_id and b.id = up.blog_id
-        left join down on b.author_id = down.user_id and b.id = down.blog_id
+        where b.id = #{id}
     </select>
     <resultMap id="BlogDetails" type="BlogVo">
         <id column="id" property="id"/>
@@ -112,9 +111,12 @@
             <id column="u_id" property="id"/>
             <result column="u_nickname" property="nickname"/>
             <result column="u_avatar" property="avatar"/>
-            <result column="u_is_admin" property="u_is_disable"/>
-            <result column="u_is_disable" property="u_is_disable"/>
-            <result column="u_create_time" property="u_create_time"/>
+            <result column="up_count" property="upCount"/>
+            <result column="down_count" property="downCount"/>
+            <result column="pass_count" property="passCount"/>
+            <result column="u_is_admin" property="isAdmin"/>
+            <result column="u_is_disable" property="isDisable"/>
+            <result column="u_create_time" property="createTime"/>
         </association>
         <collection property="categories" column="id" ofType="Category" select="getCategories">
         </collection>

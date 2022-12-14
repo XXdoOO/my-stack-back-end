@@ -74,8 +74,8 @@ public class UserService {
         userVo.setEmail(user.getEmail());
         userVo.setAvatar(user.getAvatar());
         userVo.setCreateTime(user.getCreateTime());
-        userVo.setDisable(user.getDisable());
-        userVo.setAdmin(user.getAdmin());
+        userVo.setIsDisable(user.getDisable());
+        userVo.setIsAdmin(user.getAdmin());
 
         if (user.getDisable()) {
             userVo.setDisableInfo(getUserDisableInfo(user.getId()));
@@ -183,7 +183,7 @@ public class UserService {
         return userMapper.deleteById(id) == 1;
     }
 
-    public void sendRegisterCode(String email){
+    public void sendRegisterCode(String email) {
         String code = sendEmailCode(email);
 
         HashMap<String, Object> map = new HashMap<String, Object>() {{

@@ -11,6 +11,7 @@ import com.xx.mapper.BlogMapper;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.po.BlogViewPo;
+import com.xx.pojo.vo.BlogVo;
 import com.xx.pojo.vo.UserVo;
 import com.xx.service.BlogService;
 import com.xx.service.UserService;
@@ -88,7 +89,7 @@ public class VisitorController {
 
             if (user == null) {
                 return MyResponse.fail("邮箱或密码错误");
-            } else if (user.isDisable()) {
+            } else if (user.getIsDisable()) {
                 return MyResponse.error("用户已被封禁", user.getDisableInfo());
             } else {
                 return MyResponse.success("登录成功", user);
@@ -187,13 +188,9 @@ public class VisitorController {
     @ResponseBody
     @GetMapping("getBlogDetails")
     public MyResponse getBlogDetails(@RequestParam long id) {
-        MyResponse myResponse = new MyResponse();
-
-        Blog blogDetails = blogService.getBlogDetails(id);
-
-        myResponse.setData(blogDetails);
-        return myResponse;
+        return MyResponse.success(blogService.getBlogDetails(id));
     }
+
     //
     // @ResponseBody
     // @GetMapping("getCommentsList")

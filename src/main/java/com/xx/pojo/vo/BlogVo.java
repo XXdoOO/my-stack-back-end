@@ -1,5 +1,6 @@
 package com.xx.pojo.vo;
 
+import com.xx.pojo.entity.Category;
 import com.xx.pojo.entity.Comment;
 import com.xx.pojo.entity.User;
 import lombok.Data;
@@ -23,8 +24,7 @@ public class BlogVo {
     private long views;
     private Integer status;
     private UserVo authorInfo;
-    private List<String> categories;
-    private List<Comment> commentsList;
+    private List<Category> categories;
     private boolean isUp;
     private boolean isDown;
     private boolean isStar;
