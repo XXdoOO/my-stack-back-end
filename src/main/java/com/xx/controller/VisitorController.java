@@ -6,23 +6,14 @@ import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
-import com.xx.service.CommentsService;
+import com.xx.service.CommentService;
 import com.xx.mapper.BlogMapper;
 import com.xx.pojo.dto.UserDTO;
-import com.xx.pojo.entity.User;
-import com.xx.pojo.po.BlogViewPo;
-import com.xx.pojo.vo.BlogVo;
 import com.xx.pojo.vo.UserVo;
 import com.xx.service.BlogService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
-import com.xx.util.VerCodeGenerate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping("/")
@@ -48,7 +38,7 @@ public class VisitorController {
     private BlogService blogService;
 
     @Autowired
-    private CommentsService commentsService;
+    private CommentService commentService;
 
     @Resource
     private BlogMapper blogMapper;
@@ -194,8 +184,8 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getCommentsList")
-    public MyResponse getCommentsList(@RequestParam long blogId, String orderBy) {
-        return MyResponse.success(commentsService.getCommentsList(blogId, orderBy));
+    public MyResponse getCommentsList(@RequestParam long blogId, Long parent, String orderBy) {
+        return MyResponse.success(new PageInfo<>(commentService.getCommentsList(blogId, parent == null ? 0 : parent, orderBy)));
     }
 
     @ResponseBody

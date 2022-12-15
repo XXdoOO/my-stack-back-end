@@ -1,22 +1,17 @@
 package com.xx.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.mapper.CommentMapper;
 import com.xx.mapper.UserMapper;
-import com.xx.pojo.*;
-import com.xx.pojo.entity.Comment;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.CommentVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
-public class CommentsService {
+public class CommentService {
 
     @Autowired
     private CommentMapper commentMapper;
@@ -27,7 +22,7 @@ public class CommentsService {
     @Autowired
     private HttpSession session;
 
-    public List<CommentVo> getCommentsList(long blogId, String orderBy) {
+    public List<CommentVo> getCommentsList(long blogId, Long parent, String orderBy) {
         User user = (User) session.getAttribute("USER_SESSION");
 
         Long userId = null;
@@ -35,7 +30,7 @@ public class CommentsService {
             userId = user.getId();
         }
 
-        return commentMapper.getCommentList(blogId, userId, orderBy);
+        return commentMapper.getCommentList(blogId, parent, userId, orderBy);
     }
 
     // public void setCommentsInfo(List<Comments> comments) {

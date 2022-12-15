@@ -5,7 +5,11 @@
 
 <mapper namespace="com.xx.mapper.CommentMapper">
     <select id="getCommentList" resultType="CommentVo">
-        select c.id,
+        select
+        #{orderBy} as orderBy,
+        #{userId} as userId,
+        #{blogId} as blogId,
+        c.id,
         c.blog_id,
         c.parent,
         c.sender_id,
@@ -21,8 +25,9 @@
             0,1, 0) as is_down
         </if>
         from comment c
+        where c.blog_id = #{blogId} and c.parent = #{parent}
         <if test="orderBy != null and orderBy != ''">
-            group by #{groupBy}
+            order by #{orderBy}
         </if>
     </select>
 </mapper>

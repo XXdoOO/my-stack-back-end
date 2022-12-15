@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.xx.pojo.entity.BaseEntity;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class CommentVo {
     private Long id;
