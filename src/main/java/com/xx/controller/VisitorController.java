@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
+import com.xx.pojo.dto.CommentDTO;
 import com.xx.service.CommentService;
 import com.xx.mapper.BlogMapper;
 import com.xx.pojo.dto.UserDTO;
@@ -22,6 +23,7 @@ import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
@@ -43,9 +45,54 @@ public class VisitorController {
     @Resource
     private BlogMapper blogMapper;
 
+    @Autowired
+    private Producer captchaProducer;
+
+    @ResponseBody
+    @RequestMapping("sendCode")
+    public MyResponse commonEmail(@RequestParam String email) {
+        String regex = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
+        if (!email.matches(regex)) {
+            return MyResponse.fail("邮箱格式错误");
+        }
+
+        if (userService.isExistUser(email)) {
+            return MyResponse.fail("用户已存在");
+        }
+
+        userService.sendRegisterCode(email);
+        return MyResponse.success("发送成功");
+    }
+
+    @RequestMapping("/kaptcha")
+    public void getKaptchaImage(HttpServletResponse response) throws Exception {
+        response.setDateHeader("Expires", 0);
+        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+        response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+        response.setHeader("Pragma", "no-cache");
+        response.setContentType("image/jpeg");
+
+        String capText = captchaProducer.createText();
+
+        HashMap<String, Object> map = new HashMap<String, Object>() {{
+            put("createTime", System.currentTimeMillis());
+            put("code", capText);
+        }};
+        session.setAttribute(Constants.KAPTCHA_SESSION_KEY, map);
+        //向客户端写出
+        BufferedImage bi = captchaProducer.createImage(capText);
+        ServletOutputStream out = response.getOutputStream();
+        ImageIO.write(bi, "jpg", out);
+        try {
+            out.flush();
+        } finally {
+            out.close();
+        }
+    }
+
     @ResponseBody
     @PostMapping("login")
-    public MyResponse login(@RequestBody UserDTO userDTO) {
+    public MyResponse login(@RequestBody @Validated UserDTO userDTO) {
         HashMap<String, Object> map =
                 (HashMap<String, Object>) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
 
@@ -89,7 +136,7 @@ public class VisitorController {
 
     @ResponseBody
     @PostMapping("register")
-    public MyResponse register(@RequestBody UserDTO userDTO) {
+    public MyResponse register(@RequestBody @Validated UserDTO userDTO) {
         HashMap<String, Object> map =
                 (HashMap<String, Object>) session.getAttribute("REGISTER_CODE");
 
@@ -131,105 +178,20 @@ public class VisitorController {
         return MyResponse.success(new PageInfo<>(blogService.getBlogListByKeywords(keywords)));
     }
 
-
     @ResponseBody
     @GetMapping("user/{userId}")
     public MyResponse getUserInfo(@PathVariable Long userId) {
         return MyResponse.success(userService.getUserInfo(userId));
     }
 
-    //
-    // @ResponseBody
-    // @GetMapping("getUserPostBlogList")
-    // public MyResponse getUserBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
-    //     MyResponse myResponse = new MyResponse();
-    //
-    //     Map<String, Object> map = blogService.getUserPostBlogList(username, startIndex == null ? 0 :
-    //                     startIndex,
-    //             pageSize == null ? 10 : pageSize);
-    //     myResponse.setData(map);
-    //     return myResponse;
-    // }
-    //
-    // @ResponseBody
-    // @GetMapping("getUserUpBlogList")
-    // public MyResponse getUserUpBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
-    //     MyResponse myResponse = new MyResponse();
-    //
-    //     Map<String, Object> map = blogService.getUserUpBlogList(username, startIndex == null ? 0 :
-    //                     startIndex,
-    //             pageSize == null ? 10 : pageSize);
-    //     myResponse.setData(map);
-    //     return myResponse;
-    // }
-    //
-    // @ResponseBody
-    // @GetMapping("getUserDownBlogList")
-    // public MyResponse getUserDownBlogList(@RequestParam String username, Integer startIndex, Integer pageSize) {
-    //     MyResponse myResponse = new MyResponse();
-    //
-    //     Map<String, Object> map = blogService.getUserDownBlogList(username, startIndex == null ? 0 :
-    //                     startIndex,
-    //             pageSize == null ? 10 : pageSize);
-    //     myResponse.setData(map);
-    //     return myResponse;
-    // }
-    //
     @ResponseBody
     @GetMapping("blog/{blogId}")
     public MyResponse getBlogDetails(@PathVariable long blogId) {
         return MyResponse.success(blogService.getBlogDetails(blogId));
     }
 
-
-    @ResponseBody
     @GetMapping("getCommentsList")
-    public MyResponse getCommentsList(@RequestParam long blogId, Long parent, String orderBy) {
-        return MyResponse.success(new PageInfo<>(commentService.getCommentsList(blogId, parent == null ? 0 : parent, orderBy)));
-    }
-
-    @ResponseBody
-    @RequestMapping("sendCode")
-    public MyResponse commonEmail(@RequestParam String email) {
-        String regex = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
-        if (!email.matches(regex)) {
-            return MyResponse.fail("邮箱格式错误");
-        }
-
-        if (userService.isExistUser(email)) {
-            return MyResponse.fail("用户已存在");
-        }
-
-        userService.sendRegisterCode(email);
-        return MyResponse.success("发送成功");
-    }
-
-    @Autowired
-    private Producer captchaProducer;
-
-    @RequestMapping("/kaptcha")
-    public void getKaptchaImage(HttpServletResponse response) throws Exception {
-        response.setDateHeader("Expires", 0);
-        response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
-        response.addHeader("Cache-Control", "post-check=0, pre-check=0");
-        response.setHeader("Pragma", "no-cache");
-        response.setContentType("image/jpeg");
-
-        String capText = captchaProducer.createText();
-
-        HashMap<String, Object> map = new HashMap<String, Object>() {{
-            put("createTime", System.currentTimeMillis());
-            put("code", capText);
-        }};
-        session.setAttribute(Constants.KAPTCHA_SESSION_KEY, map);
-        //向客户端写出
-        BufferedImage bi = captchaProducer.createImage(capText);
-        ServletOutputStream out = response.getOutputStream();
-        ImageIO.write(bi, "jpg", out);
-        try {
-            out.flush();
-        } finally {
-            out.close();
-        }
+    private MyResponse getCommentsList(@Validated CommentDTO dto) {
+        return MyResponse.success(commentService.getCommentsList(dto));
     }
 }

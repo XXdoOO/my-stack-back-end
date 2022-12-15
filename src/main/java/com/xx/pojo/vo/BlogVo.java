@@ -18,15 +18,15 @@ public class BlogVo {
     private String description;
     private String cover;
     private String content;
-    private long up;
-    private long down;
-    private long star;
-    private long views;
+    private Long up;
+    private Long down;
+    private Long star;
+    private Long views;
     private Integer status;
     private UserVo authorInfo;
     private List<Category> categories;
-    private boolean isUp;
-    private boolean isDown;
-    private boolean isStar;
+    private Long isUp;
+    private Long isDown;
+    private Long isStar;
     private Date createTime;
 }

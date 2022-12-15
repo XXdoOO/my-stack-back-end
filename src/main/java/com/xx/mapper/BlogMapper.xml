@@ -22,6 +22,12 @@
             if((select count(r.id) from record r where r.user_id = #{userId} and r.blog_id = b.id and r.type = 2) > 0,
             1, 0) as is_star
         </if>
+        <if test="userId = null">
+            ,
+            0 as is_up,
+            0 as is_down,
+            0 as is_star
+        </if>
     </sql>
 
     <select id="getBlogListByKeywords" resultMap="BlogView">

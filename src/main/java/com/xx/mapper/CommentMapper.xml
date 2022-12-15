@@ -6,17 +6,21 @@
 <mapper namespace="com.xx.mapper.CommentMapper">
     <select id="getCommentList" resultType="CommentVo">
         select
-        #{orderBy} as orderBy,
-        #{userId} as userId,
-        #{blogId} as blogId,
         c.id,
         c.blog_id,
         c.parent,
         c.sender_id,
         c.receive_id,
         c.content,
-        (select count(r.id) from record r where r.comment_id = c.id and r.type = 0) as up_count,
-        (select count(r.id) from record r where r.comment_id = c.id and r.type = 1) as down_count
+        c.create_time,
+        u.nickname as sender_nickname,
+        u.avatar as sender_avatar,
+        (select count(r.id) from record r where r.comment_id = c.id and r.type = 0) as up,
+        (select count(r.id) from record r where r.comment_id = c.id and r.type = 1) as down
+        <if test="parent == 0">
+            ,
+            (select count(comment.id) from comment where comment.parent = c.id) as children_count
+        </if>
         <if test="userId != null">
             ,
             if((select count(r.id) from record r where r.user_id = #{userId} and r.comment_id = c.id and r.type = 0) >
@@ -24,7 +28,14 @@
             if((select count(r.id) from record r where r.user_id = #{userId} and r.comment_id = c.id and r.type = 1) >
             0,1, 0) as is_down
         </if>
+        <if test="userId = null">
+            ,
+            0 as is_up,
+            0 as is_down,
+            0 as is_star
+        </if>
         from comment c
+        left join user u on c.sender_id = u.id
         where c.blog_id = #{blogId} and c.parent = #{parent}
         <if test="orderBy != null and orderBy != ''">
             order by #{orderBy}

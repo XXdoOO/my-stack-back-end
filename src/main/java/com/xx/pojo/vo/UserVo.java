@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +16,7 @@ public class UserVo {
     private String email;
     private String nickname;
     private String avatar;
-    private Timestamp createTime;
+    private Date createTime;
     private Boolean isDisable;
     private Boolean isAdmin;
     private Disable disableInfo;
