@@ -19,6 +19,9 @@ public class User extends BaseEntity {
     @TableField(value = "avatar")
     private String avatar;
 
+    @TableField(value = "ip")
+    private String ip;
+
     @TableField(value = "is_admin")
     private Boolean admin;
 

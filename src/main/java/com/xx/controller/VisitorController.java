@@ -13,6 +13,7 @@ import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.vo.UserVo;
 import com.xx.service.BlogService;
 import com.xx.service.UserService;
+import com.xx.util.IpUtil;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -21,9 +22,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 
@@ -47,6 +48,13 @@ public class VisitorController {
 
     @Autowired
     private Producer captchaProducer;
+
+    @ResponseBody
+    @RequestMapping("ip")
+    public MyResponse getIp(HttpServletRequest request){
+        System.out.println(IpUtil.getIpAddr(request));
+        return MyResponse.success(IpUtil.getIpAddr(request));
+    }
 
     @ResponseBody
     @RequestMapping("sendCode")
