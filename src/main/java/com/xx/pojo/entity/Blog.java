@@ -24,4 +24,7 @@ public class Blog extends BaseEntity {
 
     @TableField(value = "status")
     private Boolean status;
+
+    @TableField(value = "ip")
+    private String ip;
 }

@@ -21,4 +21,7 @@ public class Comment extends BaseEntity {
 
     @TableField(value = "content")
     private String content;
+
+    @TableField(value = "ip")
+    private String ip;
 }
