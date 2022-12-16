@@ -192,6 +192,7 @@ public class VisitorController {
 
     @GetMapping("getCommentsList")
     private MyResponse getCommentsList(@Validated CommentDTO dto) {
-        return MyResponse.success(commentService.getCommentsList(dto));
+        PageHelper.startPage(dto.getPageNum(),dto.getPageSize());
+        return MyResponse.success(new PageInfo<>(commentService.getCommentsList(dto)));
     }
 }
