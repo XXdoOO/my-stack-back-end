@@ -8,14 +8,14 @@ import java.util.List;
 
 @Data
 public class BlogViewPo {
-    private long id;
+    private Long id;
     private String title;
     private String description;
     private String cover;
-    private long up;
-    private long down;
-    private long star;
-    private long views;
+    private Long up;
+    private Long down;
+    private Long star;
+    private Long views;
     private Boolean isUp = false;
     private Boolean isDown = false;
     private Boolean isStar = false;

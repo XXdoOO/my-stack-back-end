@@ -6,17 +6,17 @@
 <mapper namespace="com.xx.mapper.UserMapper">
     <select id="getMyInfo" resultType="UserPo">
         select u.nickname,
-               count(b.status = 0) as auditing_count,
-               count(b.status = 1) as pass_count,
-               count(b.status = 2) as no_pass_count,
-               count(up.blog_id)   as up_count,
-               count(down.blog_id) as down_count,
-               count(star.blog_id) as star_count
+               count(b.status = 0)                                                            as auditing_count,
+               count(b.status = 1)                                                            as pass_count,
+               count(b.status = 2)                                                            as no_pass_count,
+               count(select * from record where
+                     user_id = #{id} and blog_id is not null and type = 0 and is_deleted = 0) as up_count,
+               count(select * from record where
+                     user_id = #{id} and blog_id is not null and type = 1 and is_deleted = 0) as down_count,
+               count(select * from record where
+                     user_id = #{id} and blog_id is not null and type = 2 and is_deleted = 0) as star_count,
         from user u
                  left join blog b on u.id = b.author_id and b.is_deleted = 0
-                 left join up on b.id = up.blog_id and up.is_deleted = 0
-                 left join down on b.id = down.blog_id and down.is_deleted = 0
-                 left join star on b.id = star.blog_id and star.is_deleted = 0
         where u.id = #{id}
           and u.is_deleted = 0
     </select>

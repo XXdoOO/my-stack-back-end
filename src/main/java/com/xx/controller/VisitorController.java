@@ -108,13 +108,13 @@ public class VisitorController {
         String password = userDTO.getPassword();
         String code = userDTO.getCode();
 
-        if (StringUtils.isNotBlank(email)) {
+        if (StringUtils.isBlank(email)) {
             return MyResponse.error("邮箱为空或格式错误");
         }
-        if (StringUtils.isNotBlank(password)) {
+        if (StringUtils.isBlank(password)) {
             return MyResponse.error("密码为空或格式错误");
         }
-        if (StringUtils.isNotBlank(code) && code.length() == 4) {
+        if (StringUtils.isBlank(code) && code.length() == 4) {
             return MyResponse.error("验证码为空或格式错误");
         }
 

@@ -6,10 +6,10 @@ import lombok.Data;
 @Data
 public class UserPo {
     private String nickname;
-    private long passCount;
-    private long noPassCount;
-    private long auditingCount;
-    private long upCount;
-    private long downCount;
-    private long starCount;
+    private Long passCount;
+    private Long noPassCount;
+    private Long auditingCount;
+    private Long upCount;
+    private Long downCount;
+    private Long starCount;
 }
