@@ -2,18 +2,20 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xx.mapper.*;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.Disable;
 import com.xx.pojo.entity.User;
-import com.xx.pojo.po.UserPo;
 import com.xx.pojo.vo.BlogVo;
 import com.xx.pojo.vo.UserVo;
+import com.xx.util.Code;
 import com.xx.util.SaveFile;
 import com.xx.util.VerCodeGenerate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -71,6 +73,7 @@ public class UserService {
         UserVo userVo = new UserVo();
 
         userVo.setId(user.getId());
+        userVo.setNickname(user.getNickname());
         userVo.setEmail(user.getEmail());
         userVo.setAvatar(user.getAvatar());
         userVo.setCreateTime(user.getCreateTime());
@@ -86,15 +89,14 @@ public class UserService {
             }
         } else {
             session.setAttribute("USER_SESSION", user);
-            UserPo userInfo = userMapper.getMyInfo(user.getId());
+            UserVo myInfo = userMapper.getMyInfo(user.getId());
 
-            userVo.setNickname(userInfo.getNickname());
-            userVo.setAuditingCount(userInfo.getAuditingCount());
-            userVo.setPassCount(userInfo.getPassCount());
-            userVo.setNoPassCount(userInfo.getNoPassCount());
-            userVo.setUpCount(userInfo.getUpCount());
-            userVo.setDownCount(userInfo.getDownCount());
-            userVo.setStarCount(userInfo.getStarCount());
+            userVo.setAuditingCount(myInfo.getAuditingCount());
+            userVo.setPassCount(myInfo.getPassCount());
+            userVo.setNoPassCount(myInfo.getNoPassCount());
+            userVo.setUp(myInfo.getUp());
+            userVo.setDown(myInfo.getDown());
+            userVo.setStar(myInfo.getStar());
         }
 
         return userVo;
@@ -147,17 +149,17 @@ public class UserService {
         session.invalidate();
     }
 
-    public UserVo getUserInfo(long id) {
-        UserPo userInfo = userMapper.getUserInfo(id);
-
-        UserVo userVo = new UserVo();
-
-        userVo.setNickname(userInfo.getNickname());
-        userVo.setPassCount(userInfo.getPassCount());
-        userVo.setUpCount(userInfo.getUpCount());
-        userVo.setDownCount(userInfo.getDownCount());
-        return userVo;
-    }
+    // public UserVo getUserInfo(long id) {
+    //     UserPo userInfo = userMapper.getUserInfo(id);
+    //
+    //     UserVo userVo = new UserVo();
+    //
+    //     userVo.setNickname(userInfo.getNickname());
+    //     userVo.setPassCount(userInfo.getPassCount());
+    //     userVo.setUpCount(userInfo.getUpCount());
+    //     userVo.setDownCount(userInfo.getDownCount());
+    //     return userVo;
+    // }
 
     public boolean updateMyInfo(UserDTO userDTO) {
         Long id = ((User) session.getAttribute("USER_SESSION")).getId();
@@ -183,15 +185,15 @@ public class UserService {
         return userMapper.deleteById(id) == 1;
     }
 
-    public void sendRegisterCode(String email) {
+    public boolean sendRegisterCode(String email) {
         String code = sendEmailCode(email);
 
-        HashMap<String, Object> map = new HashMap<String, Object>() {{
-            put("createTime", System.currentTimeMillis());
-            put("email", email);
-            put("code", code);
-        }};
-        session.setAttribute("REGISTER_CODE", map);
+        if (StringUtils.isNotBlank(code)) {
+            session.setAttribute(Code.REGISTER_CODE, new Code(email, code));
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public String sendEmailCode(String email) {
@@ -208,8 +210,11 @@ public class UserService {
                 + "\n本次请求的邮件验证码为:" + verCode + ",本验证码 5 分钟内效，请及时输入。（请勿泄露此验证码）\n"
                 + "\n如非本人操作，请忽略该邮件。\n(这是一封通过自动发送的邮件，请不要直接回复）");
 
-        mailSender.send(message);
-
+        try {
+            mailSender.send(message);
+        } catch (MailSendException e) {
+            return null;
+        }
         return verCode;
     }
 }

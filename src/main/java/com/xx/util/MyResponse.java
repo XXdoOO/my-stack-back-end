@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,7 +25,7 @@ public class MyResponse {
     }
 
     public static MyResponse success(String msg, Object data) {
-        return new MyResponse(Code.SUCCESS, msg, data);
+        return new MyResponse(StatusCode.SUCCESS, msg, data);
     }
 
     public static MyResponse fail() {
@@ -39,7 +37,7 @@ public class MyResponse {
     }
 
     public static MyResponse fail(String msg, Object data) {
-        return new MyResponse(Code.FAIL, msg, data);
+        return new MyResponse(StatusCode.FAIL, msg, data);
     }
 
     public static MyResponse error() {
@@ -51,7 +49,7 @@ public class MyResponse {
     }
 
     public static MyResponse error(String msg, Object data) {
-        return new MyResponse(Code.ERROR, msg, data);
+        return new MyResponse(StatusCode.ERROR, msg, data);
     }
 
     public static MyResponse unauthorized() {
@@ -63,6 +61,6 @@ public class MyResponse {
     }
 
     public static MyResponse unauthorized(String msg, Object data) {
-        return new MyResponse(Code.UNAUTHORIZED, msg, data);
+        return new MyResponse(StatusCode.UNAUTHORIZED, msg, data);
     }
 }

@@ -23,7 +23,7 @@ public class UserVo {
     private Long passCount;
     private Long noPassCount;
     private Long auditingCount;
-    private Long upCount;
-    private Long downCount;
-    private Long starCount;
+    private Long up;
+    private Long down;
+    private Long star;
 }

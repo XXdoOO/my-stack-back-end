@@ -1,15 +1,22 @@
 package com.xx.util;
 
+import lombok.Data;
+
+@Data
 public class Code {
-    // 操作成功
-    public final static int SUCCESS = 200;
+    public static final String REGISTER_CODE = "REGISTER_CODE";
+    private String email;
+    private String code;
+    private Long createTime;
 
-    // 操作失败
-    public final static int FAIL = 201;
+    public Code(String code) {
+        this.code = code;
+        this.createTime = System.currentTimeMillis();
+    }
 
-    // 操作错误
-    public final static int ERROR = 400;
-
-    // 权限不足
-    public final static int UNAUTHORIZED = 403;
+    public Code(String email, String code) {
+        this.email = email;
+        this.code = code;
+        this.createTime = System.currentTimeMillis();
+    }
 }

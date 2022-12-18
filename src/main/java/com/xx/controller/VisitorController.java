@@ -13,6 +13,7 @@ import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.vo.UserVo;
 import com.xx.service.BlogService;
 import com.xx.service.UserService;
+import com.xx.util.Code;
 import com.xx.util.IpUtil;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +52,7 @@ public class VisitorController {
 
     @ResponseBody
     @RequestMapping("ip")
-    public MyResponse getIp(HttpServletRequest request){
+    public MyResponse getIp(HttpServletRequest request) {
         System.out.println(IpUtil.getIpAddr(request));
         return MyResponse.success(IpUtil.getIpAddr(request));
     }
@@ -68,8 +69,10 @@ public class VisitorController {
             return MyResponse.fail("用户已存在");
         }
 
-        userService.sendRegisterCode(email);
-        return MyResponse.success("发送成功");
+        if (userService.sendRegisterCode(email)) {
+            return MyResponse.success("发送成功");
+        }
+        return MyResponse.fail("邮箱无效");
     }
 
     @RequestMapping("/kaptcha")
@@ -82,11 +85,11 @@ public class VisitorController {
 
         String capText = captchaProducer.createText();
 
-        HashMap<String, Object> map = new HashMap<String, Object>() {{
-            put("createTime", System.currentTimeMillis());
-            put("code", capText);
-        }};
-        session.setAttribute(Constants.KAPTCHA_SESSION_KEY, map);
+        session.setAttribute(Constants.KAPTCHA_SESSION_KEY, new Code(capText));
+
+        Code map = (Code) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
+
+        System.out.println(map);
         //向客户端写出
         BufferedImage bi = captchaProducer.createImage(capText);
         ServletOutputStream out = response.getOutputStream();
@@ -101,8 +104,9 @@ public class VisitorController {
     @ResponseBody
     @PostMapping("login")
     public MyResponse login(@RequestBody @Validated UserDTO userDTO) {
-        HashMap<String, Object> map =
-                (HashMap<String, Object>) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
+        Code map = (Code) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
+
+        System.out.println(map);
 
         String email = userDTO.getEmail();
         String password = userDTO.getPassword();
@@ -118,11 +122,10 @@ public class VisitorController {
             return MyResponse.error("验证码为空或格式错误");
         }
 
-        if (map == null || System.currentTimeMillis() - ((long) map.get(
-                "createTime")) >= 60000) {
+        if (map == null || System.currentTimeMillis() - map.getCreateTime() >= 60000) {
             session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
             return MyResponse.fail("验证码已过期");
-        } else if (!((String) map.get("code")).equalsIgnoreCase(userDTO.getCode())) {
+        } else if (!(map.getCode()).equalsIgnoreCase(userDTO.getCode())) {
             session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
             return MyResponse.fail("验证码错误");
         }
@@ -145,8 +148,7 @@ public class VisitorController {
     @ResponseBody
     @PostMapping("register")
     public MyResponse register(@RequestBody @Validated UserDTO userDTO) {
-        HashMap<String, Object> map =
-                (HashMap<String, Object>) session.getAttribute("REGISTER_CODE");
+        final Code map = (Code) session.getAttribute(Code.REGISTER_CODE);
 
         String email = userDTO.getEmail();
         String password = userDTO.getPassword();
@@ -163,10 +165,9 @@ public class VisitorController {
         }
 
 
-        if (map == null || System.currentTimeMillis() - ((long) map.get(
-                "createTime")) >= 300000) {
+        if (map == null || System.currentTimeMillis() - map.getCreateTime() >= 300000) {
             return MyResponse.fail("验证码已过期");
-        } else if (map.get("email").equals(email) && !map.get("code").equals(code)) {
+        } else if (map.getEmail().equals(email) && !map.getCode().equals(code)) {
             return MyResponse.fail("邮箱或验证码错误");
         } else {
             if (userService.register(email, password)) {
@@ -186,11 +187,11 @@ public class VisitorController {
         return MyResponse.success(new PageInfo<>(blogService.getBlogListByKeywords(keywords)));
     }
 
-    @ResponseBody
-    @GetMapping("user/{userId}")
-    public MyResponse getUserInfo(@PathVariable Long userId) {
-        return MyResponse.success(userService.getUserInfo(userId));
-    }
+    // @ResponseBody
+    // @GetMapping("user/{userId}")
+    // public MyResponse getUserInfo(@PathVariable Long userId) {
+    //     return MyResponse.success(userService.getUserInfo(userId));
+    // }
 
     @ResponseBody
     @GetMapping("blog/{blogId}")
@@ -200,7 +201,7 @@ public class VisitorController {
 
     @GetMapping("getCommentsList")
     private MyResponse getCommentsList(@Validated CommentDTO dto) {
-        PageHelper.startPage(dto.getPageNum(),dto.getPageSize());
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         return MyResponse.success(new PageInfo<>(commentService.getCommentsList(dto)));
     }
 }

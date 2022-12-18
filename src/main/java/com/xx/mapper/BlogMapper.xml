@@ -124,8 +124,8 @@
             <id column="u_id" property="id"/>
             <result column="u_nickname" property="nickname"/>
             <result column="u_avatar" property="avatar"/>
-            <result column="up_count" property="upCount"/>
-            <result column="down_count" property="downCount"/>
+            <result column="up_count" property="up"/>
+            <result column="down_count" property="down"/>
             <result column="pass_count" property="passCount"/>
             <result column="u_is_admin" property="isAdmin"/>
             <result column="u_is_disable" property="isDisable"/>

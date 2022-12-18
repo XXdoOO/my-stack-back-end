@@ -4,32 +4,17 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xx.mapper.UserMapper">
-    <select id="getMyInfo" resultType="UserPo">
+    <select id="getMyInfo" resultType="UserVo">
         select u.nickname,
-               count(b.status = 0)                                                            as auditing_count,
-               count(b.status = 1)                                                            as pass_count,
-               count(b.status = 2)                                                            as no_pass_count,
-               count(select * from record where
-                     user_id = #{id} and blog_id is not null and type = 0 and is_deleted = 0) as up_count,
-               count(select * from record where
-                     user_id = #{id} and blog_id is not null and type = 1 and is_deleted = 0) as down_count,
-               count(select * from record where
-                     user_id = #{id} and blog_id is not null and type = 2 and is_deleted = 0) as star_count,
+               count(distinct case when b.status = 0 then b.id end) as auditing_count,
+               count(distinct case when b.status = 1 then b.id end) as pass_count,
+               count(distinct case when b.status = 2 then b.id end) as no_pass_count,
+               count(distinct case when r.type = 0 then r.id end)   as up,
+               count(distinct case when r.type = 1 then r.id end)   as down,
+               count(distinct case when r.type = 2 then r.id end)   as star
         from user u
                  left join blog b on u.id = b.author_id and b.is_deleted = 0
-        where u.id = #{id}
-          and u.is_deleted = 0
-    </select>
-
-    <select id="getUserInfo" resultType="UserPo">
-        select u.nickname,
-               count(b.status = 1) as pass_count,
-               count(up.blog_id)   as up_count,
-               count(down.blog_id) as down_count
-        from user u
-                 left join blog b on u.id = b.author_id and b.is_deleted = 0
-                 left join up on b.id = up.blog_id and up.is_deleted = 0
-                 left join down on b.id = down.blog_id and down.is_deleted = 0
+                 left join record r on r.user_id = u.id and r.blog_id is not null and r.is_deleted = 0
         where u.id = #{id}
           and u.is_deleted = 0
     </select>

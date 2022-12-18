@@ -5,20 +5,12 @@ import com.xx.pojo.dto.CommentDTO;
 import com.xx.service.BlogService;
 import com.xx.service.CommentService;
 import com.xx.service.UserService;
-import com.xx.util.Code;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/user")
