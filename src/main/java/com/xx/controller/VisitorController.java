@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
+import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
 import com.xx.service.CommentService;
 import com.xx.mapper.BlogMapper;
@@ -180,11 +181,11 @@ public class VisitorController {
 
 
     @ResponseBody
-    @GetMapping("getBlogByKeywords")
-    public MyResponse getBlogByKeywords(String keywords, Integer pageNum, Integer pageSize) {
-        PageHelper.startPage(1, 10);
+    @GetMapping("getBlogList")
+    public MyResponse getBlogByKeywords(BlogDTO dto) {
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
 
-        return MyResponse.success(new PageInfo<>(blogService.getBlogListByKeywords(keywords)));
+        return MyResponse.success(new PageInfo<>(blogService.getBlogList(dto)));
     }
 
     // @ResponseBody

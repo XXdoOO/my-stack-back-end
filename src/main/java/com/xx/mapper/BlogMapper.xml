@@ -5,24 +5,20 @@
 
 <mapper namespace="com.xx.mapper.BlogMapper">
     <sql id="recordCount">
-        (select count(r.id) from record r where r.blog_id = b.id and r.type = 0)
-        as up,
-        (select count(r.id) from record r where r.blog_id = b.id and r.type = 1) as down,
-        (select count(r.id) from record r where r.blog_id = b.id and r.type = 2) as star,
-        (select count(r.id) from record r where r.blog_id = b.id and r.type = 3) as views,
+        count(distinct case when r.type = 0 then r.id end) as up,
+       count(distinct case when r.type = 1 then r.id end) as down,
+       count(distinct case when r.type = 2 then r.id end) as star,
+       count(distinct case when r.type = 3 then r.id end) as views,
     </sql>
 
     <sql id="isRecord">
         <if test="userId != null">
             ,
-            if((select count(r.id) from record r where r.user_id = #{userId} and r.blog_id = b.id and r.type = 0) > 0,
-            1, 0) as is_up,
-            if((select count(r.id) from record r where r.user_id = #{userId} and r.blog_id = b.id and r.type = 1) > 0,
-            1, 0) as is_down,
-            if((select count(r.id) from record r where r.user_id = #{userId} and r.blog_id = b.id and r.type = 2) > 0,
-            1, 0) as is_star
+            if(count(distinct case when r.blog_id = b.id and r.type = 0 then r.id end) = 1, 1, 0) as is_up,
+            if(count(distinct case when r.blog_id = b.id and r.type = 1 then r.id end) = 1, 1, 0) as is_down,
+            if(count(distinct case when r.blog_id = b.id and r.type = 2 then r.id end) = 1, 1, 0) as is_star
         </if>
-        <if test="userId = null">
+        <if test="userId == null">
             ,
             0 as is_up,
             0 as is_down,
@@ -30,7 +26,7 @@
         </if>
     </sql>
 
-    <select id="getBlogListByKeywords" resultMap="BlogView">
+    <select id="getBlogList" resultMap="BlogView">
         select
         b.id,
         b.title,
@@ -43,31 +39,59 @@
         u.nickname as author_nickname
         <include refid="isRecord"/>
         from blog b left join user u on u.id = b.author_id
+        left join record r on r.is_deleted = 0 and r.blog_id is not null
+        <if test="type == null or authorId == null">
+            and b.author_id = r.user_id
+        </if>
+        <if test="type != null and authorId != null">
+            and b.id = r.blog_id
+        </if>
         <where>
+            b.is_deleted = 0
             <if test="keywords != null and keywords != ''">
-                (b.title like concat('%', #{keywords}, '%')
+                and (b.title like concat('%', #{keywords}, '%')
                 or b.description like concat('%', #{keywords}, '%')
                 or b.content like concat('%', #{keywords}, '%'))
             </if>
+            -- 获取用户发布的博客
+            -- 获取用户顶过的博客
+            -- 获取用户踩过的博客
+
+            <if test="!(userId != null and userId == authorId)">
+                <if test="type == null">
+                    and b.status = 1
+                </if>
+                <if test="type == 0">
+                    and r.type = 0
+                </if>
+                <if test="type == 1">
+                    and r.type = 1
+                </if>
+            </if>
+
+            -- 获取自己审核中的博客
+            -- 获取自己未通过审核的博客
+            -- 获取自己收藏的博客
+            -- 获取自己浏览的博客
+            <if test="userId != null and userId == authorId">
+                <if test="type == null">
+                    and b.status = 0
+                </if>
+                <if test="type == 1">
+                    and b.status = 2
+                </if>
+                <if test="type == 2">
+                    and r.type = 2
+                </if>
+                <if test="type == 3">
+                    and r.type = 3
+                </if>
+            </if>
         </where>
-        group by b.id, b.title, b.description, b.cover, b.create_time
+        group by b.id
     </select>
     <resultMap id="BlogView" type="BlogViewVo">
         <id column="id" property="id"/>
-        <result column="title" property="title"/>
-        <result column="description" property="description"/>
-        <result column="cover" property="cover"/>
-        <result column="up" property="up"/>
-        <result column="down" property="down"/>
-        <result column="star" property="star"/>
-        <result column="views" property="views"/>
-        <result column="status" property="status"/>
-        <result column="is_up" property="isUp"/>
-        <result column="is_down" property="isDown"/>
-        <result column="is_star" property="isStar"/>
-        <result column="author_id" property="authorId"/>
-        <result column="author_nickname" property="authorNickname"/>
-        <result column="create_time" property="createTime"/>
         <collection property="categories" column="id" ofType="Category" select="getCategories">
         </collection>
     </resultMap>

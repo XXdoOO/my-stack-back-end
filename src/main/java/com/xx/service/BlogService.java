@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xx.mapper.*;
-import com.xx.pojo.*;
+import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.BlogViewVo;
 import com.xx.pojo.vo.BlogVo;
@@ -36,15 +36,17 @@ public class BlogService {
     @Value("${images.local-path}")
     private String locPath;
 
-    public List<BlogViewVo> getBlogListByKeywords(String keywords) {
+    public List<BlogViewVo> getBlogList(BlogDTO dto) {
         User user = (User) session.getAttribute("USER_SESSION");
 
-        Long userId = null;
         if (user != null) {
-            userId = user.getId();
+            dto.setUserId(user.getId());
+        } else {
+            dto.setUserId(null);
         }
 
-        return blogMapper.getBlogListByKeywords(userId, keywords);
+        System.out.println(dto);
+        return blogMapper.getBlogList(dto);
     }
 
     // public Map<String, Object> getBlogList(BlogView blogView, String orderBy, Boolean isAsc, long startIndex,
