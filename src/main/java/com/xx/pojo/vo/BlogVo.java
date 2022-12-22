@@ -25,8 +25,8 @@ public class BlogVo {
     private Integer status;
     private UserVo authorInfo;
     private List<Category> categories;
-    private Long isUp;
-    private Long isDown;
-    private Long isStar;
+    private Boolean isUp;
+    private Boolean isDown;
+    private Boolean isStar;
     private Date createTime;
 }

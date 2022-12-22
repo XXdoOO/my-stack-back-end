@@ -7,9 +7,11 @@ import com.xx.pojo.dto.CommentDTO;
 import com.xx.pojo.entity.Comment;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.CommentVo;
+import com.xx.util.IpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -24,6 +26,9 @@ public class CommentService {
 
     @Autowired
     private HttpSession session;
+
+    @Autowired
+    private HttpServletRequest request;
 
     public List<CommentVo> getCommentsList(CommentDTO dto) {
         User user = (User) session.getAttribute("USER_SESSION");
@@ -42,7 +47,7 @@ public class CommentService {
         return commentMapper.getCommentList(dto);
     }
 
-    public boolean postComments(CommentDTO dto) {
+    public CommentVo postComments(CommentDTO dto) {
         User user = (User) session.getAttribute("USER_SESSION");
 
         Comment comment = new Comment();
@@ -52,7 +57,24 @@ public class CommentService {
         comment.setSenderId(user.getId());
         comment.setReceiveId(dto.getReceiveId());
 
-        return commentMapper.insert(comment) == 1;
+        commentMapper.insert(comment);
+
+        CommentVo commentVo = new CommentVo();
+
+        commentVo.setId(comment.getId());
+        commentVo.setBlogId(comment.getBlogId());
+        commentVo.setContent(comment.getContent());
+        commentVo.setParent(comment.getParent());
+        commentVo.setSenderId(comment.getSenderId());
+        commentVo.setReceiveId(comment.getReceiveId());
+        commentVo.setIp(IpUtil.getIpAddr(request));
+        commentVo.setChildrenCount(0L);
+        commentVo.setUp(0L);
+        commentVo.setDown(0L);
+        commentVo.setIsUp(false);
+        commentVo.setIsDown(false);
+        commentVo.setCreateTime(comment.getCreateTime());
+        return commentVo;
     }
 
     public boolean deleteComment(Long id) {

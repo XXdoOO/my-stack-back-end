@@ -182,7 +182,7 @@ public class VisitorController {
 
     @ResponseBody
     @GetMapping("getBlogList")
-    public MyResponse getBlogByKeywords(BlogDTO dto) {
+    public MyResponse getBlogList(BlogDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
 
         return MyResponse.success(new PageInfo<>(blogService.getBlogList(dto)));

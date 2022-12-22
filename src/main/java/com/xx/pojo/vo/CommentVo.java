@@ -17,7 +17,9 @@ public class CommentVo {
     private String senderNickname;
     private String senderAvatar;
     private Long receiveId;
+    private String receiveNickname;
     private String content;
+    private String ip;
     private Long up;
     private Long down;
     private Boolean isUp;

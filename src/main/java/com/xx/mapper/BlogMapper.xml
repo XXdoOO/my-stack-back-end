@@ -4,13 +4,6 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xx.mapper.BlogMapper">
-    <sql id="recordCount">
-        count(distinct case when r.type = 0 then r.id end) as up,
-       count(distinct case when r.type = 1 then r.id end) as down,
-       count(distinct case when r.type = 2 then r.id end) as star,
-       count(distinct case when r.type = 3 then r.id end) as views,
-    </sql>
-
     <sql id="isRecord">
         <if test="userId != null">
             ,
@@ -32,7 +25,10 @@
         b.title,
         b.description,
         b.cover,
-        <include refid="recordCount"/>
+        count(distinct case when r.type = 0 then r.id end) as up,
+        count(distinct case when r.type = 1 then r.id end) as down,
+        count(distinct case when r.type = 2 then r.id end) as star,
+        count(distinct case when r.type = 3 then r.id end) as views,
         b.status,
         b.create_time,
         b.author_id,
@@ -40,10 +36,10 @@
         <include refid="isRecord"/>
         from blog b left join user u on u.id = b.author_id
         left join record r on r.is_deleted = 0 and r.blog_id is not null
-        <if test="type == null or authorId == null">
+        <if test="authorId != null and (type == 0 or type == 1 or (userId != null and userId == authorId and (type == 4 or type == 5)))">
             and b.author_id = r.user_id
         </if>
-        <if test="type != null and authorId != null">
+        <if test="authorId == null or (authorId != null and (type == null or (userId != null and userId == authorId and (type == 2 or type == 3))))">
             and b.id = r.blog_id
         </if>
         <where>
@@ -53,11 +49,12 @@
                 or b.description like concat('%', #{keywords}, '%')
                 or b.content like concat('%', #{keywords}, '%'))
             </if>
-            -- 获取用户发布的博客
-            -- 获取用户顶过的博客
-            -- 获取用户踩过的博客
 
-            <if test="!(userId != null and userId == authorId)">
+            <!--获取用户发布的博客-->
+            <!--获取用户顶过的博客-->
+            <!--获取用户踩过的博客-->
+            <if test="authorId != null">
+                and b.author_id = #{authorId}
                 <if test="type == null">
                     and b.status = 1
                 </if>
@@ -67,25 +64,23 @@
                 <if test="type == 1">
                     and r.type = 1
                 </if>
+                <if test="userId != null and userId == authorId">
+                    <if test="type == 2">
+                        and b.status = 0
+                    </if>
+                    <if test="type == 3">
+                        and b.status = 2
+                    </if>
+                    <if test="type == 4">
+                        and r.type = 2
+                    </if>
+                    <if test="type == 5">
+                        and r.type = 3
+                    </if>
+                </if>
             </if>
-
-            -- 获取自己审核中的博客
-            -- 获取自己未通过审核的博客
-            -- 获取自己收藏的博客
-            -- 获取自己浏览的博客
-            <if test="userId != null and userId == authorId">
-                <if test="type == null">
-                    and b.status = 0
-                </if>
-                <if test="type == 1">
-                    and b.status = 2
-                </if>
-                <if test="type == 2">
-                    and r.type = 2
-                </if>
-                <if test="type == 3">
-                    and r.type = 3
-                </if>
+            <if test="authorId == null">
+                and b.status = 1
             </if>
         </where>
         group by b.id
@@ -109,7 +104,10 @@
         b.description,
         b.cover,
         b.content,
-        <include refid="recordCount"/>
+        count(distinct case when r.type = 0 then r.id end) as up,
+        count(distinct case when r.type = 1 then r.id end) as down,
+        count(distinct case when r.type = 2 then r.id end) as star,
+        count(distinct case when r.type = 3 then r.id end) as views,
         b.status,
         b.create_time,
         u.id as u_id,
@@ -127,6 +125,7 @@
         <include refid="isRecord"/>
         from blog b
         left join user u on b.author_id = u.id
+        left join record r on r.is_deleted = 0 and r.blog_id is not null and b.id = r.blog_id
         where b.id = #{id}
     </select>
     <resultMap id="BlogDetails" type="BlogVo">

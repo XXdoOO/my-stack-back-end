@@ -5,11 +5,13 @@ import com.xx.pojo.dto.CommentDTO;
 import com.xx.service.BlogService;
 import com.xx.service.CommentService;
 import com.xx.service.UserService;
+import com.xx.util.IpUtil;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
@@ -28,13 +30,12 @@ public class UserController {
     @ResponseBody
     @GetMapping("/logout")
     public MyResponse logout() {
-        MyResponse myResponse = new MyResponse();
-
         userService.logout();
 
-        return myResponse;
+        return MyResponse.success();
     }
 
+    @ResponseBody
     @PostMapping("postComments")
     private MyResponse postComments(@RequestBody @Valid CommentDTO dto) {
         if (StringUtils.isBlank(dto.getContent())) {
@@ -44,6 +45,7 @@ public class UserController {
         return MyResponse.success(commentService.postComments(dto));
     }
 
+    @ResponseBody
     @DeleteMapping("deleteComment")
     private MyResponse deleteComment(@RequestParam long id) {
         return MyResponse.success(commentService.deleteComment(id));
