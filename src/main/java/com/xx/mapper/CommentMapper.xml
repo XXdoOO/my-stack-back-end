@@ -17,20 +17,23 @@
         c.create_time,
         u.nickname as sender_nickname,
         u.avatar as sender_avatar,
-        (select count(r.id) from record r where r.comment_id = c.id and r.type = 0) as up,
-        (select count(r.id) from record r where r.comment_id = c.id and r.type = 1) as down
+        (select count(r.id) from record r where r.is_deleted = 0 and r.comment_id = c.id and r.type = 0) as up,
+        (select count(r.id) from record r where r.is_deleted = 0 and r.comment_id = c.id and r.type = 1) as down
         <if test="parent == 0">
             ,
-            (select count(comment.id) from comment where comment.parent = c.id) as children_count
+            (select count(comment.id) from comment where comment.is_deleted = 0 and comment.parent = c.id) as
+            children_count
         </if>
         <if test="userId != null">
             ,
-            if((select count(r.id) from record r where r.user_id = #{userId} and r.comment_id = c.id and r.type = 0) >
-            0,1, 0) as is_up,
-            if((select count(r.id) from record r where r.user_id = #{userId} and r.comment_id = c.id and r.type = 1) >
-            0,1, 0) as is_down
+            if((select count(r.id) from record r where r.is_deleted = 0 and r.user_id = #{userId} and r.comment_id =
+            c.id and r.type = 0) >
+            0, 1, 0) as is_up,
+            if((select count(r.id) from record r where r.is_deleted = 0 and r.user_id = #{userId} and r.comment_id =
+            c.id and r.type = 1) >
+            0, 1, 0) as is_down
         </if>
-        <if test="userId = null">
+        <if test="userId == null">
             ,
             0 as is_up,
             0 as is_down,
@@ -38,7 +41,7 @@
         </if>
         from comment c
         left join user u on c.sender_id = u.id
-        where c.blog_id = #{blogId} and c.parent = #{parent}
+        where c.is_deleted = 0 and c.blog_id = #{blogId} and c.parent = #{parent}
         <if test="orderBy != null and orderBy != ''">
             order by #{orderBy}
         </if>

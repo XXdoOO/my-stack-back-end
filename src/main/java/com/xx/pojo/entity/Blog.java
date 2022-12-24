@@ -19,6 +19,9 @@ public class Blog extends BaseEntity {
     @TableField(value = "content")
     private String content;
 
+    @TableField(value = "views")
+    private Long views;
+
     @TableField(value = "author_id")
     private Long authorId;
 

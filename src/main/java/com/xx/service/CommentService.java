@@ -2,9 +2,11 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.xx.mapper.CommentMapper;
+import com.xx.mapper.RecordMapper;
 import com.xx.mapper.UserMapper;
 import com.xx.pojo.dto.CommentDTO;
 import com.xx.pojo.entity.Comment;
+import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.CommentVo;
 import com.xx.util.IpUtil;
@@ -22,6 +24,9 @@ public class CommentService {
     private CommentMapper commentMapper;
 
     @Autowired
+    private RecordMapper recordMapper;
+
+    @Autowired
     private UserMapper userMapper;
 
     @Autowired
@@ -33,17 +38,16 @@ public class CommentService {
     public List<CommentVo> getCommentsList(CommentDTO dto) {
         User user = (User) session.getAttribute("USER_SESSION");
 
-        Long userId = null;
         if (user != null) {
-            userId = user.getId();
+            dto.setUserId(user.getId());
+        } else {
+            dto.setUserId(null);
         }
-
-        dto.setUserId(userId);
 
         if (dto.getParent() == null) {
             dto.setParent(0L);
         }
-
+        System.out.println(dto);
         return commentMapper.getCommentList(dto);
     }
 
@@ -77,10 +81,43 @@ public class CommentService {
         return commentVo;
     }
 
-    public boolean deleteComment(Long id) {
+    public int deleteComment(Long id) {
         User user = (User) session.getAttribute("USER_SESSION");
 
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
-        return commentMapper.delete(wrapper.eq("id", id).eq("sender_id", user.getId())) == 1;
+        return commentMapper.delete(wrapper.
+                eq("id", id).
+                and(i -> i.eq("sender_id", user.getId()).or().eq("parent", id)));
+    }
+
+    public boolean handleComment(long commentId, int type) {
+        if (type > 1 || type < 0) {
+            return false;
+        }
+
+        User user = (User) session.getAttribute("USER_SESSION");
+
+        Long userId = null;
+        if (user != null) {
+            userId = user.getId();
+        }
+
+        QueryWrapper<Record> wrapper = new QueryWrapper<>();
+        Record record1 = recordMapper.selectOne(wrapper.
+                eq("user_id", userId).
+                eq("comment_id", commentId).
+                eq("type", type));
+
+        if (record1 == null) {
+            Record record = new Record();
+
+            record.setCommentId(commentId);
+            record.setType(type);
+            record.setUserId(userId);
+
+            return recordMapper.insert(record) == 1;
+        } else {
+            return recordMapper.deleteById(record1.getId()) == 1;
+        }
     }
 }

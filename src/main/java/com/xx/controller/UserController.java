@@ -46,8 +46,20 @@ public class UserController {
     }
 
     @ResponseBody
-    @DeleteMapping("deleteComment")
-    private MyResponse deleteComment(@RequestParam long id) {
-        return MyResponse.success(commentService.deleteComment(id));
+    @DeleteMapping("deleteComment/{commentId}")
+    private MyResponse deleteComment(@PathVariable long commentId) {
+        return MyResponse.success(commentService.deleteComment(commentId));
+    }
+
+    @ResponseBody
+    @PutMapping("handleBlog")
+    private MyResponse handleBlog(long blogId, int type) {
+        return MyResponse.success(blogService.handleBlog(blogId, type));
+    }
+
+    @ResponseBody
+    @PutMapping("handleComment")
+    private MyResponse handleComment(long commentId, int type) {
+        return MyResponse.success(commentService.handleComment(commentId, type));
     }
 }

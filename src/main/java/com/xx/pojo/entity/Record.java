@@ -2,7 +2,9 @@ package com.xx.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
+@Data
 @TableName(value = "record")
 public class Record extends BaseEntity {
     @TableField(value = "user_id")

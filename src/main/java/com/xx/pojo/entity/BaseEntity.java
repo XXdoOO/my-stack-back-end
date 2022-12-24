@@ -1,9 +1,6 @@
 package com.xx.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.util.Date;
@@ -20,5 +17,6 @@ public class BaseEntity {
     private Date createTime;
 
     @TableField(value = "is_deleted")
+    @TableLogic
     private Boolean deleted;
 }
