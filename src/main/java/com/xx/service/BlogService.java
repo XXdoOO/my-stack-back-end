@@ -105,4 +105,15 @@ public class BlogService {
             return recordMapper.deleteById(record1.getId()) == 1;
         }
     }
+
+    public void postBlog(BlogDTO dto) {
+        User user = (User) session.getAttribute("USER_SESSION");
+
+        Blog blog = new Blog();
+
+        blog.setTitle(dto.getTitle());
+        blog.setDescription(dto.getDescription());
+        blog.setContent(dto.getContent());
+        blog.setAuthorId(user.getId());
+    }
 }

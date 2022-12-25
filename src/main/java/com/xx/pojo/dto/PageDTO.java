@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PageDTO {
     private Integer pageNum = 1;
-    private Integer pageSize = 2;
+    private Integer pageSize = 10;
     private String orderBy = "id";
 
     public void setPageNum(Integer pageNum) {

@@ -37,10 +37,10 @@
         from blog b left join user u on u.id = b.author_id
         left join record r on r.is_deleted = 0 and r.blog_id is not null
         <if test="authorId != null and (type == 0 or type == 1 or (userId != null and userId == authorId and (type == 4 or type == 5)))">
-            and b.author_id = r.user_id
+            and b.id = r.blog_id
         </if>
         <if test="authorId == null or (authorId != null and (type == null or (userId != null and userId == authorId and (type == 2 or type == 3))))">
-            and b.id = r.blog_id
+            and b.author_id = r.user_id
         </if>
         <where>
             b.is_deleted = 0
@@ -50,13 +50,9 @@
                 or b.content like concat('%', #{keywords}, '%'))
             </if>
 
-            <!--获取用户发布的博客-->
-            <!--获取用户顶过的博客-->
-            <!--获取用户踩过的博客-->
             <if test="authorId != null">
-                and b.author_id = #{authorId}
                 <if test="type == null">
-                    and b.status = 1
+                    and b.author_id = #{authorId} and b.status = 1
                 </if>
                 <if test="type == 0">
                     and r.type = 0

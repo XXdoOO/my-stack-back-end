@@ -11,4 +11,8 @@ public class BlogDTO extends PageDTO {
     // 0为发布的，1为顶过的，2为踩过的
     private Integer type;
     private Long categoryId;
+
+    private String title;
+    private String description;
+    private String content;
 }

@@ -16,6 +16,7 @@ public class UserVo {
     private String email;
     private String nickname;
     private String avatar;
+    private String ip;
     private Date createTime;
     private Boolean isDisable;
     private Boolean isAdmin;

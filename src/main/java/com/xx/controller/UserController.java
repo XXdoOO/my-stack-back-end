@@ -62,4 +62,6 @@ public class UserController {
     private MyResponse handleComment(long commentId, int type) {
         return MyResponse.success(commentService.handleComment(commentId, type));
     }
+
+
 }

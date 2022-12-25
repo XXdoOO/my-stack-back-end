@@ -76,6 +76,7 @@ public class UserService {
         userVo.setNickname(user.getNickname());
         userVo.setEmail(user.getEmail());
         userVo.setAvatar(user.getAvatar());
+        userVo.setIp(user.getIp());
         userVo.setCreateTime(user.getCreateTime());
         userVo.setIsDisable(user.getDisable());
         userVo.setIsAdmin(user.getAdmin());
