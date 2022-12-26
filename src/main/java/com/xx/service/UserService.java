@@ -162,23 +162,6 @@ public class UserService {
     //     return userVo;
     // }
 
-    public boolean updateMyInfo(UserDTO userDTO) {
-        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
-
-        User user = new User();
-        // user.setEmail(userDTO.getEmail());
-        // user.setPassword(userDTO.getPassword());
-        user.setNickname(userDTO.getNickname());
-
-        MultipartFile avatar = userDTO.getAvatar();
-        if (avatar != null) {
-            SaveFile.saveFile(avatar, locPath + "/avatar/", id + ".jpg");
-
-            user.setAvatar("/avatar/" + id + ".jpg");
-        }
-
-        return userMapper.updateById(user) == 1;
-    }
 
     public boolean deleteSelf() {
         Long id = ((User) session.getAttribute("USER_SESSION")).getId();

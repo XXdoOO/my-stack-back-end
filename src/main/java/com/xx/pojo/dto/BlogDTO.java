@@ -1,6 +1,7 @@
 package com.xx.pojo.dto;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class BlogDTO extends PageDTO {
@@ -15,4 +16,5 @@ public class BlogDTO extends PageDTO {
     private String title;
     private String description;
     private String content;
+    private MultipartFile cover;
 }

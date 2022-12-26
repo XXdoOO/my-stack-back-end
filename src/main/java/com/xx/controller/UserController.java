@@ -1,6 +1,7 @@
 package com.xx.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
 import com.xx.service.BlogService;
 import com.xx.service.CommentService;
@@ -63,5 +64,10 @@ public class UserController {
         return MyResponse.success(commentService.handleComment(commentId, type));
     }
 
-
+    @ResponseBody
+    @PostMapping("postBlog")
+    private MyResponse postBlog(BlogDTO dto) {
+        blogService.postBlog(dto);
+        return MyResponse.success();
+    }
 }
