@@ -78,6 +78,25 @@
             <if test="authorId == null">
                 and b.status = 1
             </if>
+
+            <if test="title != null and title != ''">
+                and b.title like concat('%', #{title}, '%')
+            </if>
+            <if test="description != null and description != ''">
+                and b.description like concat('%', #{description}, '%')
+            </if>
+            <if test="authorNickname != null and authorNickname != ''">
+                and u.nickname like concat('%', #{authorNickname}, '%')
+            </if>
+            <if test="status != null">
+                and b.status = #{status}
+            </if>
+            <if test="startTime != null">
+                and b.create_time <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null">
+                and b.create_time <![CDATA[ <= ]]> #{endTime}
+            </if>
         </where>
         group by b.id
     </select>

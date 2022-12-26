@@ -70,4 +70,14 @@ public class UserController {
         blogService.postBlog(dto);
         return MyResponse.success();
     }
+
+    @ResponseBody
+    @PostMapping("updateBlog")
+    private MyResponse updateBlog(BlogDTO dto) {
+        if (dto.getId() != null) {
+            blogService.updateBlog(dto);
+            return MyResponse.success();
+        }
+        return MyResponse.fail();
+    }
 }

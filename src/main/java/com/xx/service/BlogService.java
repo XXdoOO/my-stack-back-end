@@ -115,5 +115,34 @@ public class BlogService {
         blog.setDescription(dto.getDescription());
         blog.setContent(dto.getContent());
         blog.setAuthorId(user.getId());
+
+        blogMapper.insert(blog);
+
+        if (SaveFile.saveFile(dto.getCoverImg(), blog.getId())) {
+            UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+            blogMapper.update(null, wrapper.
+                    set("cover", "/cover/" + blog.getId() + ".jpg").
+                    eq("id", blog.getId()));
+        }
+    }
+
+    public void updateBlog(BlogDTO dto){
+        User user = (User) session.getAttribute("USER_SESSION");
+
+        Blog blog = new Blog();
+
+        blog.setTitle(dto.getTitle());
+        blog.setDescription(dto.getDescription());
+        blog.setContent(dto.getContent());
+        blog.setAuthorId(user.getId());
+
+        blogMapper.updateById(blog);
+
+        if (SaveFile.saveFile(dto.getCoverImg(), blog.getId())) {
+            UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+            blogMapper.update(null, wrapper.
+                    set("cover", "/cover/" + blog.getId() + ".jpg").
+                    eq("id", blog.getId()));
+        }
     }
 }

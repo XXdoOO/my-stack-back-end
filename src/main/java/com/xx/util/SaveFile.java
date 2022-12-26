@@ -7,11 +7,12 @@ import java.io.File;
 import java.io.IOException;
 
 public class SaveFile {
-    public static boolean saveFile(MultipartFile file, String filename) {
+    public static boolean saveFile(MultipartFile file, long blogId) {
         if (file == null || file.isEmpty()) {
             return false;
         }
         String locPath = "D:/fileUpload/";
+        String filename = "cover/" + blogId + ".jpg";
         File temp = new File(locPath);
         if (!temp.exists()) {
             temp.mkdirs();
