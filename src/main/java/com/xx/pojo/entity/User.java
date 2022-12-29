@@ -1,5 +1,6 @@
 package com.xx.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.SqlCondition;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -13,7 +14,7 @@ public class User extends BaseEntity {
     @TableField(value = "password")
     private String password;
 
-    @TableField(value = "nickname")
+    @TableField(value = "nickname", condition = SqlCondition.LIKE)
     private String nickname;
 
     @TableField(value = "avatar")

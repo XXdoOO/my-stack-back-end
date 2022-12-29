@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 
 @Data
-public class UserDTO {
+public class UserDTO extends PageDTO {
     private String email;
 
     private String password;
@@ -18,4 +18,8 @@ public class UserDTO {
     private String nickname;
 
     private MultipartFile avatar;
+
+    private Boolean isAdmin;
+
+    private Boolean isDisable;
 }

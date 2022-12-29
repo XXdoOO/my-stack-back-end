@@ -50,6 +50,15 @@ public class BlogService {
         return blogMapper.getBlogList(dto);
     }
 
+    public List<BlogViewVo> getBlogList2(BlogDTO dto) {
+        return blogMapper.getBlogList2(dto);
+    }
+
+    public boolean auditBlog(long blogId, boolean isPass) {
+        UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+        return blogMapper.update(null, wrapper.set("status", isPass ? 1 : 2).eq("id", blogId)) == 1;
+    }
+
     public BlogVo getBlogDetails(long id) {
         User user = (User) session.getAttribute("USER_SESSION");
 
@@ -122,7 +131,7 @@ public class BlogService {
         }
     }
 
-    public void updateBlog(BlogDTO dto){
+    public void updateBlog(BlogDTO dto) {
         User user = (User) session.getAttribute("USER_SESSION");
 
         Blog blog = new Blog();

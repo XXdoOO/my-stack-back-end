@@ -3,27 +3,24 @@ package com.xx.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.xx.mapper.*;
+import com.xx.mapper.DisableMapper;
+import com.xx.mapper.UserMapper;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.Disable;
 import com.xx.pojo.entity.User;
-import com.xx.pojo.vo.BlogVo;
 import com.xx.pojo.vo.UserVo;
 import com.xx.util.Code;
-import com.xx.util.SaveFile;
 import com.xx.util.VerCodeGenerate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -200,5 +197,21 @@ public class UserService {
             return null;
         }
         return verCode;
+    }
+
+    public List<User> getUserList(UserDTO dto) {
+        User user = new User();
+
+        user.setNickname(dto.getNickname());
+        user.setAdmin(dto.getIsAdmin());
+        user.setDisable(dto.getIsDisable());
+
+        System.out.println(user);
+        QueryWrapper<User> wrapper = new QueryWrapper<>(user);
+        List<User> users = userMapper.selectList(wrapper);
+
+        users.forEach(item -> item.setPassword(null));
+
+        return users;
     }
 }

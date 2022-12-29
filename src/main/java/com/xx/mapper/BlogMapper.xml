@@ -78,7 +78,28 @@
             <if test="authorId == null">
                 and b.status = 1
             </if>
-
+        </where>
+        group by b.id
+    </select>
+    <select id="getBlogList2" resultMap="BlogView">
+        select
+        b.id,
+        b.title,
+        b.description,
+        b.cover,
+        count(distinct case when r.type = 0 then r.id end) as up,
+        count(distinct case when r.type = 1 then r.id end) as down,
+        count(distinct case when r.type = 2 then r.id end) as star,
+        count(distinct case when r.type = 3 then r.id end) + b.views as views,
+        b.status,
+        b.create_time,
+        b.author_id,
+        u.nickname as author_nickname
+        <include refid="isRecord"/>
+        from blog b left join user u on u.id = b.author_id
+        left join record r on r.is_deleted = 0 and r.blog_id is not null
+        and b.author_id = r.user_id
+        <where>
             <if test="title != null and title != ''">
                 and b.title like concat('%', #{title}, '%')
             </if>
