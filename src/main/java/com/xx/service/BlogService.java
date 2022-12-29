@@ -38,9 +38,6 @@ public class BlogService {
     @Autowired
     private HttpSession session;
 
-    @Value("${images.local-path}")
-    private String locPath;
-
     public List<BlogViewVo> getBlogList(BlogDTO dto) {
         User user = (User) session.getAttribute("USER_SESSION");
 
@@ -50,7 +47,6 @@ public class BlogService {
             dto.setUserId(null);
         }
 
-        System.out.println(dto);
         return blogMapper.getBlogList(dto);
     }
 
