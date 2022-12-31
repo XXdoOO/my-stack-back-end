@@ -1,5 +1,6 @@
 package com.xx.pojo.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.xx.pojo.entity.Disable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,12 +19,13 @@ public class UserVo {
     private String avatar;
     private String ip;
     private Date createTime;
-    private Boolean isDisable;
-    private Boolean isAdmin;
+    private Boolean disable;
+    private Boolean admin;
     private Disable disableInfo;
     private Long passCount;
     private Long noPassCount;
     private Long auditingCount;
+    private Long history;
     private Long up;
     private Long down;
     private Long star;

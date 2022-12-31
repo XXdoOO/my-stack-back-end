@@ -52,26 +52,26 @@
 
             <if test="authorId != null">
                 <if test="type == null">
-                    and b.author_id = #{authorId} and b.status = 1
+                    and b.status = 1 and b.author_id = #{authorId}
                 </if>
                 <if test="type == 0">
-                    and r.type = 0
+                    and r.type = 0 and r.user_id = #{authorId}
                 </if>
                 <if test="type == 1">
-                    and r.type = 1
+                    and r.type = 1 and r.user_id = #{authorId}
                 </if>
                 <if test="userId != null and userId == authorId">
                     <if test="type == 2">
-                        and b.status = 0
+                        and b.status = 0 and b.author_id = #{authorId}
                     </if>
                     <if test="type == 3">
-                        and b.status = 2
+                        and b.status = 2 and b.author_id = #{authorId}
                     </if>
                     <if test="type == 4">
-                        and r.type = 2
+                        and r.type = 2 and r.user_id = #{authorId}
                     </if>
                     <if test="type == 5">
-                        and r.type = 3
+                        and r.type = 3 and r.user_id = #{authorId}
                     </if>
                 </if>
             </if>
@@ -186,11 +186,16 @@
             <result column="up_count" property="up"/>
             <result column="down_count" property="down"/>
             <result column="pass_count" property="passCount"/>
-            <result column="u_is_admin" property="isAdmin"/>
-            <result column="u_is_disable" property="isDisable"/>
+            <result column="u_is_admin" property="admin"/>
+            <result column="u_is_disable" property="disable"/>
             <result column="u_create_time" property="createTime"/>
         </association>
         <collection property="categories" column="id" ofType="CategoryVo" select="getCategories">
         </collection>
     </resultMap>
+    <select id="getBlogDetails2" resultMap="BlogDetails">
+        select content
+        from blog
+        where id = #{id}
+    </select>
 </mapper>

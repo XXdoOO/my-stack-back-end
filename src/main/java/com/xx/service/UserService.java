@@ -7,6 +7,7 @@ import com.xx.mapper.DisableMapper;
 import com.xx.mapper.UserMapper;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.Disable;
+import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.UserVo;
 import com.xx.util.Code;
@@ -28,18 +29,6 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-    //    @Autowired
-//    private BlogMapper blogMapper;
-//
-//    @Autowired
-//    private BlogStarMapper blogStarMapper;
-//
-//    @Autowired
-//    private BlogUpMapper blogUpMapper;
-//
-//    @Autowired
-//    private BlogDownMapper blogDownMapper;
-//
     @Autowired
     private DisableMapper disableMapper;
 
@@ -75,8 +64,8 @@ public class UserService {
         userVo.setAvatar(user.getAvatar());
         userVo.setIp(user.getIp());
         userVo.setCreateTime(user.getCreateTime());
-        userVo.setIsDisable(user.getDisable());
-        userVo.setIsAdmin(user.getAdmin());
+        userVo.setDisable(user.getDisable());
+        userVo.setAdmin(user.getAdmin());
 
         if (user.getDisable()) {
             userVo.setDisableInfo(getUserDisableInfo(user.getId()));
@@ -87,7 +76,7 @@ public class UserService {
             }
         } else {
             session.setAttribute("USER_SESSION", user);
-            UserVo myInfo = userMapper.getMyInfo(user.getId());
+            UserVo myInfo = userMapper.getUserInfo(null, user.getId());
 
             userVo.setAuditingCount(myInfo.getAuditingCount());
             userVo.setPassCount(myInfo.getPassCount());
@@ -123,9 +112,8 @@ public class UserService {
 
     public boolean isExistUser(String email) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
-        return userMapper.selectCount(wrapper.eq("email", email)) > 0;
+        return userMapper.exists(wrapper.eq("email", email));
     }
-
 
     public boolean register(String email, String password) {
         if (isExistUser(email)) {
@@ -146,19 +134,6 @@ public class UserService {
     public void logout() {
         session.invalidate();
     }
-
-    // public UserVo getUserInfo(long id) {
-    //     UserPo userInfo = userMapper.getUserInfo(id);
-    //
-    //     UserVo userVo = new UserVo();
-    //
-    //     userVo.setNickname(userInfo.getNickname());
-    //     userVo.setPassCount(userInfo.getPassCount());
-    //     userVo.setUpCount(userInfo.getUpCount());
-    //     userVo.setDownCount(userInfo.getDownCount());
-    //     return userVo;
-    // }
-
 
     public boolean deleteSelf() {
         Long id = ((User) session.getAttribute("USER_SESSION")).getId();
@@ -200,18 +175,16 @@ public class UserService {
     }
 
     public List<User> getUserList(UserDTO dto) {
-        User user = new User();
+        return userMapper.getUserList(dto);
+    }
 
-        user.setNickname(dto.getNickname());
-        user.setAdmin(dto.getIsAdmin());
-        user.setDisable(dto.getIsDisable());
+    public UserVo getUserInfo(Long authorId) {
+        User user = (User) session.getAttribute("USER_SESSION");
 
-        System.out.println(user);
-        QueryWrapper<User> wrapper = new QueryWrapper<>(user);
-        List<User> users = userMapper.selectList(wrapper);
-
-        users.forEach(item -> item.setPassword(null));
-
-        return users;
+        Long userId = null;
+        if (user != null) {
+            userId = user.getId();
+        }
+        return userMapper.getUserInfo(authorId, userId);
     }
 }

@@ -18,4 +18,6 @@ public interface BlogMapper extends BaseMapper<Blog> {
     List<BlogViewVo> getBlogList2(BlogDTO dto);
 
     BlogVo getBlogDetails(long id, Long userId);
+
+    BlogVo getBlogDetails2(long id);
 }

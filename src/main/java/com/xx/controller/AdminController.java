@@ -30,15 +30,22 @@ public class AdminController {
     @ResponseBody
     @GetMapping("getBlogList")
     public MyResponse getBlogList(BlogDTO dto) {
+        System.out.println(dto);
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
 
         return MyResponse.success(new PageInfo<>(blogService.getBlogList2(dto)));
     }
 
     @ResponseBody
-    @GetMapping("auditBlog")
-    public MyResponse auditBlog(@RequestParam long blogId, @RequestParam boolean isPass) {
-        return MyResponse.success(blogService.auditBlog(blogId, isPass));
+    @GetMapping("blog/{blogId}")
+    public MyResponse getBlogDetails(@PathVariable long blogId) {
+        return MyResponse.success(blogService.getBlogDetails2(blogId));
+    }
+
+    @ResponseBody
+    @PutMapping("auditBlog")
+    public MyResponse auditBlog(@RequestParam long blogId, @RequestParam int status) {
+        return MyResponse.success(blogService.auditBlog(blogId, status));
     }
 
     @ResponseBody

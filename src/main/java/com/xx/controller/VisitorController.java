@@ -138,7 +138,7 @@ public class VisitorController {
 
             if (user == null) {
                 return MyResponse.fail("邮箱或密码错误");
-            } else if (user.getIsDisable()) {
+            } else if (user.getDisable()) {
                 return MyResponse.error("用户已被封禁", user.getDisableInfo());
             } else {
                 return MyResponse.success("登录成功", user);
@@ -188,11 +188,11 @@ public class VisitorController {
         return MyResponse.success(new PageInfo<>(blogService.getBlogList(dto)));
     }
 
-    // @ResponseBody
-    // @GetMapping("user/{userId}")
-    // public MyResponse getUserInfo(@PathVariable Long userId) {
-    //     return MyResponse.success(userService.getUserInfo(userId));
-    // }
+    @ResponseBody
+    @GetMapping("user/{authorId}")
+    public MyResponse getUserInfo(@PathVariable Long authorId) {
+        return MyResponse.success(userService.getUserInfo(authorId));
+    }
 
     @ResponseBody
     @GetMapping("blog/{blogId}")

@@ -47,6 +47,8 @@ public class BlogService {
             dto.setUserId(null);
         }
 
+        System.out.println(dto);
+
         return blogMapper.getBlogList(dto);
     }
 
@@ -54,9 +56,13 @@ public class BlogService {
         return blogMapper.getBlogList2(dto);
     }
 
-    public boolean auditBlog(long blogId, boolean isPass) {
+    public boolean auditBlog(long blogId, int status) {
+        if (status != 0 && status != 1 && status != 2) {
+            return false;
+        }
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
-        return blogMapper.update(null, wrapper.set("status", isPass ? 1 : 2).eq("id", blogId)) == 1;
+        return blogMapper.update(null, wrapper.set("status", status).
+                eq("id", blogId)) == 1;
     }
 
     public BlogVo getBlogDetails(long id) {
@@ -64,20 +70,29 @@ public class BlogService {
 
         Long userId = null;
         if (user != null) {
-            userId = user.getId();
+            QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
+            if (!recordMapper.exists(queryWrapper.eq("user_id", user.getId()).
+                    eq("blog_id", id).eq("type", 3))) {
 
-            Record record = new Record();
-            record.setBlogId(id);
-            record.setType(3);
-            record.setUserId(userId);
+                userId = user.getId();
 
-            recordMapper.insert(record);
+                Record record = new Record();
+                record.setBlogId(id);
+                record.setType(3);
+                record.setUserId(userId);
+
+                recordMapper.insert(record);
+            }
         }
 
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         blogMapper.update(null, wrapper.setSql("views = views + 1").eq("id", id));
 
         return blogMapper.getBlogDetails(id, userId);
+    }
+
+    public BlogVo getBlogDetails2(long id) {
+        return blogMapper.getBlogDetails2(id);
     }
 
     public boolean handleBlog(long blogId, int type) {
