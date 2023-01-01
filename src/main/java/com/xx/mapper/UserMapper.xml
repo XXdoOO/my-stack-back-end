@@ -21,7 +21,7 @@
             count(distinct case when b.status = 0 then b.id end) as auditing_count,
             count(distinct case when b.status = 2 then b.id end) as no_pass_count,
             count(distinct case when r.type = 2 then r.id end) as star,
-            count(distinct case when r.type = 3 then r.id end) as `history`
+            count(distinct case when r.type = 3 then r.id end) as view_count
         </if>
         from user u
         left join blog b on u.id = b.author_id and b.is_deleted = 0
@@ -47,7 +47,7 @@
         <result column="auditing_count" property="auditingCount"/>
         <result column="no_pass_count" property="noPassCount"/>
         <result column="star" property="star"/>
-        <result column="history" property="history"/>
+        <result column="view_count" property="viewCount"/>
     </resultMap>
 
     <select id="getUserList" resultMap="UserListMap">

@@ -189,7 +189,7 @@ public class VisitorController {
     }
 
     @ResponseBody
-    @GetMapping("user/{authorId}")
+    @GetMapping("getUserInfo/{authorId}")
     public MyResponse getUserInfo(@PathVariable Long authorId) {
         return MyResponse.success(userService.getUserInfo(authorId));
     }

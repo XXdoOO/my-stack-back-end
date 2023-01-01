@@ -97,7 +97,7 @@ public class UserService {
                 last("limit 1"));
 
         // 确认用户被封禁
-        if (disable != null && disable.getEndTime() > System.currentTimeMillis()) {
+        if (disable != null && disable.getEndTime().getTime() > System.currentTimeMillis()) {
             return disable;
         } else { // 用户已解封
             UpdateWrapper<User> wrapper = new UpdateWrapper<>();
@@ -186,5 +186,18 @@ public class UserService {
             userId = user.getId();
         }
         return userMapper.getUserInfo(authorId, userId);
+    }
+
+    public void disableUser(UserDTO dto) {
+        Disable disable = new Disable();
+
+        disable.setUserId(dto.getUserId());
+        disable.setReason(dto.getReason());
+        disable.setEndTime(dto.getEndTime());
+        disableMapper.insert(disable);
+
+        UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+        userMapper.update(null, wrapper.set("is_disable", dto.getIsDisable()).
+                eq("id", dto.getUserId()));
     }
 }

@@ -3,6 +3,7 @@ package com.xx.controller;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
+import com.xx.pojo.dto.UserDTO;
 import com.xx.service.BlogService;
 import com.xx.service.CommentService;
 import com.xx.service.UserService;
@@ -72,10 +73,26 @@ public class UserController {
     }
 
     @ResponseBody
-    @PostMapping("updateBlog")
+    @PutMapping("updateBlog")
     private MyResponse updateBlog(BlogDTO dto) {
         if (dto.getId() != null) {
             blogService.updateBlog(dto);
+            return MyResponse.success();
+        }
+        return MyResponse.fail();
+    }
+
+    @ResponseBody
+    @DeleteMapping("deleteBlog/{blogId}")
+    private MyResponse deleteBlog(@PathVariable Long blogId) {
+        return MyResponse.success(blogService.deleteBlog(blogId));
+    }
+
+    @ResponseBody
+    @PutMapping("disableUser")
+    private MyResponse disableUser(@RequestBody UserDTO dto) {
+        if (dto.getUserId() != null && StringUtils.isNotBlank(dto.getReason()) && dto.getEndTime() != null && dto.getIsDisable() != null) {
+            userService.disableUser(dto);
             return MyResponse.success();
         }
         return MyResponse.fail();

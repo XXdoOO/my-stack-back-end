@@ -142,7 +142,8 @@ public class BlogService {
             UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
             blogMapper.update(null, wrapper.
                     set("cover", "/cover/" + blog.getId() + ".jpg").
-                    eq("id", blog.getId()));
+                    eq("id", blog.getId()).
+                    eq("author_id", user.getId()));
         }
     }
 
@@ -154,15 +155,23 @@ public class BlogService {
         blog.setTitle(dto.getTitle());
         blog.setDescription(dto.getDescription());
         blog.setContent(dto.getContent());
-        blog.setAuthorId(user.getId());
 
-        blogMapper.updateById(blog);
-
-        if (SaveFile.saveFile(dto.getCoverImg(), blog.getId())) {
-            UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
-            blogMapper.update(null, wrapper.
-                    set("cover", "/cover/" + blog.getId() + ".jpg").
-                    eq("id", blog.getId()));
+        if (SaveFile.saveFile(dto.getCoverImg(), dto.getId())) {
+            blog.setCover("/cover/" + dto.getId() + ".jpg");
         }
+        UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
+        blogMapper.update(blog, wrapper.
+                eq("id", dto.getId()).
+                eq("author_id", user.getId()));
+    }
+
+    public boolean deleteBlog(long blogId) {
+        User user = (User) session.getAttribute("USER_SESSION");
+
+        QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
+        recordMapper.delete(queryWrapper.eq("blog_id", blogId));
+
+        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
+        return blogMapper.delete(wrapper.eq("id", blogId).eq("author_id", user.getId())) == 1;
     }
 }
