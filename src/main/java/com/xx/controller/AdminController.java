@@ -1,5 +1,6 @@
 package com.xx.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xx.config.FilterConfigurer;
@@ -53,6 +54,16 @@ public class AdminController {
     public MyResponse getUserList(UserDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         return MyResponse.success(new PageInfo<>(userService.getUserList(dto)));
+    }
+
+    @ResponseBody
+    @PutMapping("disableUser")
+    private MyResponse disableUser(@RequestBody UserDTO dto) {
+        if (dto.getUserId() != null && dto.getIsDisable() != null) {
+            userService.disableUser(dto);
+            return MyResponse.success();
+        }
+        return MyResponse.fail();
     }
 }
 

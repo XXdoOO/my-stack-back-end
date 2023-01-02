@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -189,15 +190,23 @@ public class UserService {
     }
 
     public void disableUser(UserDTO dto) {
-        Disable disable = new Disable();
+        if (!dto.getIsDisable()) {
+            QueryWrapper<Disable> wrapper = new QueryWrapper<>();
+            disableMapper.delete(wrapper.eq("user_id", dto.getUserId()));
+            UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+            userMapper.update(null, updateWrapper.set("is_disable", 0).
+                    eq("id", dto.getUserId()));
+        } else if (StringUtils.isNotBlank(dto.getReason()) && dto.getMinutes() != null && dto.getMinutes() > 0) {
+            Disable disable = new Disable();
 
-        disable.setUserId(dto.getUserId());
-        disable.setReason(dto.getReason());
-        disable.setEndTime(dto.getEndTime());
-        disableMapper.insert(disable);
+            disable.setUserId(dto.getUserId());
+            disable.setReason(dto.getReason());
+            disable.setEndTime(new Date(System.currentTimeMillis() + dto.getMinutes() * 60000));
+            disableMapper.insert(disable);
 
-        UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-        userMapper.update(null, wrapper.set("is_disable", dto.getIsDisable()).
-                eq("id", dto.getUserId()));
+            UpdateWrapper<User> wrapper = new UpdateWrapper<>();
+            userMapper.update(null, wrapper.set("is_disable", 1).
+                    eq("id", dto.getUserId()));
+        }
     }
 }

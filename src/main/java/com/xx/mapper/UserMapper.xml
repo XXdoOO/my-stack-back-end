@@ -58,6 +58,7 @@
         ip,
         is_admin,
         is_disable,
+        is_deleted,
         create_time
         from user
         <where>
@@ -81,5 +82,6 @@
     <resultMap id="UserListMap" type="User">
         <result column="is_admin" property="admin"/>
         <result column="is_disable" property="disable"/>
+        <result column="is_deleted" property="deleted"/>
     </resultMap>
 </mapper>

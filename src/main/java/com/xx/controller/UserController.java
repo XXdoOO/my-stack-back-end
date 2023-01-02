@@ -87,14 +87,4 @@ public class UserController {
     private MyResponse deleteBlog(@PathVariable Long blogId) {
         return MyResponse.success(blogService.deleteBlog(blogId));
     }
-
-    @ResponseBody
-    @PutMapping("disableUser")
-    private MyResponse disableUser(@RequestBody UserDTO dto) {
-        if (dto.getUserId() != null && StringUtils.isNotBlank(dto.getReason()) && dto.getEndTime() != null && dto.getIsDisable() != null) {
-            userService.disableUser(dto);
-            return MyResponse.success();
-        }
-        return MyResponse.fail();
-    }
 }
