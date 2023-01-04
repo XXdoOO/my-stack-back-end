@@ -21,7 +21,7 @@
             count(distinct case when b.status = 0 then b.id end) as auditing_count,
             count(distinct case when b.status = 2 then b.id end) as no_pass_count,
             count(distinct case when r.type = 2 then r.id end) as star,
-            count(distinct case when r.type = 3 then r.id end) as view_count
+            count(distinct case when r.type = 3 then r.id end) as history
         </if>
         from user u
         left join blog b on u.id = b.author_id and b.is_deleted = 0
@@ -35,19 +35,8 @@
         </if>
     </select>
     <resultMap id="UserVoMap" type="UserVo">
-        <id column="id" property="id"/>
-        <result column="nickname" property="nickname"/>
-        <result column="avatar" property="avatar"/>
-        <result column="ip" property="ip"/>
         <result column="is_admin" property="admin"/>
         <result column="is_disable" property="disable"/>
-        <result column="pass_count" property="passCount"/>
-        <result column="up" property="up"/>
-        <result column="down" property="down"/>
-        <result column="auditing_count" property="auditingCount"/>
-        <result column="no_pass_count" property="noPassCount"/>
-        <result column="star" property="star"/>
-        <result column="view_count" property="viewCount"/>
     </resultMap>
 
     <select id="getUserList" resultMap="UserListMap">

@@ -85,6 +85,9 @@ public class UserService {
             userVo.setUp(myInfo.getUp());
             userVo.setDown(myInfo.getDown());
             userVo.setStar(myInfo.getStar());
+            userVo.setHistory(myInfo.getHistory());
+
+            System.out.println(myInfo);
         }
 
         return userVo;

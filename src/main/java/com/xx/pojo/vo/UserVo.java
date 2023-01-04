@@ -25,7 +25,7 @@ public class UserVo {
     private Long passCount;
     private Long noPassCount;
     private Long auditingCount;
-    private Long viewCount;
+    private Long history;
     private Long up;
     private Long down;
     private Long star;

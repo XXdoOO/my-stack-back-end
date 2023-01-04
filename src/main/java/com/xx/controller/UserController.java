@@ -1,6 +1,8 @@
 package com.xx.controller;
 
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
 import com.xx.pojo.dto.UserDTO;
@@ -86,5 +88,13 @@ public class UserController {
     @DeleteMapping("deleteBlog/{blogId}")
     private MyResponse deleteBlog(@PathVariable Long blogId) {
         return MyResponse.success(blogService.deleteBlog(blogId));
+    }
+
+    @ResponseBody
+    @GetMapping("getBlogList")
+    public MyResponse getBlogList(BlogDTO dto) {
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+
+        return MyResponse.success(new PageInfo<>(blogService.getBlogList(dto)));
     }
 }

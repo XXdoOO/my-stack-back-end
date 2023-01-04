@@ -70,19 +70,14 @@ public class BlogService {
 
         Long userId = null;
         if (user != null) {
-            QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
-            if (!recordMapper.exists(queryWrapper.eq("user_id", user.getId()).
-                    eq("blog_id", id).eq("type", 3))) {
+            userId = user.getId();
 
-                userId = user.getId();
+            Record record = new Record();
+            record.setBlogId(id);
+            record.setType(3);
+            record.setUserId(userId);
 
-                Record record = new Record();
-                record.setBlogId(id);
-                record.setType(3);
-                record.setUserId(userId);
-
-                recordMapper.insert(record);
-            }
+            recordMapper.insert(record);
         }
 
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
