@@ -26,6 +26,8 @@ public class UserDTO extends PageDTO {
 
     private Boolean isDisable;
 
+    private Boolean isDeleted;
+
     private Integer status;
 
     private Long userId;
