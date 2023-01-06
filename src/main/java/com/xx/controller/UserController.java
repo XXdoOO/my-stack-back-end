@@ -97,4 +97,10 @@ public class UserController {
 
         return MyResponse.success(new PageInfo<>(blogService.getBlogList(dto)));
     }
+
+    @ResponseBody
+    @PutMapping("updateInfo")
+    public MyResponse updateInfo(UserDTO dto) {
+        return MyResponse.success(userService.updateInfo(dto));
+    }
 }

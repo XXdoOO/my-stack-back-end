@@ -11,6 +11,7 @@ import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.UserVo;
 import com.xx.util.Code;
+import com.xx.util.SaveFile;
 import com.xx.util.VerCodeGenerate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -137,6 +138,19 @@ public class UserService {
 
     public void logout() {
         session.invalidate();
+    }
+
+    public boolean updateInfo(UserDTO dto) {
+        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
+        User user = new User();
+        user.setId(id);
+        user.setNickname(dto.getNickname());
+
+        if (SaveFile.saveAvatar(dto.getAvatar(), id)) {
+            user.setAvatar("/avatar/" + id + ".jpg");
+        }
+
+        return userMapper.updateById(user) == 1;
     }
 
     public boolean deleteSelf() {

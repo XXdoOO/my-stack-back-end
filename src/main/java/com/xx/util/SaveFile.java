@@ -21,9 +21,28 @@ public class SaveFile {
         File localFile = new File(locPath + filename);
         try {
             file.transferTo(localFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
 
-            System.out.println(locPath + filename);
-            System.out.println(file.getOriginalFilename() + " 上传成功");
+        return true;
+    }
+
+    public static boolean saveAvatar(MultipartFile file, long userId) {
+        if (file == null || file.isEmpty()) {
+            return false;
+        }
+        String locPath = "D:/fileUpload/";
+        String filename = "avatar/" + userId + ".jpg";
+        File temp = new File(locPath);
+        if (!temp.exists()) {
+            temp.mkdirs();
+        }
+
+        File localFile = new File(locPath + filename);
+        try {
+            file.transferTo(localFile);
         } catch (IOException e) {
             e.printStackTrace();
             return false;
