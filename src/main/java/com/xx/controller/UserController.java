@@ -9,13 +9,11 @@ import com.xx.pojo.dto.UserDTO;
 import com.xx.service.BlogService;
 import com.xx.service.CommentService;
 import com.xx.service.UserService;
-import com.xx.util.IpUtil;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller

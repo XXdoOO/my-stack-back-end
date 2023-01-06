@@ -10,6 +10,8 @@ import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.BlogViewVo;
 import com.xx.pojo.vo.BlogVo;
+import com.xx.util.AddressUtils;
+import com.xx.util.IpUtils;
 import com.xx.util.MyResponse;
 import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
@@ -37,6 +40,9 @@ public class BlogService {
 
     @Autowired
     private HttpSession session;
+
+    @Autowired
+    private HttpServletRequest request;
 
     public List<BlogViewVo> getBlogList(BlogDTO dto) {
         User user = (User) session.getAttribute("USER_SESSION");
@@ -130,6 +136,8 @@ public class BlogService {
         blog.setDescription(dto.getDescription());
         blog.setContent(dto.getContent());
         blog.setAuthorId(user.getId());
+        blog.setIp(IpUtils.getIpAddr(request));
+        blog.setIpTerritory(AddressUtils.getRealAddressByIP(blog.getIp()));
 
         blogMapper.insert(blog);
 

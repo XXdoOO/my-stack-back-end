@@ -10,6 +10,7 @@
         u.nickname as nickname,
         u.avatar,
         u.ip,
+        u.ip_territory,
         u.is_admin,
         u.is_disable,
         count(distinct case when b.status = 1 then b.id end) as pass_count,

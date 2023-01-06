@@ -14,8 +14,9 @@ import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.vo.UserVo;
 import com.xx.service.BlogService;
 import com.xx.service.UserService;
+import com.xx.util.AddressUtils;
 import com.xx.util.Code;
-import com.xx.util.IpUtil;
+import com.xx.util.IpUtils;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +29,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/")
@@ -54,8 +54,7 @@ public class VisitorController {
     @ResponseBody
     @RequestMapping("ip")
     public MyResponse getIp(HttpServletRequest request) {
-        System.out.println(IpUtil.getIpAddr(request));
-        return MyResponse.success(IpUtil.getIpAddr(request));
+        return MyResponse.success(AddressUtils.getRealAddressByIP(IpUtils.getIpAddr(request)));
     }
 
     @ResponseBody

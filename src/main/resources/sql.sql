@@ -9,17 +9,18 @@ use
 
 create table `user`
 (
-    `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
-    `email`       varchar(32)                                                               not null comment '邮箱',
-    `password`    varchar(16)                                                               not null comment '密码',
-    `nickname`    varchar(32)         default '用户昵称'                                    not null comment '昵称',
-    `avatar`      varchar(64)         default '/avatar/4.jpg'                               not null comment '头像',
-    `ip`          varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
-    `is_admin`    tinyint(1) unsigned default 0                                             not null comment '身份，0为普通用户，1为管理员',
-    `is_disable`  tinyint(1) unsigned default 0                                             not null comment '状态，0为正常，1为异常',
-    `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
-    `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除'
+    `id`           bigint unsigned auto_increment primary key                                not null comment 'id',
+    `email`        varchar(32)                                                               not null comment '邮箱',
+    `password`     varchar(16)                                                               not null comment '密码',
+    `nickname`     varchar(32)         default '用户昵称'                                        not null comment '昵称',
+    `avatar`       varchar(64)         default '/avatar/4.jpg'                               not null comment '头像',
+    `ip`           varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
+    `ip_territory` varchar(16)         default '未知'                                          not null comment 'ip属地',
+    `is_admin`     tinyint(1) unsigned default 0                                             not null comment '身份，0为普通用户，1为管理员',
+    `is_disable`   tinyint(1) unsigned default 0                                             not null comment '状态，0为正常，1为异常',
+    `update_time`  datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
+    `create_time`  datetime            default current_timestamp                             not null comment '创建时间',
+    `is_deleted`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除'
 ) comment '用户账号信息';
 
 create table `disable`
@@ -37,32 +38,34 @@ create table `disable`
 
 create table `blog`
 (
-    `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
-    `title`       varchar(64)                                                               not null comment '标题',
-    `description` varchar(256) comment '描述',
-    `cover`       text comment '特色图片',
-    `content`     mediumtext                                                                not null comment '内容',
-    `author_id`   bigint unsigned                                                           not null comment '作者用户名',
-    `ip`          varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
-    `status`      tinyint(2) unsigned default 0 comment '发布状态，0为审核中，1为通过审核，2为未通过审核',
-    `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
-    `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
+    `id`           bigint unsigned auto_increment primary key                                not null comment 'id',
+    `title`        varchar(64)                                                               not null comment '标题',
+    `description`  varchar(256) comment '描述',
+    `cover`        text comment '特色图片',
+    `content`      mediumtext                                                                not null comment '内容',
+    `author_id`    bigint unsigned                                                           not null comment '作者用户名',
+    `ip`           varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
+    `ip_territory` varchar(16)         default '未知'                                          not null comment 'ip属地',
+    `status`       tinyint(2) unsigned default 0 comment '发布状态，0为审核中，1为通过审核，2为未通过审核',
+    `update_time`  datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
+    `create_time`  datetime            default current_timestamp                             not null comment '创建时间',
+    `is_deleted`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
     foreign key (`author_id`) references `user` (`id`)
 ) comment '博客信息';
 
 create table `comment`
 (
-    `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
-    `blog_id`     bigint unsigned                                                           not null comment '所属博客id',
-    `parent`      bigint unsigned comment '父级评论，null则为一级评论，!null则为二级评论',
-    `sender_id`   bigint unsigned                                                           not null comment '评论者的id',
-    `receive_id`  bigint unsigned comment '接收者的id，为null则回复的是根评论',
-    `content`     varchar(128)                                                              not null comment '评论内容',
-    `ip`          varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
-    `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
-    `create_time` datetime            default current_timestamp                             not null comment '创建时间',
-    `is_deleted`  tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
+    `id`           bigint unsigned auto_increment primary key                                not null comment 'id',
+    `blog_id`      bigint unsigned                                                           not null comment '所属博客id',
+    `parent`       bigint unsigned comment '父级评论，null则为一级评论，!null则为二级评论',
+    `sender_id`    bigint unsigned                                                           not null comment '评论者的id',
+    `receive_id`   bigint unsigned comment '接收者的id，为null则回复的是根评论',
+    `content`      varchar(128)                                                              not null comment '评论内容',
+    `ip`           varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
+    `ip_territory` varchar(16)         default '未知'                                          not null comment 'ip属地',
+    `update_time`  datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
+    `create_time`  datetime            default current_timestamp                             not null comment '创建时间',
+    `is_deleted`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
     foreign key (`blog_id`) references `blog` (`id`),
     foreign key (`sender_id`) references `user` (`id`),
     foreign key (`receive_id`) references `user` (`id`)

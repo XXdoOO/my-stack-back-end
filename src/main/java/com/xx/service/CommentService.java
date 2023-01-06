@@ -9,7 +9,8 @@ import com.xx.pojo.entity.Comment;
 import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.CommentVo;
-import com.xx.util.IpUtil;
+import com.xx.util.AddressUtils;
+import com.xx.util.IpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,7 +72,8 @@ public class CommentService {
         commentVo.setParent(comment.getParent());
         commentVo.setSenderId(comment.getSenderId());
         commentVo.setReceiveId(comment.getReceiveId());
-        commentVo.setIp(IpUtil.getIpAddr(request));
+        commentVo.setIp(IpUtils.getIpAddr(request));
+        commentVo.setIpTerritory(AddressUtils.getRealAddressByIP(commentVo.getIp()));
         commentVo.setChildrenCount(0L);
         commentVo.setUp(0L);
         commentVo.setDown(0L);

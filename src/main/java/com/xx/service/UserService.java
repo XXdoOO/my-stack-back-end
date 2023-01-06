@@ -10,9 +10,7 @@ import com.xx.pojo.entity.Disable;
 import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.UserVo;
-import com.xx.util.Code;
-import com.xx.util.SaveFile;
-import com.xx.util.VerCodeGenerate;
+import com.xx.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
@@ -21,6 +19,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
@@ -36,6 +35,9 @@ public class UserService {
 
     @Autowired
     private HttpSession session;
+
+    @Autowired
+    private HttpServletRequest request;
 
     @Resource
     private JavaMailSender mailSender;
@@ -64,20 +66,32 @@ public class UserService {
         userVo.setNickname(user.getNickname());
         userVo.setEmail(user.getEmail());
         userVo.setAvatar(user.getAvatar());
-        userVo.setIp(user.getIp());
         userVo.setCreateTime(user.getCreateTime());
         userVo.setDisable(user.getDisable());
         userVo.setAdmin(user.getAdmin());
+        userVo.setIp(IpUtils.getIpAddr(request));
+        userVo.setIpTerritory(AddressUtils.getRealAddressByIP(userVo.getIp()));
+
+        User user1 = new User();
+        user1.setId(user.getId());
 
         if (user.getDisable()) {
             userVo.setDisableInfo(getUserDisableInfo(user.getId()));
 
             if (!user.getDisable()) {
                 user.setDisable(false);
+
+                user1.setDisable(false);
+                user1.setIp(userVo.getIp());
+                user1.setIpTerritory(userVo.getIpTerritory());
                 session.setAttribute("USER_SESSION", user);
             }
         } else {
             session.setAttribute("USER_SESSION", user);
+
+            user1.setIp(userVo.getIp());
+            user1.setIpTerritory(userVo.getIpTerritory());
+
             UserVo myInfo = userMapper.getUserInfo(null, user.getId());
 
             userVo.setAuditingCount(myInfo.getAuditingCount());
@@ -90,7 +104,7 @@ public class UserService {
 
             System.out.println(myInfo);
         }
-
+        userMapper.updateById(user1);
         return userVo;
     }
 

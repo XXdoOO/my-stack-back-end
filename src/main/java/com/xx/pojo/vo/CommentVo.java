@@ -20,6 +20,7 @@ public class CommentVo {
     private String receiveNickname;
     private String content;
     private String ip;
+    private String ipTerritory;
     private Long up;
     private Long down;
     private Boolean isUp;

@@ -14,6 +14,7 @@
         (select nickname from user where id = c.receive_id) as receive_nickname,
         c.content,
         c.ip,
+        c.ip_territory,
         c.create_time,
         u.nickname as sender_nickname,
         u.avatar as sender_avatar,

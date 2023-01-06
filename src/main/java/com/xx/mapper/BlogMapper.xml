@@ -140,6 +140,8 @@
         b.description,
         b.cover,
         b.content,
+        b.ip,
+        b.ip_territory,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
@@ -174,6 +176,8 @@
         <result column="down" property="down"/>
         <result column="star" property="star"/>
         <result column="views" property="views"/>
+        <result column="ip" property="ip"/>
+        <result column="ip_territory" property="ipTerritory"/>
         <result column="status" property="status"/>
         <result column="is_up" property="isUp"/>
         <result column="is_down" property="isDown"/>
