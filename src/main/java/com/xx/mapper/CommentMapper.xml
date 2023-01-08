@@ -47,4 +47,29 @@
             order by #{orderBy}
         </if>
     </select>
+
+    <select id="getCommentList2" resultType="CommentVo">
+        select c.*, u.nickname as sender_nickname from comment c
+        left join user u on c.sender_id = u.id
+        <where>
+            <if test="blogId != null">
+                c.blog_id = #{blogId}
+            </if>
+            <if test="content != null and content != ''">
+                and c.content like concat('%',#{content},'%')
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and u.nickname like concat('%',#{nickname},'%')
+            </if>
+            <if test="startTime != null">
+                and c.create_time <![CDATA[ >= ]]> #{startTime}
+            </if>
+            <if test="endTime != null">
+                and c.create_time <![CDATA[ <= ]]> #{endTime}
+            </if>
+            <if test="isDeleted != null">
+                and c.is_deleted = #{isDeleted}
+            </if>
+        </where>
+    </select>
 </mapper>

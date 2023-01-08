@@ -11,4 +11,5 @@ import java.util.List;
 @Repository
 public interface CommentMapper extends BaseMapper<Comment> {
     List<CommentVo> getCommentList(CommentDTO dto);
+    List<CommentVo> getCommentList2(CommentDTO dto);
 }

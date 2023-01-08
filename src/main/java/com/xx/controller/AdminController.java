@@ -5,8 +5,10 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xx.config.FilterConfigurer;
 import com.xx.pojo.dto.BlogDTO;
+import com.xx.pojo.dto.CommentDTO;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.service.BlogService;
+import com.xx.service.CommentService;
 import com.xx.service.UserService;
 import com.xx.util.Code;
 import com.xx.util.MyResponse;
@@ -27,6 +29,9 @@ public class AdminController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CommentService commentService;
 
     @ResponseBody
     @GetMapping("getBlogList")
@@ -64,6 +69,13 @@ public class AdminController {
             return MyResponse.success();
         }
         return MyResponse.fail();
+    }
+
+    @ResponseBody
+    @GetMapping("getCommentsList")
+    private MyResponse getCommentsList(CommentDTO dto) {
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+        return MyResponse.success(new PageInfo<>(commentService.getCommentsList2(dto)));
     }
 }
 

@@ -52,6 +52,10 @@ public class CommentService {
         return commentMapper.getCommentList(dto);
     }
 
+    public List<CommentVo> getCommentsList2(CommentDTO dto) {
+        return commentMapper.getCommentList2(dto);
+    }
+
     public CommentVo postComments(CommentDTO dto) {
         User user = (User) session.getAttribute("USER_SESSION");
 

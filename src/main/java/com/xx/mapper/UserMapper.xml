@@ -47,6 +47,7 @@
         nickname,
         avatar,
         ip,
+        ip_territory,
         is_admin,
         is_disable,
         is_deleted,
