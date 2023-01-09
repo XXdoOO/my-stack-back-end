@@ -12,10 +12,10 @@ create table `user`
     `id`           bigint unsigned auto_increment primary key                                not null comment 'id',
     `email`        varchar(32)                                                               not null comment '邮箱',
     `password`     varchar(16)                                                               not null comment '密码',
-    `nickname`     varchar(32)         default '用户昵称'                                        not null comment '昵称',
+    `nickname`     varchar(32)         default '用户昵称'                                    not null comment '昵称',
     `avatar`       varchar(64)         default '/avatar/4.jpg'                               not null comment '头像',
     `ip`           varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
-    `ip_territory` varchar(16)         default '未知'                                          not null comment 'ip属地',
+    `ip_territory` varchar(16)         default '未知'                                        not null comment 'ip属地',
     `is_admin`     tinyint(1) unsigned default 0                                             not null comment '身份，0为普通用户，1为管理员',
     `is_disable`   tinyint(1) unsigned default 0                                             not null comment '状态，0为正常，1为异常',
     `update_time`  datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
@@ -45,7 +45,7 @@ create table `blog`
     `content`      mediumtext                                                                not null comment '内容',
     `author_id`    bigint unsigned                                                           not null comment '作者用户名',
     `ip`           varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
-    `ip_territory` varchar(16)         default '未知'                                          not null comment 'ip属地',
+    `ip_territory` varchar(16)         default '未知'                                        not null comment 'ip属地',
     `status`       tinyint(2) unsigned default 0 comment '发布状态，0为审核中，1为通过审核，2为未通过审核',
     `update_time`  datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time`  datetime            default current_timestamp                             not null comment '创建时间',
@@ -62,7 +62,7 @@ create table `comment`
     `receive_id`   bigint unsigned comment '接收者的id，为null则回复的是根评论',
     `content`      varchar(128)                                                              not null comment '评论内容',
     `ip`           varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
-    `ip_territory` varchar(16)         default '未知'                                          not null comment 'ip属地',
+    `ip_territory` varchar(16)         default '未知'                                        not null comment 'ip属地',
     `update_time`  datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
     `create_time`  datetime            default current_timestamp                             not null comment '创建时间',
     `is_deleted`   tinyint(1) unsigned default 0                                             not null comment '逻辑删除，1为删除',
@@ -85,7 +85,7 @@ create table `record`
     foreign key (`blog_id`) references `blog` (`id`)
 ) comment '收藏关系';
 
-create table category
+create table `category`
 (
     `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
     `name`        varchar(16)                                                               not null comment '名称',
@@ -94,7 +94,7 @@ create table category
     `is_deleted`  tinyint(1) unsigned default 0                                             not null
 ) comment '分类';
 
-create table blog_category
+create table `blog_category`
 (
     `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
     `blog_id`     bigint unsigned                                                           not null comment '博客id',
@@ -105,6 +105,28 @@ create table blog_category
     foreign key (`category_id`) references `category` (`id`)
 
 ) comment '博客和分类关系';
+
+create table `dict_type`
+(
+    `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
+    `name`        varchar(16) unique                                                        not null comment '字典名称',
+    `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
+    `create_time` datetime            default current_timestamp                             not null comment '创建时间',
+    `is_deleted`  tinyint(1) unsigned default 0                                             not null
+) comment '字典类型';
+
+create table `dict_data`
+(
+    `id`          bigint unsigned auto_increment primary key                                not null comment 'id',
+    `dict_name`   varchar(16)                                                               not null comment '字典名称',
+    `label`       varchar(8)                                                                not null comment 'value',
+    `value`       varchar(8)                                                                not null comment 'key',
+    `update_time` datetime            default current_timestamp on update current_timestamp not null comment '更新时间',
+    `create_time` datetime            default current_timestamp                             not null comment '创建时间',
+    `is_deleted`  tinyint(1) unsigned default 0,
+    foreign key (`dict_name`) references `dict_type` (`name`),
+    unique index `dict_data`(`dict_name`, `value`)
+) comment '字典数据';
 
 insert into category(`name`)
 values ('java'),
