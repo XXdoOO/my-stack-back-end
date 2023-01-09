@@ -27,44 +27,44 @@ public class DictController {
 
     @ResponseBody
     @PostMapping("dictType")
-    public MyResponse postDictType(DictDTO dto) {
+    public MyResponse postDictType(@RequestBody DictDTO dto) {
         return dictService.postDictType(dto) ? MyResponse.success() : MyResponse.fail();
     }
 
     @ResponseBody
     @PutMapping("dictType")
-    public MyResponse putDictType(DictDTO dto) {
+    public MyResponse putDictType(@RequestBody DictDTO dto) {
         return dictService.putDictType(dto) ? MyResponse.success() : MyResponse.fail();
     }
 
     @ResponseBody
-    @DeleteMapping("dictType")
-    public MyResponse deleteDictType(@RequestParam long id) {
+    @DeleteMapping("dictType/{id}")
+    public MyResponse deleteDictType(@PathVariable long id) {
         return dictService.deleteDictType(id) ? MyResponse.success() : MyResponse.fail();
     }
 
     @ResponseBody
     @GetMapping("dictData")
-    public MyResponse getDictData(DictDTO dto) {
+    public MyResponse getDictData(@RequestBody DictDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         return MyResponse.success(new PageInfo<>(dictService.getDictData(dto)));
     }
 
     @ResponseBody
     @PostMapping("dictData")
-    public MyResponse postDictData(DictDTO dto) {
+    public MyResponse postDictData(@RequestBody DictDTO dto) {
         return dictService.postDictData(dto) ? MyResponse.success() : MyResponse.fail();
     }
 
     @ResponseBody
     @PutMapping("dictData")
-    public MyResponse putDictData(DictDTO dto) {
+    public MyResponse putDictData(@RequestBody DictDTO dto) {
         return dictService.putDictData(dto) ? MyResponse.success() : MyResponse.fail();
     }
 
     @ResponseBody
-    @DeleteMapping("dictData")
-    public MyResponse deleteDictData(@RequestParam long id) {
+    @DeleteMapping("dictData/{id}")
+    public MyResponse deleteDictData(@PathVariable long id) {
         return dictService.deleteDictData(id) ? MyResponse.success() : MyResponse.fail();
     }
 }
