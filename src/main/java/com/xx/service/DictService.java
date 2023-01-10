@@ -23,7 +23,9 @@ public class DictService {
     public List<DictType> getDictType(DictDTO dto) {
         DictType type = new DictType();
         type.setName(dto.getDictName());
-        return dictTypeMapper.selectList(new QueryWrapper<>(type));
+        return dictTypeMapper.selectList(new QueryWrapper<>(type).
+                ge(dto.getCreateTime()[0] != null, "create_time", dto.getCreateTime()[0]).
+                le(dto.getCreateTime()[1] != null, "create_time", dto.getCreateTime()[1]));
     }
 
     public boolean postDictType(DictDTO dto) {
