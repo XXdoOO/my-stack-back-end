@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName(value = "blog")
 public class Blog extends BaseEntity {
     private String title;
     private String description;

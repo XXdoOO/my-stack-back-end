@@ -1,13 +1,14 @@
 package com.xx.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.SqlCondition;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
-@TableName(value = "user")
 public class User extends BaseEntity {
+    @TableId(type = IdType.AUTO)
+    private Long id;
     private String email;
     private String password;
 
@@ -20,6 +21,18 @@ public class User extends BaseEntity {
     @TableField(value = "is_admin")
     private Boolean admin;
 
-    @TableField(value = "is_disable")
-    private Boolean disable;
+    @TableField(value = "is_enabled")
+    private Boolean enabled;
+
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date updateTime;
+
+    @TableField(fill = FieldFill.INSERT)
+    private Date createTime;
+
+    private Long createBy;
+
+    @TableField(value = "is_deleted")
+    @TableLogic
+    private Boolean deleted;
 }

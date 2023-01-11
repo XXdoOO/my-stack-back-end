@@ -11,6 +11,7 @@ import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.UserVo;
 import com.xx.util.*;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailSendException;
@@ -45,10 +46,6 @@ public class UserService {
     @Value("${spring.mail.username}")
     private String from;
 
-
-    @Value("${images.local-path}")
-    private String locPath;
-
     public UserVo login(String email, String password) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
 
@@ -62,26 +59,18 @@ public class UserService {
 
         UserVo userVo = new UserVo();
 
-        userVo.setId(user.getId());
-        userVo.setNickname(user.getNickname());
-        userVo.setEmail(user.getEmail());
-        userVo.setAvatar(user.getAvatar());
-        userVo.setCreateTime(user.getCreateTime());
-        userVo.setDisable(user.getDisable());
-        userVo.setAdmin(user.getAdmin());
-        userVo.setIp(IpUtils.getIpAddr(request));
-        userVo.setIpTerritory(AddressUtils.getRealAddressByIP(userVo.getIp()));
+        BeanUtils.copyProperties(user, userVo, "password");
 
         User user1 = new User();
         user1.setId(user.getId());
 
-        if (user.getDisable()) {
+        if (!user.getEnabled()) {
             userVo.setDisableInfo(getUserDisableInfo(user.getId()));
 
-            if (!user.getDisable()) {
-                user.setDisable(false);
+            if (userVo.getDisableInfo() == null) {
+                userVo.setEnabled(false);
 
-                user1.setDisable(false);
+                user1.setEnabled(false);
                 user1.setIp(userVo.getIp());
                 user1.setIpTerritory(userVo.getIpTerritory());
                 session.setAttribute("USER_SESSION", user);

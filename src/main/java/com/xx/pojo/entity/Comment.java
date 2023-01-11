@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName(value = "comment")
 public class Comment extends BaseEntity {
     private Long blogId;
     private Long parent;

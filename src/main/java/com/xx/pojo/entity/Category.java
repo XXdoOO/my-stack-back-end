@@ -6,11 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName(value = "category")
 public class Category extends BaseEntity {
-    @TableId
-    private Long id;
-
-    @TableField(value = "name")
     private String name;
 }

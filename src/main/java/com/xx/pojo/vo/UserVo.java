@@ -2,6 +2,7 @@ package com.xx.pojo.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.xx.pojo.entity.Disable;
+import com.xx.pojo.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,16 +13,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserVo {
-    private Long id;
-    private String email;
-    private String nickname;
-    private String avatar;
-    private String ip;
-    private String ipTerritory;
-    private Date createTime;
-    private Boolean disable;
-    private Boolean admin;
+public class UserVo extends User {
     private Disable disableInfo;
     private Long passCount;
     private Long noPassCount;
