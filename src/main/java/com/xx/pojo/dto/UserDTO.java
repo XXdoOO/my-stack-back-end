@@ -5,13 +5,10 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 @Data
-public class UserDTO extends PageDTO {
+public class UserDTO extends BaseDTO {
     private String email;
 
     private String password;
@@ -24,23 +21,9 @@ public class UserDTO extends PageDTO {
 
     private Boolean isAdmin;
 
-    private Boolean isDisable;
-
-    private Boolean isDeleted;
-
-    private Integer status;
-
     private Long userId;
 
     private Long minutes;
 
     private String reason;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date startTime;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date endTime;
 }

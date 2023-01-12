@@ -137,7 +137,7 @@ public class VisitorController {
 
             if (user == null) {
                 return MyResponse.fail("邮箱或密码错误");
-            } else if (user.getDisable()) {
+            } else if (!user.getEnabled()) {
                 return MyResponse.error("用户已被封禁", user.getDisableInfo());
             } else {
                 return MyResponse.success("登录成功", user);

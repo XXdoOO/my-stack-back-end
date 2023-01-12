@@ -71,15 +71,16 @@ public class UserService {
                 userVo.setEnabled(false);
 
                 user1.setEnabled(false);
-                user1.setIp(userVo.getIp());
-                user1.setIpTerritory(userVo.getIpTerritory());
+                user1.setIp(IpUtils.getIpAddr(request));
+                user1.setIpTerritory(AddressUtils.getRealAddressByIP(user1.getIp()));
                 session.setAttribute("USER_SESSION", user);
             }
+            return null;
         } else {
             session.setAttribute("USER_SESSION", user);
 
-            user1.setIp(userVo.getIp());
-            user1.setIpTerritory(userVo.getIpTerritory());
+            user1.setIp(IpUtils.getIpAddr(request));
+            user1.setIpTerritory(AddressUtils.getRealAddressByIP(user1.getIp()));
 
             UserVo myInfo = userMapper.getUserInfo(null, user.getId());
 
@@ -90,8 +91,6 @@ public class UserService {
             userVo.setDown(myInfo.getDown());
             userVo.setStar(myInfo.getStar());
             userVo.setHistory(myInfo.getHistory());
-
-            System.out.println(myInfo);
         }
         userMapper.updateById(user1);
         return userVo;
@@ -109,7 +108,7 @@ public class UserService {
             return disable;
         } else { // 用户已解封
             UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-            userMapper.update(null, wrapper.set("status", false).
+            userMapper.update(null, wrapper.set("is_enabled", true).
                     eq("id", id));
 
             QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
@@ -210,11 +209,11 @@ public class UserService {
     }
 
     public void disableUser(UserDTO dto) {
-        if (!dto.getIsDisable()) {
+        if (dto.getEnabled()) {
             QueryWrapper<Disable> wrapper = new QueryWrapper<>();
             disableMapper.delete(wrapper.eq("user_id", dto.getUserId()));
             UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
-            userMapper.update(null, updateWrapper.set("is_disable", 0).
+            userMapper.update(null, updateWrapper.set("is_enabled", true).
                     eq("id", dto.getUserId()));
         } else if (StringUtils.isNotBlank(dto.getReason()) && dto.getMinutes() != null && dto.getMinutes() > 0) {
             Disable disable = new Disable();
@@ -225,7 +224,7 @@ public class UserService {
             disableMapper.insert(disable);
 
             UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-            userMapper.update(null, wrapper.set("is_disable", 1).
+            userMapper.update(null, wrapper.set("is_enabled", false).
                     eq("id", dto.getUserId()));
         }
     }

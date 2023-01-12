@@ -64,7 +64,7 @@ public class AdminController {
     @ResponseBody
     @PutMapping("disableUser")
     private MyResponse disableUser(@RequestBody UserDTO dto) {
-        if (dto.getUserId() != null && dto.getIsDisable() != null) {
+        if (dto.getUserId() != null && dto.getEnabled() != null) {
             userService.disableUser(dto);
             return MyResponse.success();
         }

@@ -17,7 +17,7 @@ create table `user`
     `ip`           varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
     `ip_territory` varchar(16)         default '未知'                                          not null comment 'ip属地',
     `is_admin`     tinyint(1) unsigned default 0                                             not null comment '身份，0为普通用户，1为管理员',
-    `is_disable`   tinyint(1) unsigned default 0                                             not null comment '状态，0为正常，1为异常',
+    `is_enabled`   tinyint(1) unsigned default 0                                             not null comment '状态，0为正常，1为异常',
     `update_time`  datetime            default current_timestamp on update current_timestamp not null,
     `create_time`  datetime            default current_timestamp                             not null,
     `is_deleted`   tinyint(1) unsigned default 0                                             not null
