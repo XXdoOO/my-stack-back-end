@@ -10,8 +10,7 @@ public class Blog extends BaseEntity {
     private String description;
     private String cover;
     private String content;
-    private Long views;
-    private Long authorId;
+    private Long view;
     private Integer status;
     private String ip;
     private String ipTerritory;

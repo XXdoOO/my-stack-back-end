@@ -6,7 +6,6 @@ import lombok.Data;
 
 @Data
 public class Record extends BaseEntity {
-    private Long userId;
     private Long blogId;
     private Long commentId;
     private Integer type;

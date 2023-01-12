@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -68,9 +69,9 @@ public class UserService {
             userVo.setDisableInfo(getUserDisableInfo(user.getId()));
 
             if (userVo.getDisableInfo() == null) {
-                userVo.setEnabled(false);
+                userVo.setEnabled(true);
 
-                user1.setEnabled(false);
+                user1.setEnabled(true);
                 user1.setIp(IpUtils.getIpAddr(request));
                 user1.setIpTerritory(AddressUtils.getRealAddressByIP(user1.getIp()));
                 session.setAttribute("USER_SESSION", user);
@@ -93,6 +94,7 @@ public class UserService {
             userVo.setHistory(myInfo.getHistory());
         }
         userMapper.updateById(user1);
+        disableMapper.deleteById(user.getId());
         return userVo;
     }
 
@@ -107,12 +109,6 @@ public class UserService {
         if (disable != null && disable.getEndTime().getTime() > System.currentTimeMillis()) {
             return disable;
         } else { // 用户已解封
-            UpdateWrapper<User> wrapper = new UpdateWrapper<>();
-            userMapper.update(null, wrapper.set("is_enabled", true).
-                    eq("id", id));
-
-            QueryWrapper<Disable> queryWrapper = new QueryWrapper<>();
-            disableMapper.delete(queryWrapper.eq("user_id", id));
             return null;
         }
     }
@@ -143,7 +139,7 @@ public class UserService {
     }
 
     public boolean updateInfo(UserDTO dto) {
-        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
+        Long id = getCurrentUser().getId();
         User user = new User();
         user.setId(id);
         user.setNickname(dto.getNickname());
@@ -156,9 +152,7 @@ public class UserService {
     }
 
     public boolean deleteSelf() {
-        Long id = ((User) session.getAttribute("USER_SESSION")).getId();
-
-        return userMapper.deleteById(id) == 1;
+        return userMapper.deleteById(getCurrentUser().getId()) == 1;
     }
 
     public boolean sendRegisterCode(String email) {
@@ -195,17 +189,17 @@ public class UserService {
     }
 
     public List<User> getUserList(UserDTO dto) {
-        return userMapper.getUserList(dto);
+        User user = new User();
+        user.setEmail(dto.getEmail());
+        user.setNickname(dto.getNickname());
+        user.setAdmin(dto.getIsAdmin());
+        user.setEnabled(dto.getEnabled());
+
+        return userMapper.selectList(new QueryWrapper<>(user));
     }
 
     public UserVo getUserInfo(Long authorId) {
-        User user = (User) session.getAttribute("USER_SESSION");
-
-        Long userId = null;
-        if (user != null) {
-            userId = user.getId();
-        }
-        return userMapper.getUserInfo(authorId, userId);
+        return userMapper.getUserInfo(authorId, getCurrentUser().getId());
     }
 
     public void disableUser(UserDTO dto) {
@@ -227,5 +221,13 @@ public class UserService {
             userMapper.update(null, wrapper.set("is_enabled", false).
                     eq("id", dto.getUserId()));
         }
+    }
+
+    public User getCurrentUser() {
+        Object user = session.getAttribute("USER_SESSION");
+        if (user == null) {
+            return new User();
+        }
+        return (User) user;
     }
 }

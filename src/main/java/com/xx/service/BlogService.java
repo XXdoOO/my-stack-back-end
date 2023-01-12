@@ -45,13 +45,7 @@ public class BlogService {
     private HttpServletRequest request;
 
     public List<BlogViewVo> getBlogList(BlogDTO dto) {
-        User user = (User) session.getAttribute("USER_SESSION");
-
-        if (user != null) {
-            dto.setUserId(user.getId());
-        } else {
-            dto.setUserId(null);
-        }
+        dto.setUserId(userService.getCurrentUser().getId());
 
         System.out.println(dto);
 
@@ -72,22 +66,21 @@ public class BlogService {
     }
 
     public BlogVo getBlogDetails(long id) {
-        User user = (User) session.getAttribute("USER_SESSION");
+        User user = userService.getCurrentUser();
 
         Long userId = null;
         if (user != null) {
             userId = user.getId();
-
             Record record = new Record();
             record.setBlogId(id);
             record.setType(3);
-            record.setUserId(userId);
+            record.setCreateBy(userId);
 
             recordMapper.insert(record);
         }
 
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
-        blogMapper.update(null, wrapper.setSql("views = views + 1").eq("id", id));
+        blogMapper.update(null, wrapper.setSql("view = view + 1").eq("id", id));
 
         return blogMapper.getBlogDetails(id, userId);
     }
@@ -101,16 +94,11 @@ public class BlogService {
             return false;
         }
 
-        User user = (User) session.getAttribute("USER_SESSION");
-
-        Long userId = null;
-        if (user != null) {
-            userId = user.getId();
-        }
+        Long userId = userService.getCurrentUser().getId();
 
         QueryWrapper<Record> wrapper = new QueryWrapper<>();
         Record record1 = recordMapper.selectOne(wrapper.
-                eq("user_id", userId).
+                eq("create_by", userId).
                 eq("blog_id", blogId).
                 eq("type", type));
 
@@ -119,7 +107,7 @@ public class BlogService {
 
             record.setBlogId(blogId);
             record.setType(type);
-            record.setUserId(userId);
+            record.setCreateBy(userId);
 
             return recordMapper.insert(record) == 1;
         } else {
@@ -128,14 +116,14 @@ public class BlogService {
     }
 
     public void postBlog(BlogDTO dto) {
-        User user = (User) session.getAttribute("USER_SESSION");
+        User user = userService.getCurrentUser();
 
         Blog blog = new Blog();
 
         blog.setTitle(dto.getTitle());
         blog.setDescription(dto.getDescription());
         blog.setContent(dto.getContent());
-        blog.setAuthorId(user.getId());
+        blog.setCreateBy(user.getId());
         blog.setIp(IpUtils.getIpAddr(request));
         blog.setIpTerritory(AddressUtils.getRealAddressByIP(blog.getIp()));
 
@@ -146,12 +134,12 @@ public class BlogService {
             blogMapper.update(null, wrapper.
                     set("cover", "/cover/" + blog.getId() + ".jpg").
                     eq("id", blog.getId()).
-                    eq("author_id", user.getId()));
+                    eq("create_by", user.getId()));
         }
     }
 
     public void updateBlog(BlogDTO dto) {
-        User user = (User) session.getAttribute("USER_SESSION");
+        User user = userService.getCurrentUser();
 
         Blog blog = new Blog();
 
@@ -165,16 +153,16 @@ public class BlogService {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         blogMapper.update(blog, wrapper.
                 eq("id", dto.getId()).
-                eq("author_id", user.getId()));
+                eq("create_by", user.getId()));
     }
 
     public boolean deleteBlog(long blogId) {
-        User user = (User) session.getAttribute("USER_SESSION");
+        User user = userService.getCurrentUser();
 
         QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
         recordMapper.delete(queryWrapper.eq("blog_id", blogId));
 
         QueryWrapper<Blog> wrapper = new QueryWrapper<>();
-        return blogMapper.delete(wrapper.eq("id", blogId).eq("author_id", user.getId())) == 1;
+        return blogMapper.delete(wrapper.eq("id", blogId).eq("create_by", user.getId())) == 1;
     }
 }

@@ -11,6 +11,7 @@ import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.CommentVo;
 import com.xx.util.AddressUtils;
 import com.xx.util.IpUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,19 +32,16 @@ public class CommentService {
     private UserMapper userMapper;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private HttpSession session;
 
     @Autowired
     private HttpServletRequest request;
 
     public List<CommentVo> getCommentsList(CommentDTO dto) {
-        User user = (User) session.getAttribute("USER_SESSION");
-
-        if (user != null) {
-            dto.setUserId(user.getId());
-        } else {
-            dto.setUserId(null);
-        }
+        dto.setUserId(userService.getCurrentUser().getId());
 
         if (dto.getParent() == null) {
             dto.setParent(0L);
@@ -57,43 +55,28 @@ public class CommentService {
     }
 
     public CommentVo postComments(CommentDTO dto) {
-        User user = (User) session.getAttribute("USER_SESSION");
-
         Comment comment = new Comment();
         comment.setBlogId(dto.getBlogId());
         comment.setContent(dto.getContent());
         comment.setParent(dto.getParent());
-        comment.setSenderId(user.getId());
+        comment.setIp(IpUtils.getIpAddr(request));
+        comment.setIpTerritory(AddressUtils.getRealAddressByIP(comment.getIp()));
+        comment.setCreateBy(userService.getCurrentUser().getId());
         comment.setReceiveId(dto.getReceiveId());
 
         commentMapper.insert(comment);
 
         CommentVo commentVo = new CommentVo();
 
-        commentVo.setId(comment.getId());
-        commentVo.setBlogId(comment.getBlogId());
-        commentVo.setContent(comment.getContent());
-        commentVo.setParent(comment.getParent());
-        commentVo.setSenderId(comment.getSenderId());
-        commentVo.setReceiveId(comment.getReceiveId());
-        commentVo.setIp(IpUtils.getIpAddr(request));
-        commentVo.setIpTerritory(AddressUtils.getRealAddressByIP(commentVo.getIp()));
-        commentVo.setChildrenCount(0L);
-        commentVo.setUp(0L);
-        commentVo.setDown(0L);
-        commentVo.setIsUp(false);
-        commentVo.setIsDown(false);
-        commentVo.setCreateTime(comment.getCreateTime());
+        BeanUtils.copyProperties(comment, commentVo);
         return commentVo;
     }
 
     public int deleteComment(Long id) {
-        User user = (User) session.getAttribute("USER_SESSION");
-
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         return commentMapper.delete(wrapper.
                 eq("id", id).
-                and(i -> i.eq("sender_id", user.getId()).or().eq("parent", id)));
+                and(i -> i.eq("create_by", userService.getCurrentUser().getId()).or().eq("parent", id)));
     }
 
     public boolean handleComment(long commentId, int type) {
@@ -101,16 +84,11 @@ public class CommentService {
             return false;
         }
 
-        User user = (User) session.getAttribute("USER_SESSION");
-
-        Long userId = null;
-        if (user != null) {
-            userId = user.getId();
-        }
+        Long userId = userService.getCurrentUser().getId();
 
         QueryWrapper<Record> wrapper = new QueryWrapper<>();
         Record record1 = recordMapper.selectOne(wrapper.
-                eq("user_id", userId).
+                eq("create_by", userId).
                 eq("comment_id", commentId).
                 eq("type", type));
 
@@ -119,7 +97,7 @@ public class CommentService {
 
             record.setCommentId(commentId);
             record.setType(type);
-            record.setUserId(userId);
+            record.setCreateBy(userId);
 
             return recordMapper.insert(record) == 1;
         } else {

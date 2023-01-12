@@ -25,22 +25,22 @@
         b.title,
         b.description,
         b.cover,
+        b.view,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
-        count(distinct case when r.type = 3 then r.id end) + b.views as views,
         b.status,
         b.create_time,
-        b.author_id,
+        b.create_by,
         u.nickname as author_nickname
         <include refid="isRecord"/>
-        from blog b left join user u on u.id = b.author_id
+        from blog b left join user u on u.id = b.create_by
         left join record r on r.is_deleted = 0 and r.blog_id is not null
-        <if test="authorId != null and (type == 0 or type == 1 or (userId != null and userId == authorId and (type == 4 or type == 5)))">
+        <if test="createBy != null and (type == 0 or type == 1 or (userId != null and userId == createBy and (type == 4 or type == 5)))">
             and b.id = r.blog_id
         </if>
-        <if test="authorId == null or (authorId != null and (type == null or (userId != null and userId == authorId and (type == 2 or type == 3))))">
-            and b.author_id = r.user_id
+        <if test="createBy == null or (createBy != null and (type == null or (userId != null and userId == createBy and (type == 2 or type == 3))))">
+            and b.create_by = r.create_by
         </if>
         <where>
             b.is_deleted = 0
@@ -50,32 +50,32 @@
                 or b.content like concat('%', #{keywords}, '%'))
             </if>
 
-            <if test="authorId != null">
+            <if test="createBy != null">
                 <if test="type == null">
-                    and b.status = 1 and b.author_id = #{authorId}
+                    and b.status = 1 and b.create_by = #{createBy}
                 </if>
                 <if test="type == 0">
-                    and r.type = 0 and r.user_id = #{authorId}
+                    and r.type = 0 and r.user_id = #{createBy}
                 </if>
                 <if test="type == 1">
-                    and r.type = 1 and r.user_id = #{authorId}
+                    and r.type = 1 and r.user_id = #{createBy}
                 </if>
-                <if test="userId != null and userId == authorId">
+                <if test="userId != null and userId == createBy">
                     <if test="type == 2">
-                        and b.status = 0 and b.author_id = #{authorId}
+                        and b.status = 0 and b.create_by = #{createBy}
                     </if>
                     <if test="type == 3">
-                        and b.status = 2 and b.author_id = #{authorId}
+                        and b.status = 2 and b.create_by = #{createBy}
                     </if>
                     <if test="type == 4">
-                        and r.type = 2 and r.user_id = #{authorId}
+                        and r.type = 2 and r.user_id = #{createBy}
                     </if>
                     <if test="type == 5">
-                        and r.type = 3 and r.user_id = #{authorId}
+                        and r.type = 3 and r.user_id = #{createBy}
                     </if>
                 </if>
             </if>
-            <if test="authorId == null">
+            <if test="createBy == null">
                 and b.status = 1
             </if>
         </where>
@@ -87,18 +87,19 @@
         b.title,
         b.description,
         b.cover,
+        b.view,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
-        count(distinct case when r.type = 3 then r.id end) + b.views as views,
+        count(distinct case when r.type = 3 then r.id end) as view,
         b.status,
         b.create_time,
-        b.author_id,
+        b.create_by,
         u.nickname as author_nickname
         <include refid="isRecord"/>
-        from blog b left join user u on u.id = b.author_id
+        from blog b left join user u on u.id = b.create_by
         left join record r on r.is_deleted = 0 and r.blog_id is not null
-        and b.author_id = r.user_id
+        and b.create_by = r.create_by
         <where>
             <if test="title != null and title != ''">
                 and b.title like concat('%', #{title}, '%')
@@ -142,47 +143,32 @@
         b.content,
         b.ip,
         b.ip_territory,
+        b.view,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
-        count(distinct case when r.type = 3 then r.id end) + b.views as views,
         b.status,
         b.create_time,
         u.id as u_id,
         u.nickname as u_nickname,
         u.avatar as u_avatar,
         u.is_admin as u_is_admin,
-        u.is_disable as u_is_disable,
+        u.is_enabled as u_is_enabled,
         u.create_time as u_create_time,
-        (select count(r.id) from record r where r.user_id = b.author_id and r.blog_id is not null and r.type = 0) as
+        (select count(r.id) from record r where r.create_by = b.create_by and r.blog_id is not null and r.type = 0) as
         up_count,
-        (select count(r.id) from record r where r.user_id = b.author_id and r.blog_id is not null and r.type = 1) as
+        (select count(r.id) from record r where r.create_by = b.create_by and r.blog_id is not null and r.type = 1) as
         down_count,
-        (select count(blog.id) from blog where blog.author_id = b.author_id and blog.status = 1 and blog.is_deleted =
+        (select count(blog.id) from blog where blog.create_by = b.create_by and blog.status = 1 and blog.is_deleted =
         false) as pass_count
         <include refid="isRecord"/>
         from blog b
-        left join user u on b.author_id = u.id
+        left join user u on b.create_by = u.id
         left join record r on r.is_deleted = 0 and r.blog_id is not null and b.id = r.blog_id
         where b.id = #{id}
     </select>
     <resultMap id="BlogDetails" type="BlogVo">
         <id column="id" property="id"/>
-        <result column="title" property="title"/>
-        <result column="description" property="description"/>
-        <result column="cover" property="cover"/>
-        <result column="content" property="content"/>
-        <result column="up" property="up"/>
-        <result column="down" property="down"/>
-        <result column="star" property="star"/>
-        <result column="views" property="views"/>
-        <result column="ip" property="ip"/>
-        <result column="ip_territory" property="ipTerritory"/>
-        <result column="status" property="status"/>
-        <result column="is_up" property="isUp"/>
-        <result column="is_down" property="isDown"/>
-        <result column="is_star" property="isStar"/>
-        <result column="create_time" property="createTime"/>
         <association property="authorInfo">
             <id column="u_id" property="id"/>
             <result column="u_nickname" property="nickname"/>

@@ -20,6 +20,9 @@ public class DictService {
     @Autowired
     private DictDataMapper dictDataMapper;
 
+    @Autowired
+    private UserService userService;
+
     public List<DictType> getDictType(DictDTO dto) {
         DictType type = new DictType();
         type.setName(dto.getDictName());
@@ -31,6 +34,8 @@ public class DictService {
     public boolean postDictType(DictDTO dto) {
         DictType type = new DictType();
         type.setName(dto.getDictName());
+        type.setEnabled(dto.getEnabled());
+        type.setCreateBy(userService.getCurrentUser().getId());
         return dictTypeMapper.insert(type) == 1;
     }
 
@@ -58,6 +63,7 @@ public class DictService {
         data.setDictName(dto.getDictName());
         data.setValue(dto.getValue());
         data.setLabel(dto.getLabel());
+        data.setCreateBy(userService.getCurrentUser().getId());
         return dictDataMapper.insert(data) == 1;
     }
 

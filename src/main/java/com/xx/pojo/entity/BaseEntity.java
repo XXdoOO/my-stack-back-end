@@ -1,6 +1,7 @@
 package com.xx.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.xx.service.UserService;
 import lombok.Data;
 
 import java.util.Date;

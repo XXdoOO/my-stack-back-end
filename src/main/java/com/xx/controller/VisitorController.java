@@ -108,20 +108,6 @@ public class VisitorController {
 
         System.out.println(map);
 
-        String email = userDTO.getEmail();
-        String password = userDTO.getPassword();
-        String code = userDTO.getCode();
-
-        if (StringUtils.isBlank(email)) {
-            return MyResponse.error("邮箱为空或格式错误");
-        }
-        if (StringUtils.isBlank(password)) {
-            return MyResponse.error("密码为空或格式错误");
-        }
-        if (StringUtils.isBlank(code) && code.length() == 4) {
-            return MyResponse.error("验证码为空或格式错误");
-        }
-
         if (map == null || System.currentTimeMillis() - map.getCreateTime() >= 60000) {
             session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
             return MyResponse.fail("验证码已过期");
@@ -153,17 +139,6 @@ public class VisitorController {
         String email = userDTO.getEmail();
         String password = userDTO.getPassword();
         String code = userDTO.getCode();
-
-        if (StringUtils.isNotBlank(email)) {
-            return MyResponse.error("邮箱为空或格式错误");
-        }
-        if (StringUtils.isNotBlank(password)) {
-            return MyResponse.error("密码为空或格式错误");
-        }
-        if (StringUtils.isNotBlank(code) && code.length() == 6) {
-            return MyResponse.error("验证码为空或格式错误");
-        }
-
 
         if (map == null || System.currentTimeMillis() - map.getCreateTime() >= 300000) {
             return MyResponse.fail("验证码已过期");

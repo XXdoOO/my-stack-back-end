@@ -8,7 +8,6 @@ import lombok.Data;
 public class Comment extends BaseEntity {
     private Long blogId;
     private Long parent;
-    private Long senderId;
     private Long receiveId;
     private String content;
     private String ip;

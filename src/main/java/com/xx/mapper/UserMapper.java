@@ -12,7 +12,5 @@ import java.util.List;
 
 @Repository
 public interface UserMapper extends BaseMapper<User> {
-    UserVo getUserInfo(Long authorId, Long userId);
-
-    List<User> getUserList(UserDTO dto);
+    UserVo getUserInfo(Long createBy, Long userId);
 }

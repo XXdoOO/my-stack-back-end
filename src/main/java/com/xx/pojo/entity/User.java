@@ -6,20 +6,9 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class User extends BaseEntity {
+public class User {
     @TableId(type = IdType.AUTO)
     private Long id;
-    private String email;
-    private String password;
-
-    @TableField(condition = SqlCondition.LIKE)
-    private String nickname;
-    private String avatar;
-    private String ip;
-    private String ipTerritory;
-
-    @TableField(value = "is_admin")
-    private Boolean admin;
 
     @TableField(value = "is_enabled")
     private Boolean enabled;
@@ -30,9 +19,22 @@ public class User extends BaseEntity {
     @TableField(fill = FieldFill.INSERT)
     private Date createTime;
 
-    private Long createBy;
-
     @TableField(value = "is_deleted")
     @TableLogic
     private Boolean deleted;
+
+    @TableField(condition = SqlCondition.LIKE)
+    private String email;
+    private String password;
+
+    @TableField(condition = SqlCondition.LIKE)
+    private String nickname;
+    private String avatar;
+    private String ip;
+
+    @TableField(condition = SqlCondition.LIKE)
+    private String ipTerritory;
+
+    @TableField(value = "is_admin")
+    private Boolean admin;
 }

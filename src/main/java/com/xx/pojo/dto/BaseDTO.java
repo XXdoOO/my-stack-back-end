@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BaseDTO {
+abstract class BaseDTO{
 
     private Long id;
     private Boolean enabled;

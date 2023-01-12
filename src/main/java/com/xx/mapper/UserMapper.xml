@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xx.mapper.UserMapper">
-    <select id="getUserInfo" resultMap="UserVoMap">
+    <select id="getUserInfo" resultType="UserVo">
         select
         u.id as id,
         u.nickname as nickname,
@@ -12,11 +12,11 @@
         u.ip,
         u.ip_territory,
         u.is_admin,
-        u.is_disable,
+        u.is_enabled,
         count(distinct case when b.status = 1 then b.id end) as pass_count,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down
-        <if test="authorId == null and userId != null">
+        <if test="createBy == null and userId != null">
             ,
             u.email,
             count(distinct case when b.status = 0 then b.id end) as auditing_count,
@@ -25,55 +25,14 @@
             count(distinct case when r.type = 3 then r.id end) as history
         </if>
         from user u
-        left join blog b on u.id = b.author_id and b.is_deleted = 0
-        left join record r on r.user_id = u.id and r.blog_id is not null and r.is_deleted = 0
+        left join blog b on u.id = b.create_by and b.is_deleted = 0
+        left join record r on r.create_by = u.id and r.blog_id is not null and r.is_deleted = 0
         where
-        <if test="authorId == null and userId != null">
+        <if test="createBy == null and userId != null">
             u.id = #{userId}
         </if>
-        <if test="authorId != null">
+        <if test="createBy != null">
             u.id = #{authorId}
         </if>
     </select>
-    <resultMap id="UserVoMap" type="UserVo" autoMapping="true">
-        <id column="id" property="id"/>
-        <result column="is_admin" property="admin"/>
-        <result column="is_disable" property="disable"/>
-    </resultMap>
-
-    <select id="getUserList" resultMap="UserListMap">
-        select id,
-        email,
-        nickname,
-        avatar,
-        ip,
-        ip_territory,
-        is_admin,
-        is_disable,
-        is_deleted,
-        create_time
-        from user
-        <where>
-            <if test="nickname != null and nickname != ''">
-                nickname like concat('%', #{nickname},'%')
-            </if>
-            <if test="isDeleted != null">
-                and `is_deleted` = #{isDeleted}
-            </if>
-            <if test="isAdmin != null">
-                and `is_admin` = #{isAdmin}
-            </if>
-            <if test="startTime != null">
-                and create_time <![CDATA[ >= ]]> #{startTime}
-            </if>
-            <if test="endTime != null">
-                and create_time <![CDATA[ <= ]]> #{endTime}
-            </if>
-        </where>
-    </select>
-    <resultMap id="UserListMap" type="User">
-        <result column="is_admin" property="admin"/>
-        <result column="is_disable" property="disable"/>
-        <result column="is_deleted" property="deleted"/>
-    </resultMap>
 </mapper>

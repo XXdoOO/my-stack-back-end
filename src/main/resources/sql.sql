@@ -9,18 +9,14 @@ use
 
 create table `user`
 (
-    `id`           bigint unsigned auto_increment primary key                                not null,
-    `email`        varchar(32)                                                               not null comment '邮箱',
-    `password`     varchar(16)                                                               not null comment '密码',
-    `nickname`     varchar(32)         default '用户昵称'                                        not null comment '昵称',
-    `avatar`       varchar(64)         default '/avatar/4.jpg'                               not null comment '头像',
-    `ip`           varchar(16)         default '127.0.0.1'                                   not null comment 'ip地址',
-    `ip_territory` varchar(16)         default '未知'                                          not null comment 'ip属地',
-    `is_admin`     tinyint(1) unsigned default 0                                             not null comment '身份，0为普通用户，1为管理员',
-    `is_enabled`   tinyint(1) unsigned default 0                                             not null comment '状态，0为正常，1为异常',
-    `update_time`  datetime            default current_timestamp on update current_timestamp not null,
-    `create_time`  datetime            default current_timestamp                             not null,
-    `is_deleted`   tinyint(1) unsigned default 0                                             not null
+    `id`           bigint unsigned auto_increment primary key  not null,
+    `email`        varchar(32) unique                          not null comment '邮箱',
+    `password`     varchar(16)                                 not null comment '密码',
+    `nickname`     varchar(32)         default '用户昵称'          not null comment '昵称',
+    `avatar`       varchar(64)         default '/avatar/4.jpg' not null comment '头像',
+    `ip`           varchar(16)         default '127.0.0.1'     not null comment 'ip地址',
+    `ip_territory` varchar(16)         default '未知'            not null comment 'ip属地',
+    `is_admin`     tinyint(1) unsigned default 0               not null comment '身份，0为普通用户，1为管理员'
 ) comment '用户账号信息';
 
 create table `disable`
@@ -40,6 +36,7 @@ create table `blog`
     `description`  varchar(256) comment '描述',
     `cover`        text comment '特色图片',
     `content`      mediumtext                                 not null comment '内容',
+    `view`         bigint unsigned     default 0              not null comment '浏览量',
     `ip`           varchar(16)         default '127.0.0.1'    not null comment 'ip地址',
     `ip_territory` varchar(16)         default '未知'           not null comment 'ip属地',
     `status`       tinyint(2) unsigned default 0 comment '发布状态，0为审核中，1为通过审核，2为未通过审核'
@@ -114,7 +111,7 @@ create table `dict_data`
 
 alter table blog
     add column (
-        `is_enabled` tinyint(1) unsigned default 1 not null,
+        `is_enabled` tinyint(1) unsigned default 0 not null,
         `update_time` datetime default current_timestamp on update current_timestamp not null,
         `create_time` datetime default current_timestamp not null,
         `create_by` bigint unsigned not null,
@@ -124,7 +121,7 @@ alter table blog
     add constraint fk_blog_create_by foreign key (create_by) references user (id);
 alter table blog_category
     add column (
-        `is_enabled` tinyint(1) unsigned default 1 not null,
+        `is_enabled` tinyint(1) unsigned default 0 not null,
         `update_time` datetime default current_timestamp on update current_timestamp not null,
         `create_time` datetime default current_timestamp not null,
         `create_by` bigint unsigned not null,
@@ -134,7 +131,7 @@ alter table blog_category
     add constraint fk_blog_category_create_by foreign key (create_by) references user (id);
 alter table category
     add column (
-        `is_enabled` tinyint(1) unsigned default 1 not null,
+        `is_enabled` tinyint(1) unsigned default 0 not null,
         `update_time` datetime default current_timestamp on update current_timestamp not null,
         `create_time` datetime default current_timestamp not null,
         `create_by` bigint unsigned not null,
@@ -144,7 +141,7 @@ alter table category
     add constraint fk_category_create_by foreign key (create_by) references user (id);
 alter table comment
     add column (
-        `is_enabled` tinyint(1) unsigned default 1 not null,
+        `is_enabled` tinyint(1) unsigned default 0 not null,
         `update_time` datetime default current_timestamp on update current_timestamp not null,
         `create_time` datetime default current_timestamp not null,
         `create_by` bigint unsigned not null,
@@ -154,7 +151,7 @@ alter table comment
     add constraint fk_comment_create_by foreign key (create_by) references user (id);
 alter table dict_data
     add column (
-        `is_enabled` tinyint(1) unsigned default 1 not null,
+        `is_enabled` tinyint(1) unsigned default 0 not null,
         `update_time` datetime default current_timestamp on update current_timestamp not null,
         `create_time` datetime default current_timestamp not null,
         `create_by` bigint unsigned not null,
@@ -164,7 +161,7 @@ alter table dict_data
     add constraint fk_dict_data_create_by foreign key (create_by) references user (id);
 alter table dict_type
     add column (
-        `is_enabled` tinyint(1) unsigned default 1 not null,
+        `is_enabled` tinyint(1) unsigned default 0 not null,
         `update_time` datetime default current_timestamp on update current_timestamp not null,
         `create_time` datetime default current_timestamp not null,
         `create_by` bigint unsigned not null,
@@ -174,7 +171,7 @@ alter table dict_type
     add constraint fk_dict_type_create_by foreign key (create_by) references user (id);
 alter table disable
     add column (
-        `is_enabled` tinyint(1) unsigned default 1 not null,
+        `is_enabled` tinyint(1) unsigned default 0 not null,
         `update_time` datetime default current_timestamp on update current_timestamp not null,
         `create_time` datetime default current_timestamp not null,
         `create_by` bigint unsigned not null,
@@ -184,7 +181,7 @@ alter table disable
     add constraint fk_disable_create_by foreign key (create_by) references user (id);
 alter table record
     add column (
-        `is_enabled` tinyint(1) unsigned default 1 not null,
+        `is_enabled` tinyint(1) unsigned default 0 not null,
         `update_time` datetime default current_timestamp on update current_timestamp not null,
         `create_time` datetime default current_timestamp not null,
         `create_by` bigint unsigned not null,
@@ -192,6 +189,13 @@ alter table record
         );
 alter table record
     add constraint fk_record_create_by foreign key (create_by) references user (id);
+alter table user
+    add column (
+        `is_enabled` tinyint(1) unsigned default 0 not null,
+        `update_time` datetime default current_timestamp on update current_timestamp not null,
+        `create_time` datetime default current_timestamp not null,
+        `is_deleted` tinyint(1) unsigned default 0 not null
+        );
 
 
 insert into user(email, password, nickname, create_time, is_admin, is_deleted)
@@ -204,7 +208,7 @@ values ('1972524359@qq.com', 'xx', '我是管理员', '2022-11-09 21:59:56', 1, 
        ('1672524359@qq.com', 'xx', '4万人', '2022-11-09 21:59:56', 0, 0),
        ('1772524359@qq.com', 'xx', '一枚小黑子', '2022-11-09 21:53:56', 0, 1),
        ('1872524359@qq.com', 'xx', '超级无敌暴龙战士', '2022-11-09 21:59:16', 0, 1),
-       ('1972524359@qq.com', 'xx', '韭菜哥', '2022-11-09 21:29:56', 0, 0),
+       ('1972524358@qq.com', 'xx', '韭菜哥', '2022-11-09 21:29:56', 0, 0),
        ('1112524359@qq.com', 'xx', '努力学习', '2012-11-09 21:32:56', 0, 0),
        ('1122524359@qq.com', 'xx', '春风十里', '2019-11-09 21:22:56', 0, 0),
        ('1132524359@qq.com', 'xx', '花开富贵', '2017-11-09 01:59:56', 0, 0),
@@ -216,7 +220,7 @@ values ('1972524359@qq.com', 'xx', '我是管理员', '2022-11-09 21:59:56', 1, 
        ('1942524359@qq.com', 'xx', '听我说谢谢你', '2013-11-09 11:59:56', 0, 0),
        ('1952524359@qq.com', 'xx', '床前明月光', '2012-11-09 15:59:56', 1, 0),
        ('1962524359@qq.com', 'xx', '疑是地上霜', '1222-01-09 15:59:56', 0, 1),
-       ('1972524359@qq.com', 'xx', '举头望明月', '1022-08-09 15:59:56', 0, 0),
+       ('1972524319@qq.com', 'xx', '举头望明月', '1022-08-09 15:59:56', 0, 0),
        ('1982524359@qq.com', 'xx', '低头思故乡', '1902-02-19 15:59:56', 0, 0),
        ('1992524359@qq.com', 'xx', '李白', '2021-10-09 05:59:56', 0, 0),
        ('1971524359@qq.com', 'xx', '芭比Q', '2002-01-19 10:59:56', 0, 0);

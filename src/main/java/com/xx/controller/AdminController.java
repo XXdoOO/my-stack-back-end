@@ -6,9 +6,11 @@ import com.github.pagehelper.PageInfo;
 import com.xx.config.FilterConfigurer;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
+import com.xx.pojo.dto.DictDTO;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.service.BlogService;
 import com.xx.service.CommentService;
+import com.xx.service.DictService;
 import com.xx.service.UserService;
 import com.xx.util.Code;
 import com.xx.util.MyResponse;
@@ -32,6 +34,9 @@ public class AdminController {
 
     @Autowired
     private CommentService commentService;
+
+    @Autowired
+    private DictService dictService;
 
     @ResponseBody
     @GetMapping("getBlogList")
@@ -63,7 +68,7 @@ public class AdminController {
 
     @ResponseBody
     @PutMapping("disableUser")
-    private MyResponse disableUser(@RequestBody UserDTO dto) {
+    public MyResponse disableUser(@RequestBody UserDTO dto) {
         if (dto.getUserId() != null && dto.getEnabled() != null) {
             userService.disableUser(dto);
             return MyResponse.success();
@@ -73,9 +78,22 @@ public class AdminController {
 
     @ResponseBody
     @GetMapping("getCommentsList")
-    private MyResponse getCommentsList(CommentDTO dto) {
+    public MyResponse getCommentsList(CommentDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         return MyResponse.success(new PageInfo<>(commentService.getCommentsList2(dto)));
+    }
+
+    @ResponseBody
+    @GetMapping("dict")
+    public MyResponse getDictType(DictDTO dto) {
+        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
+        return MyResponse.success(new PageInfo<>(dictService.getDictType(dto)));
+    }
+
+    @ResponseBody
+    @PostMapping("dict")
+    public MyResponse postDictType(DictDTO dto) {
+        return dictService.postDictType(dto) ? MyResponse.success() : MyResponse.fail();
     }
 }
 
