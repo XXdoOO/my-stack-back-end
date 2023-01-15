@@ -55,10 +55,10 @@
                     and b.status = 1 and b.create_by = #{createBy}
                 </if>
                 <if test="type == 0">
-                    and r.type = 0 and r.user_id = #{createBy}
+                    and r.type = 0 and r.create_by = #{createBy}
                 </if>
                 <if test="type == 1">
-                    and r.type = 1 and r.user_id = #{createBy}
+                    and r.type = 1 and r.create_by = #{createBy}
                 </if>
                 <if test="userId != null and userId == createBy">
                     <if test="type == 2">
@@ -68,10 +68,10 @@
                         and b.status = 2 and b.create_by = #{createBy}
                     </if>
                     <if test="type == 4">
-                        and r.type = 2 and r.user_id = #{createBy}
+                        and r.type = 2 and r.create_by = #{createBy}
                     </if>
                     <if test="type == 5">
-                        and r.type = 3 and r.user_id = #{createBy}
+                        and r.type = 3 and r.create_by = #{createBy}
                     </if>
                 </if>
             </if>
@@ -87,11 +87,10 @@
         b.title,
         b.description,
         b.cover,
-        b.view,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
-        count(distinct case when r.type = 3 then r.id end) as view,
+        count(distinct case when r.type = 3 then r.id end) + b.view as view,
         b.status,
         b.create_time,
         b.create_by,
@@ -112,12 +111,6 @@
             </if>
             <if test="status != null">
                 and b.status = #{status}
-            </if>
-            <if test="startTime != null">
-                and b.create_time <![CDATA[ >= ]]> #{startTime}
-            </if>
-            <if test="endTime != null">
-                and b.create_time <![CDATA[ <= ]]> #{endTime}
             </if>
         </where>
         group by b.id
@@ -143,10 +136,9 @@
         b.content,
         b.ip,
         b.ip_territory,
-        b.view,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
-        count(distinct case when r.type = 2 then r.id end) as star,
+        count(distinct case when r.type = 3 then r.id end) + b.view as view,
         b.status,
         b.create_time,
         u.id as u_id,

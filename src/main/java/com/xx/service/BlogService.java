@@ -48,6 +48,9 @@ public class BlogService {
         dto.setUserId(userService.getCurrentUser().getId());
 
         System.out.println(dto);
+        System.out.println(dto.getCreateBy());
+        System.out.println(dto.getUserId());
+        System.out.println("===================================");
 
         return blogMapper.getBlogList(dto);
     }
@@ -77,10 +80,10 @@ public class BlogService {
             record.setCreateBy(userId);
 
             recordMapper.insert(record);
+        } else {
+            blogMapper.update(null, new UpdateWrapper<Blog>().
+                    setSql("view = view + 1").eq("id", id));
         }
-
-        UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
-        blogMapper.update(null, wrapper.setSql("view = view + 1").eq("id", id));
 
         return blogMapper.getBlogDetails(id, userId);
     }
