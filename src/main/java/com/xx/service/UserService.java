@@ -22,10 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -229,5 +226,16 @@ public class UserService {
             return new User();
         }
         return (User) user;
+    }
+
+    public void setCreateByNickname(List<BaseVo> list){
+        // 提取用户userId，方便批量查询
+        Set<Integer> deptIds = list.stream().map(User::getNickname).collect(toSet());
+        // 根据deptId查询deptName（查询前，先做非空判断）
+        List<Dept> dept = deptMapper.selectList(Wrappers.lambdaQuery(Dept.class).in(Dept::getDeptId, deptIds));
+        // 构造映射关系，方便匹配deptId与deptName
+        Map<Integer, String> hashMap = dept.stream().collect(toMap(Dept::getDeptId, Dept::getDeptName));
+        // 封装Vo，并添加到集合中(关键内容)
+        list.forEach(e -> e.set(hashMap.get(e.getDeptId())));
     }
 }

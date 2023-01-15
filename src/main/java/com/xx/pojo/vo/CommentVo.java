@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class CommentVo extends Comment {
     private User sender;
-    private User receive;
+    private User receiver;
     private Long up;
     private Long down;
     private Boolean isUp;
