@@ -11,6 +11,7 @@ import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.CommentVo;
 import com.xx.util.AddressUtils;
 import com.xx.util.IpUtils;
+import com.xx.util.SessionUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +62,6 @@ public class CommentService {
         comment.setParent(dto.getParent());
         comment.setIp(IpUtils.getIpAddr(request));
         comment.setIpTerritory(AddressUtils.getRealAddressByIP(comment.getIp()));
-        comment.setCreateBy(userService.getCurrentUser().getId());
         comment.setReceiveId(dto.getReceiveId());
 
         commentMapper.insert(comment);
@@ -69,6 +69,10 @@ public class CommentService {
         CommentVo commentVo = new CommentVo();
 
         BeanUtils.copyProperties(comment, commentVo);
+        commentVo.setSender(userMapper.selectById(SessionUtil.getUser().getId()));
+        commentVo.setReceiver(userMapper.selectById(dto.getReceiveId()));
+        commentVo.setUp(0L);
+        commentVo.setDown(0L);
         return commentVo;
     }
 

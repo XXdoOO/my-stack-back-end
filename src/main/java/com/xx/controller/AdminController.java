@@ -82,18 +82,5 @@ public class AdminController {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         return MyResponse.success(new PageInfo<>(commentService.getCommentsList2(dto)));
     }
-
-    @ResponseBody
-    @GetMapping("dict")
-    public MyResponse getDictType(DictDTO dto) {
-        PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
-        return MyResponse.success(new PageInfo<>(dictService.getDictType(dto)));
-    }
-
-    @ResponseBody
-    @PostMapping("dict")
-    public MyResponse postDictType(DictDTO dto) {
-        return dictService.postDictType(dto) ? MyResponse.success() : MyResponse.fail();
-    }
 }
 

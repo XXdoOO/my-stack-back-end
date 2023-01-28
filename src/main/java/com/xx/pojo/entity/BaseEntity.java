@@ -2,6 +2,7 @@ package com.xx.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.xx.service.UserService;
+import com.xx.util.SessionUtil;
 import lombok.Data;
 
 import java.util.Date;
@@ -25,4 +26,8 @@ public class BaseEntity {
     @TableField(value = "is_deleted")
     @TableLogic
     private Boolean deleted;
+
+    public BaseEntity() {
+        this.createBy = SessionUtil.getUser().getId();
+    }
 }

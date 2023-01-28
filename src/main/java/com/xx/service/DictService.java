@@ -25,8 +25,8 @@ public class DictService {
 
     public List<DictType> getDictType(DictDTO dto) {
         DictType type = new DictType();
+        type.setCreateBy(null);
         type.setName(dto.getDictName());
-        type.setCreateBy();
         return dictTypeMapper.selectList(new QueryWrapper<>(type).
                 ge(dto.getCreateTime()[0] != null, "create_time", dto.getCreateTime()[0]).
                 le(dto.getCreateTime()[1] != null, "create_time", dto.getCreateTime()[1]));
@@ -47,12 +47,14 @@ public class DictService {
     public boolean putDictType(DictDTO dto) {
         DictType type = new DictType();
         type.setName(dto.getDictName());
+        type.setEnabled(dto.getEnabled());
         return dictTypeMapper.updateById(type) == 1;
     }
 
 
     public List<DictData> getDictData(DictDTO dto) {
         DictData data = new DictData();
+        data.setCreateBy(null);
         data.setDictName(dto.getDictName());
         data.setLabel(dto.getLabel());
         data.setValue(dto.getValue());

@@ -18,13 +18,15 @@ public class UserDTO extends BaseDTO {
     @NotBlank(message = "密码不能为空")
     private String password;
 
-    @Length(min = 4, max = 4)
+    @Length(min = 4, max = 4, message = "验证码长度只能为4")
     @NotBlank(message = "验证码不能为空")
     private String code;
     private String nickname;
     private MultipartFile avatar;
-    private Boolean isAdmin;
+    private Boolean admin;
     private Long userId;
     private Long minutes;
     private String reason;
+    private String ip;
+    private String ipTerritory;
 }

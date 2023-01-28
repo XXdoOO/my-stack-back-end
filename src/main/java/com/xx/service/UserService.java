@@ -189,14 +189,18 @@ public class UserService {
         User user = new User();
         user.setEmail(dto.getEmail());
         user.setNickname(dto.getNickname());
-        user.setAdmin(dto.getIsAdmin());
+        user.setAdmin(dto.getAdmin());
         user.setEnabled(dto.getEnabled());
+        user.setIp(dto.getIp());
+        user.setIpTerritory(dto.getIpTerritory());
 
-        return userMapper.selectList(new QueryWrapper<>(user));
+        return userMapper.selectList(new QueryWrapper<>(user).
+                ge(dto.getCreateTime()[0] != null, "create_time", dto.getCreateTime()[0]).
+                le(dto.getCreateTime()[1] != null, "create_time", dto.getCreateTime()[1]));
     }
 
-    public UserVo getUserInfo(Long authorId) {
-        return userMapper.getUserInfo(authorId, getCurrentUser().getId());
+    public UserVo getUserInfo(Long userId) {
+        return userMapper.getUserInfo(userId, getCurrentUser().getId());
     }
 
     public void disableUser(UserDTO dto) {
@@ -226,16 +230,5 @@ public class UserService {
             return new User();
         }
         return (User) user;
-    }
-
-    public void setCreateByNickname(List<BaseVo> list){
-        // 提取用户userId，方便批量查询
-        Set<Integer> deptIds = list.stream().map(User::getNickname).collect(toSet());
-        // 根据deptId查询deptName（查询前，先做非空判断）
-        List<Dept> dept = deptMapper.selectList(Wrappers.lambdaQuery(Dept.class).in(Dept::getDeptId, deptIds));
-        // 构造映射关系，方便匹配deptId与deptName
-        Map<Integer, String> hashMap = dept.stream().collect(toMap(Dept::getDeptId, Dept::getDeptName));
-        // 封装Vo，并添加到集合中(关键内容)
-        list.forEach(e -> e.set(hashMap.get(e.getDeptId())));
     }
 }

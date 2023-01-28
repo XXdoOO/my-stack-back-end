@@ -26,6 +26,8 @@
         b.description,
         b.cover,
         b.view,
+        b.is_enabled,
+        b.is_deleted,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
@@ -87,6 +89,8 @@
         b.title,
         b.description,
         b.cover,
+        b.is_enabled,
+        b.is_deleted,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
@@ -100,6 +104,7 @@
         left join record r on r.is_deleted = 0 and r.blog_id is not null
         and b.create_by = r.create_by
         <where>
+            b.is_deleted = 0
             <if test="title != null and title != ''">
                 and b.title like concat('%', #{title}, '%')
             </if>
@@ -111,6 +116,12 @@
             </if>
             <if test="status != null">
                 and b.status = #{status}
+            </if>
+            <if test="createTime[0] != null">
+                and b.create_time >= #{createTime[0],javaType=date}
+            </if>
+            <if test="createTime[1] != null">
+                and b.create_time &lt;= #{createTime[1],javaType=date}
             </if>
         </where>
         group by b.id
@@ -161,6 +172,17 @@
     </select>
     <resultMap id="BlogDetails" type="BlogVo">
         <id column="id" property="id"/>
+        <id column="title" property="title"/>
+        <id column="description" property="description"/>
+        <id column="cover" property="cover"/>
+        <id column="content" property="content"/>
+        <id column="ip" property="ip"/>
+        <id column="ip_territory" property="ipTerritory"/>
+        <id column="up" property="up"/>
+        <id column="down" property="down"/>
+        <id column="view" property="view"/>
+        <id column="status" property="status"/>
+        <id column="create_time" property="createTime"/>
         <association property="authorInfo">
             <id column="u_id" property="id"/>
             <result column="u_nickname" property="nickname"/>

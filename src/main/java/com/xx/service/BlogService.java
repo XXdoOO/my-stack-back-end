@@ -47,15 +47,12 @@ public class BlogService {
     public List<BlogViewVo> getBlogList(BlogDTO dto) {
         dto.setUserId(userService.getCurrentUser().getId());
 
-        System.out.println(dto);
-        System.out.println(dto.getCreateBy());
-        System.out.println(dto.getUserId());
-        System.out.println("===================================");
-
         return blogMapper.getBlogList(dto);
     }
 
     public List<BlogViewVo> getBlogList2(BlogDTO dto) {
+        System.out.println(Arrays.toString(dto.getCreateTime()));
+        System.out.println(dto.getPageNum());
         return blogMapper.getBlogList2(dto);
     }
 
@@ -72,7 +69,7 @@ public class BlogService {
         User user = userService.getCurrentUser();
 
         Long userId = null;
-        if (user != null) {
+        if (user.getId() != null) {
             userId = user.getId();
             Record record = new Record();
             record.setBlogId(id);

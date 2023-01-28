@@ -21,7 +21,7 @@ public class BlogVo {
     private Long up;
     private Long down;
     private Long star;
-    private Long views;
+    private Long view;
     private String ip;
     private String ipTerritory;
     private Integer status;
