@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.xx.mapper.UserMapper">
-    <select id="getUserInfo" resultType="UserVo">
+    <select id="getUserInfo" resultType="UserVO">
         select
         u.id as id,
         u.nickname as nickname,

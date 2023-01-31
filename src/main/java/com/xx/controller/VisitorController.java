@@ -1,6 +1,5 @@
 package com.xx.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Constants;
@@ -11,7 +10,7 @@ import com.xx.pojo.dto.CommentDTO;
 import com.xx.service.CommentService;
 import com.xx.mapper.BlogMapper;
 import com.xx.pojo.dto.UserDTO;
-import com.xx.pojo.vo.UserVo;
+import com.xx.pojo.vo.UserVO;
 import com.xx.service.BlogService;
 import com.xx.service.UserService;
 import com.xx.util.AddressUtils;
@@ -119,7 +118,7 @@ public class VisitorController {
         if (!userService.isExistUser(userDTO.getEmail())) {
             return MyResponse.fail("用户不存在");
         } else {
-            UserVo user = userService.login(userDTO.getEmail(), userDTO.getPassword());
+            UserVO user = userService.login(userDTO.getEmail(), userDTO.getPassword());
 
             if (user == null) {
                 return MyResponse.fail("邮箱或密码错误");

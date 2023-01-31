@@ -5,7 +5,7 @@ import com.xx.pojo.entity.User;
 import lombok.Data;
 
 @Data
-public class CommentVo extends Comment {
+public class CommentVO extends Comment {
     private User sender;
     private User receiver;
     private Long up;

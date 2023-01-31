@@ -7,9 +7,12 @@
     <sql id="isRecord">
         <if test="userId != null">
             ,
-            if(count(distinct case when r.blog_id = b.id and r.type = 0 then r.id end) = 1, 1, 0) as is_up,
-            if(count(distinct case when r.blog_id = b.id and r.type = 1 then r.id end) = 1, 1, 0) as is_down,
-            if(count(distinct case when r.blog_id = b.id and r.type = 2 then r.id end) = 1, 1, 0) as is_star
+            if(count(distinct case when r.type = 0 and r.create_by = #{userId} then r.id end) > 0,
+            1, 0) as is_up,
+            if(count(distinct case when r.type = 1 and r.create_by = #{userId} then r.id end) > 0,
+            1, 0) as is_down,
+            if(count(distinct case when r.type = 2 and r.create_by = #{userId} then r.id end) > 0,
+            1, 0) as is_star
         </if>
         <if test="userId == null">
             ,
@@ -25,12 +28,12 @@
         b.title,
         b.description,
         b.cover,
-        b.view,
         b.is_enabled,
         b.is_deleted,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
+        count(distinct case when r.type = 3 then r.id end) + b.view as view,
         b.status,
         b.create_time,
         b.create_by,
@@ -39,10 +42,10 @@
         from blog b left join user u on u.id = b.create_by
         left join record r on r.is_deleted = 0 and r.blog_id is not null
         <if test="createBy != null and (type == 0 or type == 1 or (userId != null and userId == createBy and (type == 4 or type == 5)))">
-            and b.id = r.blog_id
+            and b.create_by = r.create_by
         </if>
         <if test="createBy == null or (createBy != null and (type == null or (userId != null and userId == createBy and (type == 2 or type == 3))))">
-            and b.create_by = r.create_by
+            and b.id = r.blog_id
         </if>
         <where>
             b.is_deleted = 0
@@ -126,12 +129,12 @@
         </where>
         group by b.id
     </select>
-    <resultMap id="BlogView" type="BlogViewVo">
+    <resultMap id="BlogView" type="BlogViewVO">
         <id column="id" property="id"/>
         <collection property="categories" column="id" ofType="Category" select="getCategories">
         </collection>
     </resultMap>
-    <select id="getCategories" resultType="CategoryVo">
+    <select id="getCategories" resultType="CategoryVO">
         select c.id as id, c.name as name
         from category c,
              blog_category bc
@@ -149,6 +152,7 @@
         b.ip_territory,
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
+        count(distinct case when r.type = 2 then r.id end) as star,
         count(distinct case when r.type = 3 then r.id end) + b.view as view,
         b.status,
         b.create_time,
@@ -170,7 +174,7 @@
         left join record r on r.is_deleted = 0 and r.blog_id is not null and b.id = r.blog_id
         where b.id = #{id}
     </select>
-    <resultMap id="BlogDetails" type="BlogVo">
+    <resultMap id="BlogDetails" type="BlogVO">
         <id column="id" property="id"/>
         <id column="title" property="title"/>
         <id column="description" property="description"/>
@@ -181,6 +185,10 @@
         <id column="up" property="up"/>
         <id column="down" property="down"/>
         <id column="view" property="view"/>
+        <id column="star" property="star"/>
+        <id column="is_up" property="isUp"/>
+        <id column="is_down" property="isDown"/>
+        <id column="is_star" property="isStar"/>
         <id column="status" property="status"/>
         <id column="create_time" property="createTime"/>
         <association property="authorInfo">
@@ -194,7 +202,7 @@
             <result column="u_is_disable" property="disable"/>
             <result column="u_create_time" property="createTime"/>
         </association>
-        <collection property="categories" column="id" ofType="CategoryVo" select="getCategories">
+        <collection property="categories" column="id" ofType="CategoryVO" select="getCategories">
         </collection>
     </resultMap>
     <select id="getBlogDetails2" resultMap="BlogDetails">

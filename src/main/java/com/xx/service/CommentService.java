@@ -7,8 +7,7 @@ import com.xx.mapper.UserMapper;
 import com.xx.pojo.dto.CommentDTO;
 import com.xx.pojo.entity.Comment;
 import com.xx.pojo.entity.Record;
-import com.xx.pojo.entity.User;
-import com.xx.pojo.vo.CommentVo;
+import com.xx.pojo.vo.CommentVO;
 import com.xx.util.AddressUtils;
 import com.xx.util.IpUtils;
 import com.xx.util.SessionUtil;
@@ -41,7 +40,7 @@ public class CommentService {
     @Autowired
     private HttpServletRequest request;
 
-    public List<CommentVo> getCommentsList(CommentDTO dto) {
+    public List<CommentVO> getCommentsList(CommentDTO dto) {
         dto.setUserId(userService.getCurrentUser().getId());
 
         if (dto.getParent() == null) {
@@ -51,11 +50,11 @@ public class CommentService {
         return commentMapper.getCommentList(dto);
     }
 
-    public List<CommentVo> getCommentsList2(CommentDTO dto) {
+    public List<CommentVO> getCommentsList2(CommentDTO dto) {
         return commentMapper.getCommentList2(dto);
     }
 
-    public CommentVo postComments(CommentDTO dto) {
+    public CommentVO postComments(CommentDTO dto) {
         Comment comment = new Comment();
         comment.setBlogId(dto.getBlogId());
         comment.setContent(dto.getContent());
@@ -66,7 +65,7 @@ public class CommentService {
 
         commentMapper.insert(comment);
 
-        CommentVo commentVo = new CommentVo();
+        CommentVO commentVo = new CommentVO();
 
         BeanUtils.copyProperties(comment, commentVo);
         commentVo.setSender(userMapper.selectById(SessionUtil.getUser().getId()));

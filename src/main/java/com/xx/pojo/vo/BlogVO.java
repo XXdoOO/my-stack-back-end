@@ -9,23 +9,23 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class BlogViewVo {
+public class BlogVO {
     private Long id;
     private String title;
     private String description;
     private String cover;
+    private String content;
     private Long up;
     private Long down;
     private Long star;
     private Long view;
+    private String ip;
+    private String ipTerritory;
     private Integer status;
-    private Long createBy;
-    private String authorNickname;
-    private Boolean isUp = false;
-    private Boolean isDown = false;
-    private Boolean isStar = false;
-
+    private UserVO authorInfo;
     private List<Category> categories;
-
+    private Boolean isUp;
+    private Boolean isDown;
+    private Boolean isStar;
     private Date createTime;
 }

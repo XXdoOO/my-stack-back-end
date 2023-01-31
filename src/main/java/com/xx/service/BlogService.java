@@ -2,20 +2,17 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xx.mapper.*;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.entity.Blog;
 import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
-import com.xx.pojo.vo.BlogViewVo;
-import com.xx.pojo.vo.BlogVo;
+import com.xx.pojo.vo.BlogViewVO;
+import com.xx.pojo.vo.BlogVO;
 import com.xx.util.AddressUtils;
 import com.xx.util.IpUtils;
-import com.xx.util.MyResponse;
 import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,13 +41,13 @@ public class BlogService {
     @Autowired
     private HttpServletRequest request;
 
-    public List<BlogViewVo> getBlogList(BlogDTO dto) {
+    public List<BlogViewVO> getBlogList(BlogDTO dto) {
         dto.setUserId(userService.getCurrentUser().getId());
 
         return blogMapper.getBlogList(dto);
     }
 
-    public List<BlogViewVo> getBlogList2(BlogDTO dto) {
+    public List<BlogViewVO> getBlogList2(BlogDTO dto) {
         System.out.println(Arrays.toString(dto.getCreateTime()));
         System.out.println(dto.getPageNum());
         return blogMapper.getBlogList2(dto);
@@ -65,7 +62,7 @@ public class BlogService {
                 eq("id", blogId)) == 1;
     }
 
-    public BlogVo getBlogDetails(long id) {
+    public BlogVO getBlogDetails(long id) {
         User user = userService.getCurrentUser();
 
         Long userId = null;
@@ -85,7 +82,7 @@ public class BlogService {
         return blogMapper.getBlogDetails(id, userId);
     }
 
-    public BlogVo getBlogDetails2(long id) {
+    public BlogVO getBlogDetails2(long id) {
         return blogMapper.getBlogDetails2(id);
     }
 

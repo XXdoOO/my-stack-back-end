@@ -1,14 +1,12 @@
 package com.xx.pojo.vo;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class BaseVo {
+public class BaseVO {
     private Long id;
 
     @TableField(value = "is_enabled")

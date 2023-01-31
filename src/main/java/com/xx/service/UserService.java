@@ -7,9 +7,8 @@ import com.xx.mapper.DisableMapper;
 import com.xx.mapper.UserMapper;
 import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.Disable;
-import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
-import com.xx.pojo.vo.UserVo;
+import com.xx.pojo.vo.UserVO;
 import com.xx.util.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +43,7 @@ public class UserService {
     @Value("${spring.mail.username}")
     private String from;
 
-    public UserVo login(String email, String password) {
+    public UserVO login(String email, String password) {
         QueryWrapper<User> wrapper = new QueryWrapper<>();
 
         User user = userMapper.selectOne(wrapper.
@@ -55,7 +54,7 @@ public class UserService {
             return null;
         }
 
-        UserVo userVo = new UserVo();
+        UserVO userVo = new UserVO();
 
         BeanUtils.copyProperties(user, userVo, "password");
 
@@ -80,7 +79,7 @@ public class UserService {
             user1.setIp(IpUtils.getIpAddr(request));
             user1.setIpTerritory(AddressUtils.getRealAddressByIP(user1.getIp()));
 
-            UserVo myInfo = userMapper.getUserInfo(null, user.getId());
+            UserVO myInfo = userMapper.getUserInfo(null, user.getId());
 
             userVo.setAuditingCount(myInfo.getAuditingCount());
             userVo.setPassCount(myInfo.getPassCount());
@@ -199,7 +198,7 @@ public class UserService {
                 le(dto.getCreateTime()[1] != null, "create_time", dto.getCreateTime()[1]));
     }
 
-    public UserVo getUserInfo(Long userId) {
+    public UserVO getUserInfo(Long userId) {
         return userMapper.getUserInfo(userId, getCurrentUser().getId());
     }
 
