@@ -48,8 +48,6 @@ public class BlogService {
     }
 
     public List<BlogViewVO> getBlogList2(BlogDTO dto) {
-        System.out.println(Arrays.toString(dto.getCreateTime()));
-        System.out.println(dto.getPageNum());
         return blogMapper.getBlogList2(dto);
     }
 

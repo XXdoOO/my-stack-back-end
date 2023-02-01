@@ -41,11 +41,12 @@
         <include refid="isRecord"/>
         from blog b left join user u on u.id = b.create_by
         left join record r on r.is_deleted = 0 and r.blog_id is not null
-        <if test="createBy != null and (type == 0 or type == 1 or (userId != null and userId == createBy and (type == 4 or type == 5)))">
-            and b.create_by = r.create_by
-        </if>
-        <if test="createBy == null or (createBy != null and (type == null or (userId != null and userId == createBy and (type == 2 or type == 3))))">
+        <if test="authorId != null and (type == 0 or type == 1 or (userId == authorId and (type == 4 or type == 5)))">
             and b.id = r.blog_id
+        </if>
+        <if test="authorId == null or (authorId != null and (type == null or (userId == authorId and (type == 2 or type == 3))))">
+
+            and b.create_by = r.create_by
         </if>
         <where>
             b.is_deleted = 0
@@ -55,32 +56,32 @@
                 or b.content like concat('%', #{keywords}, '%'))
             </if>
 
-            <if test="createBy != null">
+            <if test="authorId != null">
                 <if test="type == null">
-                    and b.status = 1 and b.create_by = #{createBy}
+                    and b.status = 1 and b.create_by = #{authorId}
                 </if>
                 <if test="type == 0">
-                    and r.type = 0 and r.create_by = #{createBy}
+                    and r.type = 0 and r.create_by = #{authorId}
                 </if>
                 <if test="type == 1">
-                    and r.type = 1 and r.create_by = #{createBy}
+                    and r.type = 1 and r.create_by = #{authorId}
                 </if>
-                <if test="userId != null and userId == createBy">
+                <if test="userId == authorId">
                     <if test="type == 2">
-                        and b.status = 0 and b.create_by = #{createBy}
+                        and b.status = 0 and b.create_by = #{authorId}
                     </if>
                     <if test="type == 3">
-                        and b.status = 2 and b.create_by = #{createBy}
+                        and b.status = 2 and b.create_by = #{authorId}
                     </if>
                     <if test="type == 4">
-                        and r.type = 2 and r.create_by = #{createBy}
+                        and r.type = 2 and r.create_by = #{authorId}
                     </if>
                     <if test="type == 5">
-                        and r.type = 3 and r.create_by = #{createBy}
+                        and r.type = 3 and r.create_by = #{authorId}
                     </if>
                 </if>
             </if>
-            <if test="createBy == null">
+            <if test="authorId == null">
                 and b.status = 1
             </if>
         </where>

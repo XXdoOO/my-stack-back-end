@@ -12,6 +12,7 @@ public class BlogDTO extends BaseDTO {
     private String keywords;
     private String authorNickname;
     private Long userId;
+    private Long authorId;
 
     // 0为发布的，1为顶过的，2为踩过的
     private Integer type;
