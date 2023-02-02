@@ -106,7 +106,7 @@
                 and c.create_time <![CDATA[ >= ]]> #{createTime[0], javaType=date}
             </if>
             <if test="createTime[1] != null">
-                and c.create_time <![CDATA[ <= ]]> #{createTime[1], javaType=date}
+                and c.create_time <![CDATA[ <= ]]> #{createTime[1], javaType=date }
             </if>
             <if test="enabled != null">
                 and c.is_enabled = #{enabled}

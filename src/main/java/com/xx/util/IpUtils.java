@@ -40,7 +40,10 @@ public class IpUtils {
             ip = request.getRemoteAddr();
         }
 
-        return "0:0:0:0:0:0:0:1".equals(ip) ? "127.0.0.1" : getMultistageReverseProxyIp(ip);
+        System.out.println("IP地址：" + ip);
+        System.out.println("本机IP地址：" + getHostIp());
+
+        return "0:0:0:0:0:0:0:1".equals(ip) ? getHostIp() : getMultistageReverseProxyIp(ip);
     }
 
     /**
@@ -83,9 +86,8 @@ public class IpUtils {
                     return true;
                 }
             case SECTION_5:
-                switch (b1) {
-                    case SECTION_6:
-                        return true;
+                if (b1 == SECTION_6) {
+                    return true;
                 }
             default:
                 return false;

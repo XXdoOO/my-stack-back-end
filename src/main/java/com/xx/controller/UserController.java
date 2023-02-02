@@ -12,6 +12,7 @@ import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,11 +40,7 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("postComments")
-    private MyResponse postComments(@RequestBody @Valid CommentDTO dto) {
-        if (StringUtils.isBlank(dto.getContent())) {
-            return MyResponse.error("评论内容不能为空");
-        }
-
+    private MyResponse postComments(@Validated @RequestBody CommentDTO dto) {
         return MyResponse.success(commentService.postComments(dto));
     }
 

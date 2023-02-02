@@ -1,14 +1,11 @@
 package com.xx.pojo.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-//import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +17,8 @@ public class CommentDTO extends BaseDTO {
     private Long blogId;
     private Long parent;
     private Long receiveId;
+
+    @NotBlank(message = "评论内容不能为空")
     private String content;
     private String nickname;
 }

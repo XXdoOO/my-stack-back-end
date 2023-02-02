@@ -18,7 +18,9 @@ public class BlogViewVO {
     private Long down;
     private Long star;
     private Long view;
+    private Long comment;
     private Integer status;
+    private Boolean enabled;
     private Long createBy;
     private String authorNickname;
     private Boolean isUp = false;
