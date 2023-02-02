@@ -40,14 +40,13 @@
         u.nickname as author_nickname
         <include refid="isRecord"/>
         from blog b left join user u on u.id = b.create_by
-        left join record r on r.is_deleted = 0 and r.blog_id is not null
-        <if test="authorId != null and (type == 0 or type == 1 or (userId == authorId and (type == 4 or type == 5)))">
-            and b.id = r.blog_id
-        </if>
-        <if test="authorId == null or (authorId != null and (type == null or (userId == authorId and (type == 2 or type == 3))))">
-
-            and b.create_by = r.create_by
-        </if>
+        left join record r on r.is_deleted = 0 and r.blog_id is not null and b.id = r.blog_id
+        <!--        <if test="authorId != null and (type == 0 or type == 1 or (userId == authorId and (type == 4 or type == 5)))">-->
+        <!--            and b.create_by = r.create_by-->
+        <!--        </if>-->
+        <!--        <if test="authorId == null or (authorId != null and (type == null or (userId == authorId and (type == 2 or type == 3))))">-->
+        <!--            and b.id = r.blog_id-->
+        <!--        </if>-->
         <where>
             b.is_deleted = 0
             <if test="keywords != null and keywords != ''">
