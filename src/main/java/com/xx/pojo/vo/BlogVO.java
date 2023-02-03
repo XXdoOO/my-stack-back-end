@@ -18,6 +18,7 @@ public class BlogVO {
     private Long up;
     private Long down;
     private Long star;
+    private Long comment;
     private Long view;
     private String ip;
     private String ipTerritory;
