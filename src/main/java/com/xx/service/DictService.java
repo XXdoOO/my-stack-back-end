@@ -46,8 +46,10 @@ public class DictService {
 
     public boolean putDictType(DictDTO dto) {
         DictType type = new DictType();
+        type.setId(dto.getId());
         type.setName(dto.getDictName());
         type.setEnabled(dto.getEnabled());
+        type.setCreateBy(null);
         return dictTypeMapper.updateById(type) == 1;
     }
 
@@ -76,6 +78,7 @@ public class DictService {
 
     public boolean putDictData(DictDTO dto) {
         DictData data = new DictData();
+        data.setId(dto.getId());
         data.setValue(dto.getValue());
         data.setLabel(dto.getLabel());
         return dictDataMapper.updateById(data) == 1;

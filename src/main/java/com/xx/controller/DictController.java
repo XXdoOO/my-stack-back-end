@@ -63,7 +63,7 @@ public class DictController {
 
     @ResponseBody
     @PutMapping("dictData")
-    public MyResponse putDictData(@Validated @RequestBody DictDTO dto) {
+    public MyResponse putDictData(@RequestBody DictDTO dto) {
         return dictService.putDictData(dto) ? MyResponse.success() : MyResponse.fail();
     }
 
