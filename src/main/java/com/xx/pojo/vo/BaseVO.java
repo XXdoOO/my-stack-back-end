@@ -15,7 +15,8 @@ public class BaseVO {
     private Date updateTime;
     private Date createTime;
     private Long createBy;
-    String createByNickname;
+    private String createByNickname;
+
     @TableField(value = "is_deleted")
     private Boolean deleted;
 }

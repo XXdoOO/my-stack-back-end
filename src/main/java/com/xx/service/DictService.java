@@ -36,7 +36,6 @@ public class DictService {
         DictType type = new DictType();
         type.setName(dto.getDictName());
         type.setEnabled(dto.getEnabled());
-        type.setCreateBy(userService.getCurrentUser().getId());
         return dictTypeMapper.insert(type) == 1;
     }
 
@@ -49,14 +48,12 @@ public class DictService {
         type.setId(dto.getId());
         type.setName(dto.getDictName());
         type.setEnabled(dto.getEnabled());
-        type.setCreateBy(null);
         return dictTypeMapper.updateById(type) == 1;
     }
 
 
     public List<DictData> getDictData(DictDTO dto) {
         DictData data = new DictData();
-        data.setCreateBy(null);
         data.setDictName(dto.getDictName());
         data.setLabel(dto.getLabel());
         data.setValue(dto.getValue());
@@ -68,7 +65,6 @@ public class DictService {
         data.setDictName(dto.getDictName());
         data.setValue(dto.getValue());
         data.setLabel(dto.getLabel());
-        data.setCreateBy(userService.getCurrentUser().getId());
         return dictDataMapper.insert(data) == 1;
     }
 
@@ -81,6 +77,7 @@ public class DictService {
         data.setId(dto.getId());
         data.setValue(dto.getValue());
         data.setLabel(dto.getLabel());
+        data.setEnabled(dto.getEnabled());
         return dictDataMapper.updateById(data) == 1;
     }
 }
