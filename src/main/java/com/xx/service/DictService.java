@@ -1,6 +1,8 @@
 package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.xx.mapper.DictDataMapper;
 import com.xx.mapper.DictTypeMapper;
@@ -45,6 +47,13 @@ public class DictService {
 
     public boolean putDictType(DictDTO dto) {
         DictType type = new DictType();
+
+        if (StringUtils.isNotBlank(dto.getDictName())) {
+            DictType dictType = dictTypeMapper.selectById(dto.getId());
+            dictDataMapper.update(null,
+                    new LambdaUpdateWrapper<DictData>().eq(DictData::getDictName, dictType.getName()).set(DictData::getDictName,
+                            dto.getDictName()));
+        }
         type.setId(dto.getId());
         type.setName(dto.getDictName());
         type.setEnabled(dto.getEnabled());

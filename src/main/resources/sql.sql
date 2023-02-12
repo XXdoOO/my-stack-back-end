@@ -33,8 +33,8 @@ create table `blog`
 (
     `id`           bigint unsigned auto_increment primary key not null,
     `title`        varchar(128)                               not null comment '标题',
-    `description`  varchar(512) comment '描述',
-    `cover`        text comment '特色图片',
+    `description`  varchar(512)                               not null comment '描述',
+    `cover`        varchar(64) comment '特色图片',
     `content`      mediumtext                                 not null comment '内容',
     `view`         bigint unsigned     default 0              not null comment '浏览量',
     `ip`           varchar(16)         default '127.0.0.1'    not null comment 'ip地址',

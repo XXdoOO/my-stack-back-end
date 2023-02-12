@@ -1,6 +1,7 @@
 package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.xx.mapper.*;
 import com.xx.pojo.dto.BlogDTO;
@@ -58,6 +59,11 @@ public class BlogService {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         return blogMapper.update(null, wrapper.set("status", status).
                 eq("id", blogId)) == 1;
+    }
+
+    public boolean enableBlog(long blogId) {
+        return blogMapper.update(null, new LambdaUpdateWrapper<Blog>().setSql("is_enabled = !is_enabled").
+                eq(Blog::getId, blogId)) == 1;
     }
 
     public BlogVO getBlogDetails(long id) {

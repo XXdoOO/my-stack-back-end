@@ -38,35 +38,35 @@ public class AdminController extends BaseController {
     @Autowired
     private CommonService commonService;
 
-    @ResponseBody
     @GetMapping("getBlogList")
     public MyResponse getBlogList(BlogDTO dto) {
         System.out.println(dto);
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
 
-        return MyResponse.success(new PageInfo<>(blogService.getBlogList2(dto)));
+        return success(new PageInfo<>(blogService.getBlogList2(dto)));
     }
 
-    @ResponseBody
     @GetMapping("blog/{blogId}")
     public MyResponse getBlogDetails(@PathVariable long blogId) {
-        return MyResponse.success(blogService.getBlogDetails2(blogId));
+        return success(blogService.getBlogDetails2(blogId));
     }
 
-    @ResponseBody
     @PutMapping("auditBlog")
     public MyResponse auditBlog(@RequestParam long blogId, @RequestParam int status) {
-        return MyResponse.success(blogService.auditBlog(blogId, status));
+        return success(blogService.auditBlog(blogId, status));
     }
 
-    @ResponseBody
+    @PutMapping("enableBlog/{blogId}")
+    public MyResponse enableBlog(@PathVariable long blogId) {
+        return MyResponse.success(blogService.enableBlog(blogId));
+    }
+
     @GetMapping("getUserList")
     public MyResponse getUserList(UserDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         return MyResponse.success(new PageInfo<>(userService.getUserList(dto)));
     }
 
-    @ResponseBody
     @PutMapping("disableUser")
     public MyResponse disableUser(@RequestBody UserDTO dto) {
         if (dto.getUserId() != null && dto.getEnabled() != null) {
@@ -76,20 +76,17 @@ public class AdminController extends BaseController {
         return MyResponse.fail();
     }
 
-    @ResponseBody
     @GetMapping("getCommentsList")
     public MyResponse getCommentsList(CommentDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         return MyResponse.success(new PageInfo<>(commentService.getCommentsList2(dto)));
     }
 
-    @ResponseBody
     @PutMapping("enabledItem")
     public MyResponse enabledItem(@RequestParam String table, @RequestParam Long id) {
         return commonService.enabledItem(table, id) ? success() : fail();
     }
 
-    @ResponseBody
     @DeleteMapping("deleteItem")
     public MyResponse deleteItem(@RequestParam String table, @RequestParam Long id) {
         return commonService.deleteItem(table, id) ? success() : fail();
