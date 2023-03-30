@@ -71,11 +71,10 @@ public class UserService {
                 user1.setIp(IpUtils.getIpAddr(request));
                 user1.setIpTerritory(AddressUtils.getRealAddressByIP(user1.getIp()));
                 session.setAttribute("USER_SESSION", user);
+            } else {
+                return userVo;
             }
-            return null;
         } else {
-            session.setAttribute("USER_SESSION", user);
-
             user1.setIp(IpUtils.getIpAddr(request));
             user1.setIpTerritory(AddressUtils.getRealAddressByIP(user1.getIp()));
 
@@ -88,9 +87,39 @@ public class UserService {
             userVo.setDown(myInfo.getDown());
             userVo.setStar(myInfo.getStar());
             userVo.setHistory(myInfo.getHistory());
+
+            session.setAttribute("USER_SESSION", user);
         }
         userMapper.updateById(user1);
-        disableMapper.deleteById(user.getId());
+        return userVo;
+    }
+
+    public UserVO getUserInfo() {
+        User user_session = (User) session.getAttribute("USER_SESSION");
+        String email = user_session.getEmail();
+        String password = user_session.getPassword();
+
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+
+        User user = userMapper.selectOne(wrapper.
+                eq("email", email).
+                eq("password", password));
+
+        UserVO userVo = new UserVO();
+
+        BeanUtils.copyProperties(user, userVo, "password");
+
+        userVo.setDisableInfo(getUserDisableInfo(user.getId()));
+
+        UserVO myInfo = userMapper.getUserInfo(null, user.getId());
+
+        userVo.setAuditingCount(myInfo.getAuditingCount());
+        userVo.setPassCount(myInfo.getPassCount());
+        userVo.setNoPassCount(myInfo.getNoPassCount());
+        userVo.setUp(myInfo.getUp());
+        userVo.setDown(myInfo.getDown());
+        userVo.setStar(myInfo.getStar());
+        userVo.setHistory(myInfo.getHistory());
         return userVo;
     }
 
@@ -105,6 +134,7 @@ public class UserService {
         if (disable != null && disable.getEndTime().getTime() > System.currentTimeMillis()) {
             return disable;
         } else { // 用户已解封
+
             return null;
         }
     }
@@ -141,7 +171,7 @@ public class UserService {
         user.setNickname(dto.getNickname());
 
         if (SaveFile.saveAvatar(dto.getAvatar(), id)) {
-            user.setAvatar("/avatar/" + id + ".jpg");
+            user.setAvatar("/avatar/user-" + id + ".jpg");
         }
 
         return userMapper.updateById(user) == 1;

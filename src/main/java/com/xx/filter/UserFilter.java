@@ -1,6 +1,7 @@
 package com.xx.filter;
 
 import com.xx.pojo.entity.User;
+import com.xx.pojo.vo.UserVO;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,10 +14,7 @@ public class UserFilter implements HandlerInterceptor {
         try {
             HttpSession session = request.getSession();
 
-            User user = (User) session.getAttribute("USER_SESSION");
-
-            System.out.println("User拦截器：" + user);
-            if (user != null) {
+            if (session.getAttribute("USER_SESSION") != null) {
                 return true;
             }
             response.sendRedirect("/handleNotLogin");

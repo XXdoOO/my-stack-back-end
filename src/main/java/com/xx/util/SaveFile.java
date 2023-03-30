@@ -34,7 +34,7 @@ public class SaveFile {
             return false;
         }
         String locPath = "D:/fileUpload/";
-        String filename = "avatar/" + userId + ".jpg";
+        String filename = "avatar/user-" + userId + ".jpg";
         File temp = new File(locPath);
         if (!temp.exists()) {
             temp.mkdirs();

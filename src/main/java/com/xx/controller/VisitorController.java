@@ -7,6 +7,7 @@ import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
+import com.xx.pojo.entity.Disable;
 import com.xx.service.CommentService;
 import com.xx.mapper.BlogMapper;
 import com.xx.pojo.dto.UserDTO;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
 
 @RestController
 @RequestMapping("/")
@@ -123,7 +125,11 @@ public class VisitorController {
             if (user == null) {
                 return MyResponse.fail("邮箱或密码错误");
             } else if (!user.getEnabled()) {
-                return MyResponse.error("用户已被封禁", user.getDisableInfo());
+                Disable info = user.getDisableInfo();
+                return MyResponse.error("用户因 ' " + info.getReason() + " ' 已被封禁至 ' " + new SimpleDateFormat("yyyy-MM" +
+                                "-dd " +
+                                "hh:mm:ss").format(info.getEndTime()) + " '",
+                        info);
             } else {
                 return MyResponse.success("登录成功", user);
             }

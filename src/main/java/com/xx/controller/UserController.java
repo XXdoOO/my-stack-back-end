@@ -39,6 +39,12 @@ public class UserController {
     }
 
     @ResponseBody
+    @GetMapping("/userInfo")
+    public MyResponse getUserInfo() {
+        return MyResponse.success(userService.getUserInfo());
+    }
+
+    @ResponseBody
     @PostMapping("postComments")
     private MyResponse postComments(@Validated @RequestBody CommentDTO dto) {
         return MyResponse.success(commentService.postComments(dto));
