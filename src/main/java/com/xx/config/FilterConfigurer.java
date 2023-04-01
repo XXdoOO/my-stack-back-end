@@ -23,10 +23,10 @@ import java.util.Map;
 
 @Configuration
 public class FilterConfigurer implements WebMvcConfigurer {
-    @Value("${images.request-path}")
+    @Value("${file.request-path}")
     private String reqPath;
 
-    @Value("${images.local-path}")
+    @Value("${file.local-path}")
     private String locPath;
 
     @Override

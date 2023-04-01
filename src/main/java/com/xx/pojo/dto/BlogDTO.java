@@ -6,6 +6,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class BlogDTO extends BaseDTO {
@@ -21,5 +22,6 @@ public class BlogDTO extends BaseDTO {
     private String description;
     private String content;
     private MultipartFile coverImg;
+    private List<MultipartFile> images;
     private Integer status;
 }

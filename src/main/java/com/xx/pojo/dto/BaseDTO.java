@@ -16,11 +16,9 @@ abstract class BaseDTO {
     private Long id;
     private Boolean enabled;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date[] updateTime = new Date[]{null, null};
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date[] createTime = new Date[]{null, null};
 

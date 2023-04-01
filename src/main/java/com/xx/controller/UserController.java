@@ -1,25 +1,30 @@
 package com.xx.controller;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
 import com.xx.pojo.dto.UserDTO;
+import com.xx.pojo.entity.Blog;
 import com.xx.service.BlogService;
 import com.xx.service.CommentService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
+import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.HashMap;
 
-@Controller
+@RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends BaseController {
 
     @Autowired
     private UserService userService;
@@ -30,7 +35,6 @@ public class UserController {
     @Autowired
     private CommentService commentService;
 
-    @ResponseBody
     @GetMapping("/logout")
     public MyResponse logout() {
         userService.logout();
@@ -38,44 +42,37 @@ public class UserController {
         return MyResponse.success();
     }
 
-    @ResponseBody
     @GetMapping("/userInfo")
     public MyResponse getUserInfo() {
         return MyResponse.success(userService.getUserInfo());
     }
 
-    @ResponseBody
     @PostMapping("postComments")
     private MyResponse postComments(@Validated @RequestBody CommentDTO dto) {
         return MyResponse.success(commentService.postComments(dto));
     }
 
-    @ResponseBody
     @DeleteMapping("deleteComment/{commentId}")
     private MyResponse deleteComment(@PathVariable long commentId) {
         return MyResponse.success(commentService.deleteComment(commentId));
     }
 
-    @ResponseBody
     @PutMapping("handleBlog")
     private MyResponse handleBlog(long blogId, int type) {
         return MyResponse.success(blogService.handleBlog(blogId, type));
     }
 
-    @ResponseBody
     @PutMapping("handleComment")
     private MyResponse handleComment(long commentId, int type) {
         return MyResponse.success(commentService.handleComment(commentId, type));
     }
 
-    @ResponseBody
     @PostMapping("postBlog")
     private MyResponse postBlog(BlogDTO dto) {
         blogService.postBlog(dto);
         return MyResponse.success();
     }
 
-    @ResponseBody
     @PutMapping("updateBlog")
     private MyResponse updateBlog(BlogDTO dto) {
         if (dto.getId() != null) {
@@ -85,13 +82,11 @@ public class UserController {
         return MyResponse.fail();
     }
 
-    @ResponseBody
     @DeleteMapping("deleteBlog/{blogId}")
     private MyResponse deleteBlog(@PathVariable Long blogId) {
         return MyResponse.success(blogService.deleteBlog(blogId));
     }
 
-    @ResponseBody
     @GetMapping("getBlogList")
     public MyResponse getBlogList(BlogDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
@@ -99,7 +94,6 @@ public class UserController {
         return MyResponse.success(new PageInfo<>(blogService.getBlogList(dto)));
     }
 
-    @ResponseBody
     @PutMapping("updateInfo")
     public MyResponse updateInfo(UserDTO dto) {
         return MyResponse.success(userService.updateInfo(dto));
