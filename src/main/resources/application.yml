@@ -22,17 +22,12 @@ spring:
       chain:
         cache: false
   mail:
-    #smtp服务主机  qq邮箱则为smtp.qq.com;163邮箱是smtp.163.com
     host: smtp.qq.com
-    #服务协议
     protocol: smtp
-    # 编码集
     default-encoding: UTF-8
-    #发送邮件的账户
     username: 1972524359@qq.com
-    #授权码
     password: dcbbklpqluffbfai
-    test-connection: true
+    port: 465
     properties:
       mail:
         smtp:
@@ -40,6 +35,11 @@ spring:
           starttls:
             enable: true
             required: true
+          ssl:
+            enable: true
+            socketFactory:
+              port: 465
+              class: javax.net.ssl.SSLSocketFactory
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT+8
