@@ -197,5 +197,5 @@ alter table user
         `is_deleted` tinyint(1) unsigned default 0 not null
         );
 
-666
+66
 
