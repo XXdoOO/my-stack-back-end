@@ -38,14 +38,13 @@ public class SaveFile {
         if (file == null || file.isEmpty()) {
             return false;
         }
-        String locPath = "D:/fileUpload/";
         String filename = "cover/" + blogId + ".jpg";
-        File temp = new File(locPath);
+        File temp = new File(localPath);
         if (!temp.exists()) {
             temp.mkdirs();
         }
 
-        File localFile = new File(locPath + filename);
+        File localFile = new File(localPath + filename);
         try {
             file.transferTo(localFile);
         } catch (IOException e) {
@@ -60,14 +59,13 @@ public class SaveFile {
         if (file == null || file.isEmpty()) {
             return false;
         }
-        String locPath = "D:/fileUpload/";
         String filename = "avatar/user-" + userId + ".jpg";
-        File temp = new File(locPath);
+        File temp = new File(localPath);
         if (!temp.exists()) {
             temp.mkdirs();
         }
 
-        File localFile = new File(locPath + filename);
+        File localFile = new File(localPath + filename);
         try {
             file.transferTo(localFile);
         } catch (IOException e) {

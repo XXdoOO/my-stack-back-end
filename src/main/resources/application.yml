@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:mysql://43.138.195.177:3306/blog_management_system?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowMultiQueries=true&useAffectedRows=true
+    url: jdbc:mysql://101.33.221.78:3306/blog_management_system?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8&allowMultiQueries=true&useAffectedRows=true
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: wsad168!
+    password: 1900130214
     hikari:
       connection-timeout: 60000   # 数据库连接超时时间,默认30秒,即30000
       validation-timeout: 3000    # 指定验证连接有效性的超时时间(默认是5秒,最小不能小于250毫秒)
@@ -57,4 +57,5 @@ mybatis-plus:
 
 file:
   request-path: /**
-  local-path: D:/fileUpload/
+  local-path: /xx/fileUpload/
+  # local-path: D:/fileUpload/

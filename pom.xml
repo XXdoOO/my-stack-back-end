@@ -9,10 +9,10 @@
         <relativePath/>
     </parent>
     <groupId>com.xx</groupId>
-    <artifactId>graduation-design</artifactId>
+    <artifactId>my-stack-back-end</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>graduation-design</name>
-    <description>graduation-design</description>
+    <name>my-stack-back-end</name>
+    <description>my-stack-back-end</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>

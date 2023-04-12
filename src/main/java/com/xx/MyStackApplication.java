@@ -8,16 +8,15 @@ import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @MapperScan("com.xx.mapper")
 @EnableTransactionManagement
 @SpringBootApplication
-public class GraduationDesignApplication {
+public class MyStackApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GraduationDesignApplication.class, args);
+        SpringApplication.run(MyStackApplication.class, args);
     }
 
     @Bean
