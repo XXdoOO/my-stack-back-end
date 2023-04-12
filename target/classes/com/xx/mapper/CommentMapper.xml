@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xx.mapper.CommentMapper">
+    <select id="getCommentList" resultMap="CommentMap">
+        select
+        c.id,
+        c.blog_id,
+        c.parent,
+        c.content,
+        c.ip,
+        c.ip_territory,
+        c.create_time,
+        c.is_deleted,
+        c.is_enabled,
+        u.id as u_id,
+        u.nickname as u_nickname,
+        u.avatar as u_avatar,
+        uu.id as uu_id,
+        uu.nickname as uu_nickname,
+        (select count(r.id) from record r where r.is_deleted = 0 and r.comment_id = c.id and r.type = 0) as up,
+        (select count(r.id) from record r where r.is_deleted = 0 and r.comment_id = c.id and r.type = 1) as down
+        <if test="parent == 0">
+            ,
+            (select count(comment.id) from comment where comment.is_deleted = 0 and comment.parent = c.id) as
+            children_count
+        </if>
+        <if test="userId != null">
+            ,
+            if((select count(r.id) from record r where r.is_deleted = 0 and r.create_by = #{userId} and r.comment_id =
+            c.id and r.type = 0) >
+            0, 1, 0) as is_up,
+            if((select count(r.id) from record r where r.is_deleted = 0 and r.create_by = #{userId} and r.comment_id =
+            c.id and r.type = 1) >
+            0, 1, 0) as is_down
+        </if>
+        <if test="userId == null">
+            ,
+            0 as is_up,
+            0 as is_down
+        </if>
+        from comment c
+        left join user u on c.create_by = u.id
+        left join user uu on c.receive_id = uu.id
+        where c.is_deleted = 0 and c.blog_id = #{blogId} and c.parent = #{parent}
+        <if test="orderBy != null and orderBy != ''">
+            order by #{orderBy}
+        </if>
+    </select>
+    <resultMap id="CommentMap" type="CommentVO">
+        <id column="id" property="id"/>
+        <result column="blog_id" property="blogId"/>
+        <result column="parent" property="parent"/>
+        <result column="content" property="content"/>
+        <result column="ip" property="ip"/>
+        <result column="ip_territory" property="ipTerritory"/>
+        <result column="create_time" property="createTime"/>
+        <result column="up" property="up"/>
+        <result column="down" property="down"/>
+        <result column="is_up" property="isUp"/>
+        <result column="is_down" property="isDown"/>
+        <result column="children_count" property="childrenCount"/>
+        <result column="is_enabled" property="enabled"/>
+        <result column="is_deleted" property="deleted"/>
+        <collection property="sender" ofType="User">
+            <id column="u_id" property="id"/>
+            <result column="u_nickname" property="nickname"/>
+            <result column="u_avatar" property="avatar"/>
+        </collection>
+        <collection property="receiver" ofType="User">
+            <id column="uu_id" property="id"/>
+            <result column="uu_nickname" property="nickname"/>
+        </collection>
+    </resultMap>
+
+    <select id="getCommentList2" resultMap="CommentMap">
+        select c.id,
+        c.blog_id,
+        c.parent,
+        c.content,
+        c.ip,
+        c.ip_territory,
+        c.create_time,
+        c.is_deleted,
+        c.is_enabled,
+        u.id as u_id,
+        u.nickname as u_nickname,
+        u.avatar as u_avatar,
+        uu.id as uu_id,
+        uu.nickname as uu_nickname from comment c
+        left join user u on c.create_by = u.id
+        left join user uu on c.receive_id = uu.id
+        <where>
+            <if test="blogId != null">
+                c.blog_id = #{blogId}
+            </if>
+            <if test="content != null and content != ''">
+                and c.content like concat('%',#{content},'%')
+            </if>
+            <if test="nickname != null and nickname != ''">
+                and u.nickname like concat('%',#{nickname},'%')
+            </if>
+            <if test="createTime[0] != null">
+                and c.create_time <![CDATA[ >= ]]> #{createTime[0], javaType=date}
+            </if>
+            <if test="createTime[1] != null">
+                and c.create_time <![CDATA[ <= ]]> #{createTime[1], javaType=date }
+            </if>
+            <if test="enabled != null">
+                and c.is_enabled = #{enabled}
+            </if>
+        </where>
+    </select>
+</mapper>

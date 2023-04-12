@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xx.mapper.UserMapper">
+    <select id="getUserInfo" resultType="UserVO">
+        select
+        u.id as id,
+        u.nickname as nickname,
+        u.avatar,
+        u.ip,
+        u.ip_territory,
+        u.is_admin,
+        u.is_enabled,
+        count(distinct case when b.status = 1 then b.id end) as pass_count,
+        count(distinct case when r.type = 0 then r.id end) as up,
+        count(distinct case when r.type = 1 then r.id end) as down
+        <if test="createBy == null and userId != null">
+            ,
+            u.email,
+            count(distinct case when b.status = 0 then b.id end) as auditing_count,
+            count(distinct case when b.status = 2 then b.id end) as no_pass_count,
+            count(distinct case when r.type = 2 then r.id end) as star,
+            count(distinct case when r.type = 3 then r.id end) as history
+        </if>
+        from user u
+        left join blog b on u.id = b.create_by and b.is_deleted = 0
+        left join record r on r.create_by = u.id and r.blog_id is not null and r.is_deleted = 0
+        where
+        <if test="createBy == null and userId != null">
+            u.id = #{userId}
+        </if>
+        <if test="createBy != null">
+            u.id = #{createBy}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.xx.mapper.BlogMapper">
+    <sql id="isRecord">
+        <if test="userId != null">
+            ,
+            if(count(distinct case when r.type = 0 and r.create_by = #{userId} then r.id end) > 0,
+            1, 0) as is_up,
+            if(count(distinct case when r.type = 1 and r.create_by = #{userId} then r.id end) > 0,
+            1, 0) as is_down,
+            if(count(distinct case when r.type = 2 and r.create_by = #{userId} then r.id end) > 0,
+            1, 0) as is_star
+        </if>
+        <if test="userId == null">
+            ,
+            0 as is_up,
+            0 as is_down,
+            0 as is_star
+        </if>
+    </sql>
+
+    <select id="getBlogList" resultMap="BlogView">
+        select
+        b.id,
+        b.title,
+        b.description,
+        b.cover,
+        b.is_enabled,
+        b.is_deleted,
+        count(distinct case when r.type = 0 then r.id end) as up,
+        count(distinct case when r.type = 1 then r.id end) as down,
+        count(distinct case when r.type = 2 then r.id end) as star,
+        (select count(1) from comment c where c.is_deleted = 0 and c.is_enabled = 1 and c.blog_id = b.id) as comment,
+        count(distinct case when r.type = 3 then r.id end) + b.view as view,
+        b.status,
+        b.create_time,
+        b.create_by,
+        u.nickname as author_nickname
+        <include refid="isRecord"/>
+        from blog b left join user u on u.id = b.create_by
+        left join record r on r.is_deleted = 0 and r.blog_id is not null and b.id = r.blog_id
+        <!--        <if test="authorId != null and (type == 0 or type == 1 or (userId == authorId and (type == 4 or type == 5)))">-->
+        <!--            and b.create_by = r.create_by-->
+        <!--        </if>-->
+        <!--        <if test="authorId == null or (authorId != null and (type == null or (userId == authorId and (type == 2 or type == 3))))">-->
+        <!--            and b.id = r.blog_id-->
+        <!--        </if>-->
+        <where>
+            b.is_deleted = 0
+            <if test="keywords != null and keywords != ''">
+                and (b.title like concat('%', #{keywords}, '%')
+                or b.description like concat('%', #{keywords}, '%')
+                or b.content like concat('%', #{keywords}, '%'))
+            </if>
+
+            <if test="authorId != null">
+                <if test="type == null">
+                    and b.status = 1 and b.create_by = #{authorId}
+                </if>
+                <if test="type == 0">
+                    and r.type = 0 and r.create_by = #{authorId}
+                </if>
+                <if test="type == 1">
+                    and r.type = 1 and r.create_by = #{authorId}
+                </if>
+                <if test="userId == authorId">
+                    <if test="type == 2">
+                        and b.status = 0 and b.create_by = #{authorId}
+                    </if>
+                    <if test="type == 3">
+                        and b.status = 2 and b.create_by = #{authorId}
+                    </if>
+                    <if test="type == 4">
+                        and r.type = 2 and r.create_by = #{authorId}
+                    </if>
+                    <if test="type == 5">
+                        and r.type = 3 and r.create_by = #{authorId}
+                    </if>
+                </if>
+            </if>
+            <if test="authorId == null">
+                and b.status = 1
+            </if>
+        </where>
+        group by b.id
+    </select>
+    <select id="getBlogList2" resultMap="BlogView">
+        select
+        b.id,
+        b.title,
+        b.description,
+        b.cover,
+        b.is_enabled as enabled,
+        b.is_deleted as deleted ,
+        count(distinct case when r.type = 0 then r.id end) as up,
+        count(distinct case when r.type = 1 then r.id end) as down,
+        count(distinct case when r.type = 2 then r.id end) as star,
+        count(distinct case when r.type = 3 then r.id end) + b.view as view,
+        b.status,
+        b.create_time,
+        b.create_by,
+        u.nickname as author_nickname
+        <include refid="isRecord"/>
+        from blog b left join user u on u.id = b.create_by
+        left join record r on r.is_deleted = 0 and r.blog_id is not null
+        and b.create_by = r.create_by
+        <where>
+            b.is_deleted = 0
+            <if test="title != null and title != ''">
+                and b.title like concat('%', #{title}, '%')
+            </if>
+            <if test="description != null and description != ''">
+                and b.description like concat('%', #{description}, '%')
+            </if>
+            <if test="authorNickname != null and authorNickname != ''">
+                and u.nickname like concat('%', #{authorNickname}, '%')
+            </if>
+            <if test="status != null">
+                and b.status = #{status}
+            </if>
+            <if test="createTime[0] != null">
+                and b.create_time >= #{createTime[0],javaType=date}
+            </if>
+            <if test="createTime[1] != null">
+                and b.create_time &lt;= #{createTime[1],javaType=date}
+            </if>
+        </where>
+        group by b.id
+    </select>
+    <resultMap id="BlogView" type="BlogViewVO">
+        <id column="id" property="id"/>
+        <collection property="categories" column="id" ofType="Category" select="getCategories">
+        </collection>
+    </resultMap>
+    <select id="getCategories" resultType="CategoryVO">
+        select c.id as id, c.name as name
+        from category c,
+             blog_category bc
+        where c.id = bc.category_id
+          and bc.blog_id = #{id}
+    </select>
+
+    <select id="getBlogDetails" resultMap="BlogDetails">
+        select b.id,
+        b.title,
+        b.description,
+        b.cover,
+        b.content,
+        b.ip,
+        b.ip_territory,
+        count(distinct case when r.type = 0 then r.id end) as up,
+        count(distinct case when r.type = 1 then r.id end) as down,
+        count(distinct case when r.type = 2 then r.id end) as star,
+        (select count(1) from comment c where c.is_deleted = 0 and c.is_enabled = 1 and c.blog_id = b.id) as comment,
+        count(distinct case when r.type = 3 then r.id end) + b.view as view,
+        b.status,
+        b.create_time,
+        u.id as u_id,
+        u.nickname as u_nickname,
+        u.avatar as u_avatar,
+        u.is_admin as u_is_admin,
+        u.is_enabled as u_is_enabled,
+        u.create_time as u_create_time,
+        (select count(r.id) from record r where r.create_by = b.create_by and r.blog_id is not null and r.type = 0) as
+        up_count,
+        (select count(r.id) from record r where r.create_by = b.create_by and r.blog_id is not null and r.type = 1) as
+        down_count,
+        (select count(blog.id) from blog where blog.create_by = b.create_by and blog.status = 1 and blog.is_deleted =
+        false) as pass_count
+        <include refid="isRecord"/>
+        from blog b
+        left join user u on b.create_by = u.id
+        left join record r on r.is_deleted = 0 and r.blog_id is not null and b.id = r.blog_id
+        where b.id = #{id}
+    </select>
+    <resultMap id="BlogDetails" type="BlogVO">
+        <id column="id" property="id"/>
+        <id column="title" property="title"/>
+        <id column="description" property="description"/>
+        <id column="cover" property="cover"/>
+        <id column="content" property="content"/>
+        <id column="ip" property="ip"/>
+        <id column="ip_territory" property="ipTerritory"/>
+        <id column="up" property="up"/>
+        <id column="down" property="down"/>
+        <id column="view" property="view"/>
+        <id column="star" property="star"/>
+        <id column="comment" property="comment"/>
+        <id column="is_up" property="isUp"/>
+        <id column="is_down" property="isDown"/>
+        <id column="is_star" property="isStar"/>
+        <id column="status" property="status"/>
+        <id column="create_time" property="createTime"/>
+        <association property="authorInfo">
+            <id column="u_id" property="id"/>
+            <result column="u_nickname" property="nickname"/>
+            <result column="u_avatar" property="avatar"/>
+            <result column="up_count" property="up"/>
+            <result column="down_count" property="down"/>
+            <result column="pass_count" property="passCount"/>
+            <result column="u_is_admin" property="admin"/>
+            <result column="u_is_disable" property="disable"/>
+            <result column="u_create_time" property="createTime"/>
+        </association>
+        <collection property="categories" column="id" ofType="CategoryVO" select="getCategories">
+        </collection>
+    </resultMap>
+    <select id="getBlogDetails2" resultMap="BlogDetails">
+        select content
+        from blog
+        where id = #{id}
+    </select>
+</mapper>
