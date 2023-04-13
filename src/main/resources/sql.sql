@@ -196,6 +196,6 @@ alter table user
         `create_time` datetime default current_timestamp not null,
         `is_deleted` tinyint(1) unsigned default 0 not null
         );
-
+kkk
 
 
