@@ -1,0 +1,22 @@
+{
+  "groups": [
+    {
+      "name": "stack",
+      "type": "com.xx.config.SystemConfig",
+      "sourceType": "com.xx.config.SystemConfig"
+    }
+  ],
+  "properties": [
+    {
+      "name": "stack.local-path",
+      "type": "java.lang.String",
+      "sourceType": "com.xx.config.SystemConfig"
+    },
+    {
+      "name": "stack.request-path",
+      "type": "java.lang.String",
+      "sourceType": "com.xx.config.SystemConfig"
+    }
+  ],
+  "hints": []
+}
