@@ -23,6 +23,7 @@ C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\controller\Excepti
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\util\SessionUtil.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\mapper\UserMapper.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\entity\Disable.java
+C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\config\SystemConfig.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\dto\BaseDTO.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\config\FilterConfigurer.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\util\StatusCode.java
@@ -39,7 +40,6 @@ C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\controller\AdminCo
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\entity\BaseEntity.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\controller\DictController.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\service\BlogService.java
-C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\service\CommonService.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\util\MyResponse.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\controller\UserController.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\mapper\DisableMapper.java
@@ -49,7 +49,6 @@ C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\config\MyMetaObjec
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\vo\BaseVO.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\mapper\CommentMapper.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\service\UserService.java
-C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\mapper\CommonMapper.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\vo\CommentVO.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\dto\CommentDTO.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\vo\CategoryVO.java
