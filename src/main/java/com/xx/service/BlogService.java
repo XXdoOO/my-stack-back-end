@@ -1,8 +1,10 @@
 package com.xx.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.xx.config.SystemConfig;
 import com.xx.mapper.*;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.entity.Blog;
@@ -16,9 +18,11 @@ import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileSystemUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.util.*;
 
 @Transactional
@@ -69,20 +73,26 @@ public class BlogService {
     public BlogVO getBlogDetails(long id) {
         User user = userService.getCurrentUser();
 
+        blogMapper.update(null, new LambdaUpdateWrapper<Blog>().
+                setSql("view = view + 1").eq(Blog::getId, id));
+
         Long userId = null;
         if (user.getId() != null) {
             userId = user.getId();
-            Record record = new Record();
-            record.setBlogId(id);
-            record.setType(3);
-            record.setCreateBy(userId);
 
-            recordMapper.insert(record);
-        } else {
-            blogMapper.update(null, new UpdateWrapper<Blog>().
-                    setSql("view = view + 1").eq("id", id));
+            if (!recordMapper.exists(new LambdaQueryWrapper<Record>().
+                    eq(Record::getBlogId, id).
+                    eq(Record::getType, 3).
+                    eq(Record::getCreateBy, userId))) {
+
+                Record record = new Record();
+                record.setBlogId(id);
+                record.setType(3);
+                record.setCreateBy(userId);
+
+                recordMapper.insert(record);
+            }
         }
-
         return blogMapper.getBlogDetails(id, userId);
     }
 
@@ -116,7 +126,7 @@ public class BlogService {
         }
     }
 
-    public void postBlog(BlogDTO dto) {
+    public boolean postBlog(BlogDTO dto) {
         User user = userService.getCurrentUser();
 
         Blog blog = new Blog();
@@ -128,15 +138,20 @@ public class BlogService {
         blog.setIp(IpUtils.getIpAddr(request));
         blog.setIpTerritory(AddressUtils.getRealAddressByIP(blog.getIp()));
 
-        blogMapper.insert(blog);
+        if (blogMapper.insert(blog) == 1) {
+            File workDir = new File(SystemConfig.getLocalPath() + user.getId() + "/" + blog.getId());
 
-        if (SaveFile.saveFile(dto.getCoverImg(), blog.getId())) {
-            UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
-            blogMapper.update(null, wrapper.
-                    set("cover", "/cover/" + blog.getId() + ".jpg").
-                    eq("id", blog.getId()).
-                    eq("create_by", user.getId()));
+            if (workDir.mkdir()) {
+                String cover = SaveFile.saveCover(dto.getCoverImg(), blog.getId());
+                if (cover != null) {
+                    blogMapper.update(null, new LambdaUpdateWrapper<Blog>().
+                            set(Blog::getCover, cover).
+                            eq(Blog::getId, blog.getId()));
+                }
+                return true;
+            }
         }
+        return false;
     }
 
     public void updateBlog(BlogDTO dto) {
@@ -148,8 +163,9 @@ public class BlogService {
         blog.setDescription(dto.getDescription());
         blog.setContent(dto.getContent());
 
-        if (SaveFile.saveFile(dto.getCoverImg(), dto.getId())) {
-            blog.setCover("/cover/" + dto.getId() + ".jpg");
+        String cover = SaveFile.saveCover(dto.getCoverImg(), dto.getId());
+        if (cover != null) {
+            blog.setCover(cover);
         }
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         blogMapper.update(blog, wrapper.
@@ -160,10 +176,17 @@ public class BlogService {
     public boolean deleteBlog(long blogId) {
         User user = userService.getCurrentUser();
 
-        QueryWrapper<Record> queryWrapper = new QueryWrapper<>();
-        recordMapper.delete(queryWrapper.eq("blog_id", blogId));
+        recordMapper.delete(new LambdaQueryWrapper<Record>().
+                eq(Record::getBlogId, blogId).
+                eq(Record::getCreateBy, user.getId()));
 
-        QueryWrapper<Blog> wrapper = new QueryWrapper<>();
-        return blogMapper.delete(wrapper.eq("id", blogId).eq("create_by", user.getId())) == 1;
+        if (blogMapper.delete(new LambdaQueryWrapper<Blog>().
+                eq(Blog::getId, blogId).
+                eq(Blog::getCreateBy, user.getId())) == 1) {
+            FileSystemUtils.deleteRecursively(new File("/" + user.getId() + "/" + blogId));
+
+            return true;
+        }
+        return false;
     }
 }

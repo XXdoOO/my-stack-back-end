@@ -23,12 +23,6 @@ import java.util.Map;
 
 @Configuration
 public class FilterConfigurer implements WebMvcConfigurer {
-    @Value("${file.request-path}")
-    private String reqPath;
-
-    @Value("${file.local-path}")
-    private String locPath;
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         InterceptorRegistration corsInterceptor = registry.addInterceptor(new CorsFilter());
@@ -42,20 +36,16 @@ public class FilterConfigurer implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        System.out.println(locPath);
-        File logoDir = new File(locPath);
+        File logoDir = new File(SystemConfig.getLocalPath());
         boolean flag = false;
         if (!logoDir.exists()) {
             flag = logoDir.mkdirs();
         }
         if (flag) {
-            System.out.println("已成功创建资源目录：{}" + locPath);
+            System.out.println("已成功创建资源目录：{}" + SystemConfig.getLocalPath());
         }
 
-        System.out.println("getAbsolutePath = " + logoDir.getAbsolutePath() + File.separator);
-        System.out.println("getPath = " + logoDir.getPath());
-
-        registry.addResourceHandler(reqPath)
+        registry.addResourceHandler(SystemConfig.getRequestPath())
                 .addResourceLocations("file:" + logoDir.getAbsolutePath() + File.separator);
     }
 

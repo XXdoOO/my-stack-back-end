@@ -69,8 +69,7 @@ public class UserController extends BaseController {
 
     @PostMapping("postBlog")
     private MyResponse postBlog(BlogDTO dto) {
-        blogService.postBlog(dto);
-        return MyResponse.success();
+        return blogService.postBlog(dto) ? success() : fail();
     }
 
     @PutMapping("updateBlog")
@@ -97,5 +96,14 @@ public class UserController extends BaseController {
     @PutMapping("updateInfo")
     public MyResponse updateInfo(UserDTO dto) {
         return MyResponse.success(userService.updateInfo(dto));
+    }
+
+    @PostMapping("uploadImage")
+    public MyResponse uploadImage(MultipartFile image, Long blogId) {
+        String s = SaveFile.uploadBlogImage(image, blogId);
+        if (s != null) {
+            return success(s);
+        }
+        return fail();
     }
 }

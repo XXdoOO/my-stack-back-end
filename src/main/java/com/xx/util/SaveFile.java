@@ -1,5 +1,7 @@
 package com.xx.util;
 
+import com.xx.config.SystemConfig;
+import com.xx.pojo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,70 +11,56 @@ import java.io.IOException;
 import java.util.List;
 
 public class SaveFile {
-    @Value("${file.local-path}")
-    private static String localPath;
+    private static final String localPath = SystemConfig.getLocalPath();
 
-    public static boolean uploadBlogImages(List<MultipartFile> files, Long blogId) {
-        if (files == null || files.isEmpty()) {
-            return false;
+    private static final Long userId = SessionUtil.getUser().getId();
+
+    public static String uploadBlogImage(MultipartFile image, Long blogId) {
+        if (image == null || image.isEmpty()) {
+            return null;
         }
-        boolean result = true;
-        for (MultipartFile file : files) {
-            File temp = new File(localPath);
-            if (!temp.exists()) {
-                temp.mkdirs();
-            }
-            File localFile = new File(localPath + blogId);
-            try {
-                file.transferTo(localFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-                result = false;
-                break;
-            }
+        String filePath = "/" + userId + "/" + blogId + "/" +
+                System.currentTimeMillis() + "__" + image.getOriginalFilename();
+        File localFile = new File(localPath + filePath);
+        try {
+            image.transferTo(localFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
         }
-        return result;
+        return filePath + "?timestamp=" + System.currentTimeMillis();
     }
 
-    public static boolean saveFile(MultipartFile file, long blogId) {
-        if (file == null || file.isEmpty()) {
-            return false;
-        }
-        String filename = "cover/" + blogId + ".jpg";
-        File temp = new File(localPath);
-        if (!temp.exists()) {
-            temp.mkdirs();
+    public static String saveCover(MultipartFile image, long blogId) {
+        if (image == null || image.isEmpty()) {
+            return null;
         }
 
-        File localFile = new File(localPath + filename);
+        String filePath = "/" + userId + "/" + blogId + "/cover" + image.getOriginalFilename().
+                substring(image.getOriginalFilename().lastIndexOf("."));
+        File localFile = new File(localPath + filePath);
+        try {
+            image.transferTo(localFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return filePath + "?timestamp=" + System.currentTimeMillis();
+    }
+
+    public static String saveAvatar(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+        String filePath = "/" + userId + "/avatar" + file.getOriginalFilename().
+                substring(file.getOriginalFilename().lastIndexOf("."));
+        File localFile = new File(localPath + filePath);
         try {
             file.transferTo(localFile);
         } catch (IOException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
-
-        return true;
-    }
-
-    public static boolean saveAvatar(MultipartFile file, long userId) {
-        if (file == null || file.isEmpty()) {
-            return false;
-        }
-        String filename = "avatar/user-" + userId + ".jpg";
-        File temp = new File(localPath);
-        if (!temp.exists()) {
-            temp.mkdirs();
-        }
-
-        File localFile = new File(localPath + filename);
-        try {
-            file.transferTo(localFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-
-        return true;
+        return filePath + "?timestamp=" + System.currentTimeMillis();
     }
 }

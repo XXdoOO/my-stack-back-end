@@ -1,8 +1,10 @@
 package com.xx.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.xx.config.SystemConfig;
 import com.xx.mapper.DisableMapper;
 import com.xx.mapper.UserMapper;
 import com.xx.pojo.dto.UserDTO;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.util.*;
 
 @Service
@@ -140,8 +143,7 @@ public class UserService {
     }
 
     public boolean isExistUser(String email) {
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
-        return userMapper.exists(wrapper.eq("email", email));
+        return userMapper.exists(new LambdaQueryWrapper<User>().eq(User::getEmail, email));
     }
 
     public boolean register(String email, String password) {
@@ -153,11 +155,14 @@ public class UserService {
         user.setEmail(email);
         user.setPassword(password);
 
-        // 随机头像
         String avatar = "/avatar/" + (new Random().nextInt(48) + 1) + ".jpg";
         user.setAvatar(avatar);
 
-        return userMapper.insert(user) == 1;
+        if (userMapper.insert(user) == 1) {
+            File workDir = new File(SystemConfig.getLocalPath() + user.getId());
+            return workDir.mkdir();
+        }
+        return false;
     }
 
     public void logout() {
@@ -170,10 +175,10 @@ public class UserService {
         user.setId(id);
         user.setNickname(dto.getNickname());
 
-        if (SaveFile.saveAvatar(dto.getAvatar(), id)) {
-            user.setAvatar("/avatar/user-" + id + ".jpg");
+        String url = SaveFile.saveAvatar(dto.getAvatar());
+        if (url != null) {
+            user.setAvatar(url);
         }
-
         return userMapper.updateById(user) == 1;
     }
 

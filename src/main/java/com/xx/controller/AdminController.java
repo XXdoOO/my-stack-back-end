@@ -35,9 +35,6 @@ public class AdminController extends BaseController {
     @Autowired
     private DictService dictService;
 
-    @Autowired
-    private CommonService commonService;
-
     @GetMapping("getBlogList")
     public MyResponse getBlogList(BlogDTO dto) {
         System.out.println(dto);
@@ -80,16 +77,6 @@ public class AdminController extends BaseController {
     public MyResponse getCommentsList(CommentDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
         return MyResponse.success(new PageInfo<>(commentService.getCommentsList2(dto)));
-    }
-
-    @PutMapping("enabledItem")
-    public MyResponse enabledItem(@RequestParam String table, @RequestParam Long id) {
-        return commonService.enabledItem(table, id) ? success() : fail();
-    }
-
-    @DeleteMapping("deleteItem")
-    public MyResponse deleteItem(@RequestParam String table, @RequestParam Long id) {
-        return commonService.deleteItem(table, id) ? success() : fail();
     }
 }
 

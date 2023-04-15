@@ -44,7 +44,7 @@
         from comment c
         left join user u on c.create_by = u.id
         left join user uu on c.receive_id = uu.id
-        where c.is_deleted = 0 and c.blog_id = #{blogId} and c.parent = #{parent}
+        where c.is_deleted = 0 and c.is_enabled = 1 and c.blog_id = #{blogId} and c.parent = #{parent}
         <if test="orderBy != null and orderBy != ''">
             order by #{orderBy}
         </if>

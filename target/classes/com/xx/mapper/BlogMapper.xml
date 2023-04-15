@@ -34,7 +34,7 @@
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
         (select count(1) from comment c where c.is_deleted = 0 and c.is_enabled = 1 and c.blog_id = b.id) as comment,
-        count(distinct case when r.type = 3 then r.id end) + b.view as view,
+        b.view as view,
         b.status,
         b.create_time,
         b.create_by,
@@ -49,7 +49,7 @@
         <!--            and b.id = r.blog_id-->
         <!--        </if>-->
         <where>
-            b.is_deleted = 0
+            b.is_deleted = 0 and b.is_enabled = 1
             <if test="keywords != null and keywords != ''">
                 and (b.title like concat('%', #{keywords}, '%')
                 or b.description like concat('%', #{keywords}, '%')
@@ -86,6 +86,7 @@
             </if>
         </where>
         group by b.id
+        order by b.create_time desc
     </select>
     <select id="getBlogList2" resultMap="BlogView">
         select
@@ -98,7 +99,7 @@
         count(distinct case when r.type = 0 then r.id end) as up,
         count(distinct case when r.type = 1 then r.id end) as down,
         count(distinct case when r.type = 2 then r.id end) as star,
-        count(distinct case when r.type = 3 then r.id end) + b.view as view,
+        b.view as view,
         b.status,
         b.create_time,
         b.create_by,
@@ -129,6 +130,7 @@
             </if>
         </where>
         group by b.id
+        order by b.create_time desc
     </select>
     <resultMap id="BlogView" type="BlogViewVO">
         <id column="id" property="id"/>
