@@ -5,10 +5,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xx.config.SystemConfig;
+import com.xx.mapper.BlogMapper;
 import com.xx.mapper.DisableMapper;
+import com.xx.mapper.RecordMapper;
 import com.xx.mapper.UserMapper;
 import com.xx.pojo.dto.UserDTO;
+import com.xx.pojo.entity.Blog;
 import com.xx.pojo.entity.Disable;
+import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.UserVO;
 import com.xx.util.*;
@@ -33,6 +37,12 @@ public class UserService {
 
     @Autowired
     private DisableMapper disableMapper;
+
+    @Autowired
+    private RecordMapper recordMapper;
+
+    @Autowired
+    private BlogMapper blogMapper;
 
     @Autowired
     private HttpSession session;
@@ -182,8 +192,13 @@ public class UserService {
         return userMapper.updateById(user) == 1;
     }
 
-    public boolean deleteSelf() {
-        return userMapper.deleteById(getCurrentUser().getId()) == 1;
+    public boolean cancelAccount() {
+        Long id = getCurrentUser().getId();
+
+        recordMapper.delete(new LambdaQueryWrapper<Record>().eq(Record::getCreateBy, id));
+        blogMapper.delete(new LambdaQueryWrapper<Blog>().eq(Blog::getCreateBy, id));
+
+        return userMapper.deleteById(id) == 1;
     }
 
     public boolean sendRegisterCode(String email) {

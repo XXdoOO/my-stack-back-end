@@ -106,4 +106,9 @@ public class UserController extends BaseController {
         }
         return fail();
     }
+
+    @DeleteMapping("cancelAccount")
+    public MyResponse cancelAccount() {
+        return userService.cancelAccount() ? success() : fail();
+    }
 }

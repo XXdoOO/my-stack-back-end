@@ -65,8 +65,8 @@ public class VisitorController {
         if (!email.matches(regex)) {
             return MyResponse.fail("邮箱格式错误");
         }
-
         if (userService.isExistUser(email)) {
+
             return MyResponse.fail("用户已存在");
         }
 
