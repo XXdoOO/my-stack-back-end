@@ -5,6 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 // import com.xx.service.BlogService;
+import com.xx.annotation.LimitRequest;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
 import com.xx.pojo.entity.Disable;
@@ -46,19 +47,15 @@ public class VisitorController {
     @Autowired
     private CommentService commentService;
 
-    @Resource
-    private BlogMapper blogMapper;
-
     @Autowired
     private Producer captchaProducer;
 
-    @ResponseBody
     @RequestMapping("ip")
     public MyResponse getIp(HttpServletRequest request) {
         return MyResponse.success(AddressUtils.getRealAddressByIP(IpUtils.getIpAddr(request)));
     }
 
-    @ResponseBody
+    @LimitRequest(time = 50000)
     @RequestMapping("sendCode")
     public MyResponse commonEmail(@RequestParam String email) {
         String regex = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
@@ -102,7 +99,6 @@ public class VisitorController {
         }
     }
 
-    @ResponseBody
     @PostMapping("login")
     public MyResponse login(@RequestBody @Validated UserDTO userDTO) {
         Code map = (Code) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
@@ -136,7 +132,6 @@ public class VisitorController {
         }
     }
 
-    @ResponseBody
     @PostMapping("register")
     public MyResponse register(@RequestBody @Validated UserDTO userDTO) {
         final Code map = (Code) session.getAttribute(Code.REGISTER_CODE);
@@ -159,7 +154,6 @@ public class VisitorController {
     }
 
 
-    @ResponseBody
     @GetMapping("getBlogList")
     public MyResponse getBlogList(BlogDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
@@ -167,13 +161,11 @@ public class VisitorController {
         return MyResponse.success(new PageInfo<>(blogService.getBlogList(dto)));
     }
 
-    @ResponseBody
     @GetMapping("getUserInfo/{userId}")
     public MyResponse getUserInfo(@PathVariable Long userId) {
         return MyResponse.success(userService.getUserInfo(userId));
     }
 
-    @ResponseBody
     @GetMapping("blog/{blogId}")
     public MyResponse getBlogDetails(@PathVariable long blogId) {
         return MyResponse.success(blogService.getBlogDetails(blogId));
