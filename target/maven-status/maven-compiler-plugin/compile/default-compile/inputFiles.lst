@@ -14,6 +14,7 @@ C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\controller\Visitor
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\entity\User.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\entity\Record.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\entity\Blog.java
+C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\annotation\LimitRequest.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\mapper\DictDataMapper.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\mapper\BlogMapper.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\util\Code.java
@@ -56,3 +57,4 @@ C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\vo\BlogViewVO
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\controller\OtherController.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\pojo\dto\UserDTO.java
 C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\service\DictService.java
+C:\Users\19725\Desktop\my-stack-back-end\src\main\java\com\xx\aop\LimitRequestAspect.java
