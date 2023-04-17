@@ -217,7 +217,7 @@ public class UserService {
 
         message.setFrom(from);
         message.setTo(email);
-        message.setSubject("您本次的验证码是");
+        message.setSubject("My Stack: 您本次用于注册的验证码是");
 
         String verCode = VerCodeGenerate.generateVerCode();
 
