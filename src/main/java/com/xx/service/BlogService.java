@@ -162,6 +162,7 @@ public class BlogService {
         blog.setTitle(dto.getTitle());
         blog.setDescription(dto.getDescription());
         blog.setContent(dto.getContent());
+        blog.setStatus(0);
 
         String cover = SaveFile.saveCover(dto.getCoverImg(), dto.getId());
         if (cover != null) {
