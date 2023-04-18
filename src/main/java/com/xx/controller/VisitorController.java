@@ -55,7 +55,7 @@ public class VisitorController {
         return MyResponse.success(AddressUtils.getRealAddressByIP(IpUtils.getIpAddr(request)));
     }
 
-    @LimitRequest(time = 50000)
+//    @LimitRequest(time = 50000)
     @RequestMapping("sendCode")
     public MyResponse commonEmail(@RequestParam String email) {
         String regex = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
