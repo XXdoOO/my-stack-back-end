@@ -55,7 +55,7 @@ public class VisitorController {
         return MyResponse.success(AddressUtils.getRealAddressByIP(IpUtils.getIpAddr(request)));
     }
 
-//    @LimitRequest(time = 50000)
+    //    @LimitRequest(time = 50000)
     @RequestMapping("sendCode")
     public MyResponse commonEmail(@RequestParam String email) {
         String regex = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
@@ -123,8 +123,7 @@ public class VisitorController {
             } else if (!user.getEnabled()) {
                 Disable info = user.getDisableInfo();
                 return MyResponse.error("用户因 ' " + info.getReason() + " ' 已被封禁至 ' " + new SimpleDateFormat("yyyy-MM" +
-                                "-dd " +
-                                "hh:mm:ss").format(info.getEndTime()) + " '",
+                                "-dd hh:mm:ss").format(info.getEndTime()) + " '",
                         info);
             } else {
                 return MyResponse.success("登录成功", user);
