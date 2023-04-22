@@ -126,7 +126,7 @@ public class BlogService {
         }
     }
 
-    public boolean postBlog(BlogDTO dto) {
+    public Long postBlog(BlogDTO dto) {
         User user = userService.getCurrentUser();
 
         Blog blog = new Blog();
@@ -148,10 +148,10 @@ public class BlogService {
                             set(Blog::getCover, cover).
                             eq(Blog::getId, blog.getId()));
                 }
-                return true;
+                return blog.getId();
             }
         }
-        return false;
+        return null;
     }
 
     public void updateBlog(BlogDTO dto) {

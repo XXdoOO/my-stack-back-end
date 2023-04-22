@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.HashMap;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
@@ -69,7 +70,8 @@ public class UserController extends BaseController {
 
     @PostMapping("postBlog")
     private MyResponse postBlog(BlogDTO dto) {
-        return blogService.postBlog(dto) ? success() : fail();
+        Long l = blogService.postBlog(dto);
+        return l != null ? success(l) : fail();
     }
 
     @PutMapping("updateBlog")
