@@ -6,7 +6,7 @@ spring:
       username: root
       password: 1900130214
   redis:
-    host: 101.33.221.78
+    host: localhost
     port: 6379
     password: wsadBABA168!
   mail:
