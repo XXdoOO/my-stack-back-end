@@ -6,8 +6,9 @@ spring:
       username: root
       password: 1900130214
   redis:
-    host: 127.0.0.1
+    host: 101.33.221.78
     port: 6379
+    password: wsadBABA168!
   mail:
     host: smtp.qq.com
     protocol: smtp
