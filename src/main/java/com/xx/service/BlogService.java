@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.util.*;
 
@@ -39,9 +38,6 @@ public class BlogService {
 
     @Autowired
     private UserMapper userMapper;
-
-    @Autowired
-    private HttpSession session;
 
     @Autowired
     private HttpServletRequest request;

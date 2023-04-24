@@ -1,24 +1,18 @@
 package com.xx.controller;
 
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.xx.config.FilterConfigurer;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
-import com.xx.pojo.dto.DictDTO;
 import com.xx.pojo.dto.UserDTO;
-import com.xx.service.*;
-import com.xx.util.Code;
+import com.xx.service.BlogService;
+import com.xx.service.CommentService;
+import com.xx.service.DictService;
+import com.xx.service.UserService;
 import com.xx.util.MyResponse;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpSession;
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -37,7 +31,6 @@ public class AdminController extends BaseController {
 
     @GetMapping("getBlogList")
     public MyResponse getBlogList(BlogDTO dto) {
-        System.out.println(dto);
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
 
         return success(new PageInfo<>(blogService.getBlogList2(dto)));

@@ -13,7 +13,7 @@ import java.util.List;
 public class SaveFile {
     private static final String localPath = SystemConfig.getLocalPath();
 
-    private static final Long userId = SessionUtil.getUser().getId();
+    private static final Long userId = UserInfoUtils.getUser().getId();
 
     public static String uploadBlogImage(MultipartFile image, Long blogId) {
         if (image == null || image.isEmpty()) {

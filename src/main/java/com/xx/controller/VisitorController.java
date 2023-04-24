@@ -4,42 +4,35 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
-// import com.xx.service.BlogService;
-import com.xx.annotation.LimitRequest;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
-import com.xx.pojo.entity.Disable;
-import com.xx.service.CommentService;
-import com.xx.mapper.BlogMapper;
 import com.xx.pojo.dto.UserDTO;
-import com.xx.pojo.vo.UserVO;
 import com.xx.service.BlogService;
+import com.xx.service.CommentService;
 import com.xx.service.UserService;
 import com.xx.util.AddressUtils;
 import com.xx.util.Code;
 import com.xx.util.IpUtils;
 import com.xx.util.MyResponse;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
-import java.text.SimpleDateFormat;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/")
-public class VisitorController {
+public class VisitorController extends BaseController {
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private HttpSession session;
 
     @Autowired
     private BlogService blogService;
@@ -49,6 +42,9 @@ public class VisitorController {
 
     @Autowired
     private Producer captchaProducer;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     @RequestMapping("ip")
     public MyResponse getIp(HttpServletRequest request) {
@@ -63,7 +59,6 @@ public class VisitorController {
             return MyResponse.fail("邮箱格式错误");
         }
         if (userService.isExistUser(email)) {
-
             return MyResponse.fail("用户已存在");
         }
 
@@ -81,15 +76,11 @@ public class VisitorController {
         response.setHeader("Pragma", "no-cache");
         response.setContentType("image/jpeg");
 
-        String capText = captchaProducer.createText();
+        String verCode = captchaProducer.createText();
 
-        session.setAttribute(Constants.KAPTCHA_SESSION_KEY, new Code(capText));
+        redisTemplate.opsForValue().set(UUID.randomUUID().toString(), verCode, 1, TimeUnit.MINUTES);
 
-        Code map = (Code) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
-
-        System.out.println(map);
-        //向客户端写出
-        BufferedImage bi = captchaProducer.createImage(capText);
+        BufferedImage bi = captchaProducer.createImage(verCode);
         ServletOutputStream out = response.getOutputStream();
         ImageIO.write(bi, "jpg", out);
         try {
@@ -100,49 +91,22 @@ public class VisitorController {
     }
 
     @PostMapping("login")
-    public MyResponse login(@RequestBody @Validated UserDTO userDTO) {
-        Code map = (Code) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
-
-        System.out.println(map);
-
-        if (map == null || System.currentTimeMillis() - map.getCreateTime() >= 60000) {
-            session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
-            return MyResponse.fail("验证码已过期");
-        } else if (!(map.getCode()).equalsIgnoreCase(userDTO.getCode())) {
-            session.removeAttribute(Constants.KAPTCHA_SESSION_KEY);
-            return MyResponse.fail("验证码错误");
-        }
-
-        if (!userService.isExistUser(userDTO.getEmail())) {
-            return MyResponse.fail("用户不存在");
-        } else {
-            UserVO user = userService.login(userDTO.getEmail(), userDTO.getPassword());
-
-            if (user == null) {
-                return MyResponse.fail("邮箱或密码错误");
-            } else if (!user.getEnabled()) {
-                Disable info = user.getDisableInfo();
-                return MyResponse.error("用户因 ' " + info.getReason() + " ' 已被封禁至 ' " + new SimpleDateFormat("yyyy-MM" +
-                                "-dd hh:mm:ss").format(info.getEndTime()) + " '",
-                        info);
-            } else {
-                return MyResponse.success("登录成功", user);
-            }
-        }
+    public MyResponse login(@RequestBody @Validated UserDTO userDTO) throws AuthenticationException {
+        return success(userService.login(userDTO.getEmail(), userDTO.getPassword(), userDTO.getCode()));
     }
 
     @PostMapping("register")
     public MyResponse register(@RequestBody @Validated UserDTO userDTO) {
-        final Code map = (Code) session.getAttribute(Code.REGISTER_CODE);
-
         String email = userDTO.getEmail();
         String password = userDTO.getPassword();
         String code = userDTO.getCode();
 
-        if (map == null || System.currentTimeMillis() - map.getCreateTime() >= 300000) {
+        String verCode = (String) redisTemplate.opsForValue().get(email);
+
+        if (verCode == null) {
             return MyResponse.fail("验证码已过期");
-        } else if (map.getEmail().equals(email) && !map.getCode().equals(code)) {
-            return MyResponse.fail("邮箱或验证码错误");
+        } else if (verCode.equals(code)) {
+            return MyResponse.fail("验证码错误");
         } else {
             if (userService.register(email, password)) {
                 return MyResponse.success("注册成功");
@@ -151,7 +115,6 @@ public class VisitorController {
             }
         }
     }
-
 
     @GetMapping("getBlogList")
     public MyResponse getBlogList(BlogDTO dto) {

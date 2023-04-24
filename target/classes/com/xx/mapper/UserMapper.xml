@@ -7,11 +7,13 @@
     <select id="getUserInfo" resultType="UserVO">
         select
         u.id as id,
+        u.email,
+        u.password,
         u.nickname as nickname,
         u.avatar,
         u.ip,
         u.ip_territory,
-        u.is_admin,
+        u.is_admin as admin,
         u.is_enabled,
         count(distinct case when b.status = 1 then b.id end) as pass_count,
         count(distinct case when r.type = 0 then r.id end) as up,

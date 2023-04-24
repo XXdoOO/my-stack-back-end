@@ -10,13 +10,12 @@ import com.xx.pojo.entity.Record;
 import com.xx.pojo.vo.CommentVO;
 import com.xx.util.AddressUtils;
 import com.xx.util.IpUtils;
-import com.xx.util.SessionUtil;
+import com.xx.util.UserInfoUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Service
@@ -33,9 +32,6 @@ public class CommentService {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private HttpSession session;
 
     @Autowired
     private HttpServletRequest request;
@@ -68,7 +64,7 @@ public class CommentService {
         CommentVO commentVo = new CommentVO();
 
         BeanUtils.copyProperties(comment, commentVo);
-        commentVo.setSender(userMapper.selectById(SessionUtil.getUser().getId()));
+        commentVo.setSender(userMapper.selectById(UserInfoUtils.getUser().getId()));
         commentVo.setReceiver(userMapper.selectById(dto.getReceiveId()));
         commentVo.setUp(0L);
         commentVo.setDown(0L);

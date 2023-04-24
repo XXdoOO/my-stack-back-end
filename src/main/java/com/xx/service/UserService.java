@@ -16,19 +16,26 @@ import com.xx.pojo.entity.Record;
 import com.xx.pojo.entity.User;
 import com.xx.pojo.vo.UserVO;
 import com.xx.util.*;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
+import java.security.Principal;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserService {
@@ -53,87 +60,41 @@ public class UserService {
     @Resource
     private JavaMailSender mailSender;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     @Value("${spring.mail.username}")
     private String from;
 
-    public UserVO login(String email, String password) {
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
+    public String login(String email, String password, String code) throws AuthenticationException {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
 
-        User user = userMapper.selectOne(wrapper.
-                eq("email", email).
-                eq("password", password));
+        Authentication authenticate = authenticationManager.authenticate(authenticationToken);
 
-        if (user == null) {
-            return null;
+        if (authenticate == null) {
+            throw new AuthenticationException("密码错误");
         }
 
-        UserVO userVo = new UserVO();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
+        UserVO userVO = userDetails.getUserVO();
 
-        BeanUtils.copyProperties(user, userVo, "password");
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", userVO.getId());
+        String token = jwtTokenUtil.generateToken(map);
 
-        User user1 = new User();
-        user1.setId(user.getId());
-
-        if (!user.getEnabled()) {
-            userVo.setDisableInfo(getUserDisableInfo(user.getId()));
-
-            if (userVo.getDisableInfo() == null) {
-                userVo.setEnabled(true);
-
-                user1.setEnabled(true);
-                user1.setIp(IpUtils.getIpAddr(request));
-                user1.setIpTerritory(AddressUtils.getRealAddressByIP(user1.getIp()));
-                session.setAttribute("USER_SESSION", user);
-            } else {
-                return userVo;
-            }
-        } else {
-            user1.setIp(IpUtils.getIpAddr(request));
-            user1.setIpTerritory(AddressUtils.getRealAddressByIP(user1.getIp()));
-
-            UserVO myInfo = userMapper.getUserInfo(null, user.getId());
-
-            userVo.setAuditingCount(myInfo.getAuditingCount());
-            userVo.setPassCount(myInfo.getPassCount());
-            userVo.setNoPassCount(myInfo.getNoPassCount());
-            userVo.setUp(myInfo.getUp());
-            userVo.setDown(myInfo.getDown());
-            userVo.setStar(myInfo.getStar());
-            userVo.setHistory(myInfo.getHistory());
-
-            session.setAttribute("USER_SESSION", user);
-        }
-        userMapper.updateById(user1);
-        return userVo;
+        redisTemplate.opsForValue().set("user-" + userVO.getId(), userVO);
+        redisTemplate.opsForValue().set("token-" + userVO.getId(), token);
+        return token;
     }
 
     public UserVO getUserInfo() {
-        User user_session = (User) session.getAttribute("USER_SESSION");
-        String email = user_session.getEmail();
-        String password = user_session.getPassword();
-
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
-
-        User user = userMapper.selectOne(wrapper.
-                eq("email", email).
-                eq("password", password));
-
-        UserVO userVo = new UserVO();
-
-        BeanUtils.copyProperties(user, userVo, "password");
-
-        userVo.setDisableInfo(getUserDisableInfo(user.getId()));
-
-        UserVO myInfo = userMapper.getUserInfo(null, user.getId());
-
-        userVo.setAuditingCount(myInfo.getAuditingCount());
-        userVo.setPassCount(myInfo.getPassCount());
-        userVo.setNoPassCount(myInfo.getNoPassCount());
-        userVo.setUp(myInfo.getUp());
-        userVo.setDown(myInfo.getDown());
-        userVo.setStar(myInfo.getStar());
-        userVo.setHistory(myInfo.getHistory());
-        return userVo;
+        return UserInfoUtils.getUser();
     }
 
     public Disable getUserDisableInfo(long id) {
@@ -205,7 +166,7 @@ public class UserService {
         String code = sendEmailCode(email);
 
         if (StringUtils.isNotBlank(code)) {
-            session.setAttribute(Code.REGISTER_CODE, new Code(email, code));
+            redisTemplate.opsForValue().set(email, code, 5, TimeUnit.MINUTES);
             return true;
         } else {
             return false;

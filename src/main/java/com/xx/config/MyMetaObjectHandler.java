@@ -1,7 +1,7 @@
 package com.xx.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
-import com.xx.util.SessionUtil;
+import com.xx.util.UserInfoUtils;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         this.setFieldValByName("createTime", new Date(), metaObject);
         this.setFieldValByName("updateTime", new Date(), metaObject);
-        this.setFieldValByName("createBy", SessionUtil.getUser().getId(), metaObject);
+        this.setFieldValByName("createBy", UserInfoUtils.getUser().getId(), metaObject);
     }
 
     @Override

@@ -1,27 +1,19 @@
 package com.xx.controller;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.xx.pojo.dto.BlogDTO;
 import com.xx.pojo.dto.CommentDTO;
 import com.xx.pojo.dto.UserDTO;
-import com.xx.pojo.entity.Blog;
 import com.xx.service.BlogService;
 import com.xx.service.CommentService;
 import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.validation.Valid;
-import java.util.HashMap;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/user")
