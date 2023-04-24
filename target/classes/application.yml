@@ -6,7 +6,7 @@ spring:
       username: root
       password: 1900130214
   redis:
-    host: localhost
+    host: 127.0.0.1
     port: 6379
   mail:
     host: smtp.qq.com
