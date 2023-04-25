@@ -97,10 +97,9 @@ public class VisitorController extends BaseController {
     }
 
     @PostMapping("login")
-    public MyResponse login(@RequestBody @Validated UserDTO userDTO) throws Exception {
+    public MyResponse login(@RequestBody @Validated UserDTO userDTO) {
         String verCode = (String) redisTemplate.opsForValue().get(IpUtils.getIpAddr(request));
-        if (verCode == null) {
-            getKaptchaImage();
+        if (verCode == null || !verCode.equals(userDTO.getCode())) {
             return fail("验证码错误");
         }
         String token = userService.login(userDTO.getEmail(), userDTO.getPassword());

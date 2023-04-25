@@ -68,14 +68,10 @@ public class UserService {
     @Value("${spring.mail.username}")
     private String from;
 
-    public String login(String email, String password) throws AuthenticationException {
+    public String login(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
 
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
-
-        if (authenticate == null) {
-            throw new AuthenticationException("密码错误");
-        }
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
         UserVO userVO = userDetails.getUserVO();

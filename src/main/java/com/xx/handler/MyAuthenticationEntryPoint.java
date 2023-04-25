@@ -3,6 +3,7 @@ package com.xx.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xx.util.MyResponse;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,14 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
         httpServletResponse.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ObjectMapper objectMapper = new ObjectMapper();
 
-        String resBody = objectMapper.writeValueAsString(MyResponse.unauthorized("请登录后尝试"));
+        MyResponse response;
+        if (e instanceof BadCredentialsException) {
+            response = MyResponse.fail("账号或密码错误");
+        } else {
+            response = MyResponse.unauthorized("请登录后尝试");
+        }
+
+        String resBody = objectMapper.writeValueAsString(response);
         PrintWriter printWriter = httpServletResponse.getWriter();
         printWriter.print(resBody);
         printWriter.flush();

@@ -55,7 +55,6 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
         }
         List<SimpleGrantedAuthority> permissions = new ArrayList<>(Collections.singleton(user.getAdmin().toString()))
                 .stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        //将User 封装到 securityContextHolder。 封装到securityContextHolder以后，其他过滤器就不会在拦截
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, user.getPassword(), permissions);
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
