@@ -46,6 +46,12 @@ public class VisitorController extends BaseController {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private HttpServletResponse response;
+
     @RequestMapping("ip")
     public MyResponse getIp(HttpServletRequest request) {
         return MyResponse.success(AddressUtils.getRealAddressByIP(IpUtils.getIpAddr(request)));
@@ -69,7 +75,7 @@ public class VisitorController extends BaseController {
     }
 
     @RequestMapping("/kaptcha")
-    public void getKaptchaImage(HttpServletResponse response) throws Exception {
+    public void getKaptchaImage() throws Exception {
         response.setDateHeader("Expires", 0);
         response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
         response.addHeader("Cache-Control", "post-check=0, pre-check=0");
@@ -78,7 +84,7 @@ public class VisitorController extends BaseController {
 
         String verCode = captchaProducer.createText();
 
-        redisTemplate.opsForValue().set(UUID.randomUUID().toString(), verCode, 1, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(IpUtils.getIpAddr(request), verCode, 1, TimeUnit.MINUTES);
 
         BufferedImage bi = captchaProducer.createImage(verCode);
         ServletOutputStream out = response.getOutputStream();
@@ -91,8 +97,14 @@ public class VisitorController extends BaseController {
     }
 
     @PostMapping("login")
-    public MyResponse login(@RequestBody @Validated UserDTO userDTO) throws AuthenticationException {
-        return success(userService.login(userDTO.getEmail(), userDTO.getPassword(), userDTO.getCode()));
+    public MyResponse login(@RequestBody @Validated UserDTO userDTO) throws Exception {
+        String verCode = (String) redisTemplate.opsForValue().get(IpUtils.getIpAddr(request));
+        if (verCode == null) {
+            getKaptchaImage();
+            return fail("验证码错误");
+        }
+        String token = userService.login(userDTO.getEmail(), userDTO.getPassword());
+        return token != null ? success(token) : fail();
     }
 
     @PostMapping("register")
@@ -105,7 +117,7 @@ public class VisitorController extends BaseController {
 
         if (verCode == null) {
             return MyResponse.fail("验证码已过期");
-        } else if (verCode.equals(code)) {
+        } else if (!verCode.equals(code)) {
             return MyResponse.fail("验证码错误");
         } else {
             if (userService.register(email, password)) {
@@ -119,7 +131,6 @@ public class VisitorController extends BaseController {
     @GetMapping("getBlogList")
     public MyResponse getBlogList(BlogDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
-
         return MyResponse.success(new PageInfo<>(blogService.getBlogList(dto)));
     }
 

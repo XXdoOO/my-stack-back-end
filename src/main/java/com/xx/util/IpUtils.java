@@ -39,10 +39,6 @@ public class IpUtils {
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
             ip = request.getRemoteAddr();
         }
-
-        System.out.println("IP地址：" + ip);
-        System.out.println("本机IP地址：" + getHostIp());
-
         return "0:0:0:0:0:0:0:1".equals(ip) ? getHostIp() : getMultistageReverseProxyIp(ip);
     }
 

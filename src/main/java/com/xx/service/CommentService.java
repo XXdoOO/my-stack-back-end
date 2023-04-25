@@ -37,7 +37,7 @@ public class CommentService {
     private HttpServletRequest request;
 
     public List<CommentVO> getCommentsList(CommentDTO dto) {
-        dto.setUserId(userService.getCurrentUser().getId());
+        dto.setUserId(UserInfoUtils.getUser().getId());
 
         if (dto.getParent() == null) {
             dto.setParent(0L);
@@ -75,7 +75,7 @@ public class CommentService {
         QueryWrapper<Comment> wrapper = new QueryWrapper<>();
         return commentMapper.delete(wrapper.
                 eq("id", id).
-                and(i -> i.eq("create_by", userService.getCurrentUser().getId()).or().eq("parent", id)));
+                and(i -> i.eq("create_by", UserInfoUtils.getUser().getId()).or().eq("parent", id)));
     }
 
     public boolean handleComment(long commentId, int type) {
@@ -83,7 +83,7 @@ public class CommentService {
             return false;
         }
 
-        Long userId = userService.getCurrentUser().getId();
+        Long userId = UserInfoUtils.getUser().getId();
 
         QueryWrapper<Record> wrapper = new QueryWrapper<>();
         Record record1 = recordMapper.selectOne(wrapper.

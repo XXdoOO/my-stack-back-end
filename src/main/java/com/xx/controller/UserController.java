@@ -30,9 +30,7 @@ public class UserController extends BaseController {
 
     @GetMapping("/logout")
     public MyResponse logout() {
-        userService.logout();
-
-        return MyResponse.success();
+        return userService.logout() ? success() : fail();
     }
 
     @GetMapping("/userInfo")

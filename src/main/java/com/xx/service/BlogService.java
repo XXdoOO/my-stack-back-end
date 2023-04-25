@@ -15,6 +15,7 @@ import com.xx.pojo.vo.BlogVO;
 import com.xx.util.AddressUtils;
 import com.xx.util.IpUtils;
 import com.xx.util.SaveFile;
+import com.xx.util.UserInfoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class BlogService {
     private HttpServletRequest request;
 
     public List<BlogViewVO> getBlogList(BlogDTO dto) {
-        dto.setUserId(userService.getCurrentUser().getId());
+        dto.setUserId(UserInfoUtils.getUser().getId());
 
         return blogMapper.getBlogList(dto);
     }
@@ -67,7 +68,7 @@ public class BlogService {
     }
 
     public BlogVO getBlogDetails(long id) {
-        User user = userService.getCurrentUser();
+        User user = UserInfoUtils.getUser();
 
         blogMapper.update(null, new LambdaUpdateWrapper<Blog>().
                 setSql("view = view + 1").eq(Blog::getId, id));
@@ -101,7 +102,7 @@ public class BlogService {
             return false;
         }
 
-        Long userId = userService.getCurrentUser().getId();
+        Long userId = UserInfoUtils.getUser().getId();
 
         QueryWrapper<Record> wrapper = new QueryWrapper<>();
         Record record1 = recordMapper.selectOne(wrapper.
@@ -123,19 +124,19 @@ public class BlogService {
     }
 
     public Long postBlog(BlogDTO dto) {
-        User user = userService.getCurrentUser();
+        Long id = UserInfoUtils.getUser().getId();
 
         Blog blog = new Blog();
 
         blog.setTitle(dto.getTitle());
         blog.setDescription(dto.getDescription());
         blog.setContent(dto.getContent());
-        blog.setCreateBy(user.getId());
+        blog.setCreateBy(id);
         blog.setIp(IpUtils.getIpAddr(request));
         blog.setIpTerritory(AddressUtils.getRealAddressByIP(blog.getIp()));
 
         if (blogMapper.insert(blog) == 1) {
-            File workDir = new File(SystemConfig.getLocalPath() + user.getId() + "/" + blog.getId());
+            File workDir = new File(SystemConfig.getLocalPath() + id + "/" + blog.getId());
 
             if (workDir.mkdir()) {
                 String cover = SaveFile.saveCover(dto.getCoverImg(), blog.getId());
@@ -151,7 +152,7 @@ public class BlogService {
     }
 
     public void updateBlog(BlogDTO dto) {
-        User user = userService.getCurrentUser();
+        Long id = UserInfoUtils.getId();
 
         Blog blog = new Blog();
 
@@ -167,20 +168,20 @@ public class BlogService {
         UpdateWrapper<Blog> wrapper = new UpdateWrapper<>();
         blogMapper.update(blog, wrapper.
                 eq("id", dto.getId()).
-                eq("create_by", user.getId()));
+                eq("create_by", id));
     }
 
     public boolean deleteBlog(long blogId) {
-        User user = userService.getCurrentUser();
+        Long id = UserInfoUtils.getId();
 
         recordMapper.delete(new LambdaQueryWrapper<Record>().
                 eq(Record::getBlogId, blogId).
-                eq(Record::getCreateBy, user.getId()));
+                eq(Record::getCreateBy, id));
 
         if (blogMapper.delete(new LambdaQueryWrapper<Blog>().
                 eq(Blog::getId, blogId).
-                eq(Blog::getCreateBy, user.getId())) == 1) {
-            FileSystemUtils.deleteRecursively(new File("/" + user.getId() + "/" + blogId));
+                eq(Blog::getCreateBy, id)) == 1) {
+            FileSystemUtils.deleteRecursively(new File("/" + id + "/" + blogId));
 
             return true;
         }
