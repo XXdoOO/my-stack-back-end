@@ -15,6 +15,11 @@ public class UserInfoUtils {
     }
 
     public static Long getId() {
-        return ((UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getId();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal.equals("anonymousUser")) {
+            return null;
+        }
+        return ((UserVO) principal).getId();
     }
 }
