@@ -6,7 +6,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class UserInfoUtils {
 
     public static UserVO getUser() {
-        return (UserVO) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal.equals("anonymousUser")) {
+            return new UserVO();
+        }
+        return (UserVO) principal;
     }
 
     public static Long getId() {
