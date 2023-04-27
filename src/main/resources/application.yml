@@ -8,7 +8,7 @@ spring:
   redis:
     host: xredis
     port: 6379
-  #    password: wsadBABA168!
+    password: wsadBABA168!
   mail:
     host: smtp.qq.com
     protocol: smtp
