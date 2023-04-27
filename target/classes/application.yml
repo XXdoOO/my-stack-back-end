@@ -46,7 +46,7 @@ jwt:
   tokenHeader: Authorization # jwt存储的请求头
   secret: admin-secret # jwt 加解密使用的密钥
   #  expiration: 86400 # jwt过期时间（60*60*24*7）
-  expiration: 1 # jwt过期时间（60*60*24*7）
+  expiration: 60 # jwt过期时间（60*60*24*7）
   #  expiration: 604800 # jwt过期时间（60*60*24*7）
   tokenHead: 'Bearer'  # jwt负载中拿到开头
 
