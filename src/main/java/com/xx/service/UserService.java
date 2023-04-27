@@ -68,6 +68,9 @@ public class UserService {
     @Value("${spring.mail.username}")
     private String from;
 
+    @Value("${jwt.expiration}")
+    private Integer expiration;
+
     public String login(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
 
@@ -80,8 +83,9 @@ public class UserService {
         map.put("id", userVO.getId());
         String token = jwtTokenUtil.generateToken(map);
 
-        redisTemplate.opsForValue().set("user-" + userVO.getId(), userVO);
-        redisTemplate.opsForValue().set("token-" + userVO.getId(), token);
+        userVO.setToken(token);
+
+        redisTemplate.opsForValue().set("user-" + userVO.getId(), userVO, expiration, TimeUnit.SECONDS);
         return token;
     }
 
@@ -130,8 +134,8 @@ public class UserService {
     }
 
     public boolean logout() {
-        Long id = UserInfoUtils.getUser().getId();
-        String key = "token-" + id;
+        Long id = UserInfoUtils.getId();
+        String key = "user-" + id;
         if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
             return Boolean.TRUE.equals(redisTemplate.delete(key));
         }
@@ -231,5 +235,13 @@ public class UserService {
             userMapper.update(null, wrapper.set("is_enabled", false).
                     eq("id", dto.getUserId()));
         }
+    }
+
+    public String getToken() {
+        UserVO user = UserInfoUtils.getUser();
+        user.setToken(user.getNewToken());
+
+        redisTemplate.opsForValue().set("user-" + user.getId(), user, expiration, TimeUnit.SECONDS);
+        return user.getToken();
     }
 }

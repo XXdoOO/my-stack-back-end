@@ -34,8 +34,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         List<String> authenticationList = new ArrayList<>(Collections.singletonList(myInfo.getAdmin().toString()));
 
-        System.out.println(authenticationList);
-
         return new UserDetailsImpl(myInfo, authenticationList);
     }
 }

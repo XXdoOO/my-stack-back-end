@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xx.util.MyResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +29,14 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
         ObjectMapper objectMapper = new ObjectMapper();
 
         MyResponse response;
+
+        e.printStackTrace();
         if (e instanceof BadCredentialsException) {
-            response = MyResponse.fail("账号或密码错误");
+            response = MyResponse.fail("密码错误");
+        } else if (e instanceof UsernameNotFoundException) {
+            response = MyResponse.fail("账号不存在");
+        } else if (e instanceof CredentialsExpiredException) {
+            response = MyResponse.unauthorized(e.getMessage());
         } else {
             response = MyResponse.unauthorized("请登录后尝试");
         }

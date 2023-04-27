@@ -33,6 +33,7 @@ public class JwtTokenUtil {
      * 根据负责生成JWT的token
      */
     public String generateToken(Map<String, Object> claims) {
+        claims.put(CLAIM_KEY_CREATED, new Date());
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate())
@@ -151,11 +152,19 @@ public class JwtTokenUtil {
      * @param token 原token
      * @param time  指定时间（秒）
      */
-    private boolean tokenRefreshJustBefore(String token, int time) {
+    public boolean tokenRefreshJustBefore(String token, int time) {
         Claims claims = getClaimsFromToken(token);
         Date created = claims.get(CLAIM_KEY_CREATED, Date.class);
         Date refreshDate = new Date();
-        //刷新时间在创建时间的指定时间内
+
         return refreshDate.after(created) && refreshDate.before(DateUtil.offsetSecond(created, time));
+    }
+
+    public boolean isNeedRefresh(String token) {
+        Claims claims = getClaimsFromToken(token);
+        Date expiration = claims.getExpiration();
+
+        Date date = new Date();
+        return expiration.getTime() - date.getTime() <= 60 * 60 * 24 * 1000;
     }
 }

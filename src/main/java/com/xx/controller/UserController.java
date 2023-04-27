@@ -11,6 +11,7 @@ import com.xx.service.UserService;
 import com.xx.util.MyResponse;
 import com.xx.util.SaveFile;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +29,9 @@ public class UserController extends BaseController {
     @Autowired
     private CommentService commentService;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     @GetMapping("/logout")
     public MyResponse logout() {
         return userService.logout() ? success() : fail();
@@ -35,27 +39,27 @@ public class UserController extends BaseController {
 
     @GetMapping("/userInfo")
     public MyResponse getUserInfo() {
-        return MyResponse.success(userService.getUserInfo());
+        return success(userService.getUserInfo());
     }
 
     @PostMapping("postComments")
     private MyResponse postComments(@Validated @RequestBody CommentDTO dto) {
-        return MyResponse.success(commentService.postComments(dto));
+        return success(commentService.postComments(dto));
     }
 
     @DeleteMapping("deleteComment/{commentId}")
     private MyResponse deleteComment(@PathVariable long commentId) {
-        return MyResponse.success(commentService.deleteComment(commentId));
+        return success(commentService.deleteComment(commentId));
     }
 
     @PutMapping("handleBlog")
     private MyResponse handleBlog(long blogId, int type) {
-        return MyResponse.success(blogService.handleBlog(blogId, type));
+        return success(blogService.handleBlog(blogId, type));
     }
 
     @PutMapping("handleComment")
     private MyResponse handleComment(long commentId, int type) {
-        return MyResponse.success(commentService.handleComment(commentId, type));
+        return success(commentService.handleComment(commentId, type));
     }
 
     @PostMapping("postBlog")
@@ -70,24 +74,24 @@ public class UserController extends BaseController {
             blogService.updateBlog(dto);
             return MyResponse.success();
         }
-        return MyResponse.fail();
+        return fail();
     }
 
     @DeleteMapping("deleteBlog/{blogId}")
     private MyResponse deleteBlog(@PathVariable Long blogId) {
-        return MyResponse.success(blogService.deleteBlog(blogId));
+        return success(blogService.deleteBlog(blogId));
     }
 
     @GetMapping("getBlogList")
     public MyResponse getBlogList(BlogDTO dto) {
         PageHelper.startPage(dto.getPageNum(), dto.getPageSize());
 
-        return MyResponse.success(new PageInfo<>(blogService.getBlogList(dto)));
+        return success(new PageInfo<>(blogService.getBlogList(dto)));
     }
 
     @PutMapping("updateInfo")
     public MyResponse updateInfo(UserDTO dto) {
-        return MyResponse.success(userService.updateInfo(dto));
+        return success(userService.updateInfo(dto));
     }
 
     @PostMapping("uploadImage")
@@ -102,5 +106,10 @@ public class UserController extends BaseController {
     @DeleteMapping("cancelAccount")
     public MyResponse cancelAccount() {
         return userService.cancelAccount() ? success() : fail();
+    }
+
+    @GetMapping("getToken")
+    public MyResponse getToken() {
+        return success(userService.getToken());
     }
 }

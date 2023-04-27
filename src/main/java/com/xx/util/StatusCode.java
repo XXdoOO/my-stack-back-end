@@ -12,4 +12,7 @@ public class StatusCode {
 
     // 权限不足
     public final static int UNAUTHORIZED = 403;
+
+    // 更新token
+    public final static int UPDATE_TOKEN = 405;
 }
