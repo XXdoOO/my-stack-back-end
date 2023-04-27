@@ -19,5 +19,4 @@ public class UserVO extends User {
     private Long down;
     private Long star;
     private String token;
-    private String newToken;
 }

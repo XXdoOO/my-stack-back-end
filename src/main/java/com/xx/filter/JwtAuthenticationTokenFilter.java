@@ -82,13 +82,7 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             return;
         }
 
-        boolean isNeedRefresh = tokenUtil.isNeedRefresh(token);
-        if (isNeedRefresh) {
-            String newToken = tokenUtil.generateToken(claims);
-
-            user.setNewToken(newToken);
-            redisTemplate.opsForValue().set("user-" + userId, user, expiration, TimeUnit.SECONDS);
-
+        if (tokenUtil.isNeedRefresh(token)) {
             response.setStatus(HttpServletResponse.SC_CREATED);
         }
 

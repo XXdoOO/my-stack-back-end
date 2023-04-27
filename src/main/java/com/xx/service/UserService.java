@@ -10,6 +10,7 @@ import com.xx.pojo.dto.UserDTO;
 import com.xx.pojo.entity.*;
 import com.xx.pojo.vo.UserVO;
 import com.xx.util.*;
+import io.jsonwebtoken.Claims;
 import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -238,10 +239,15 @@ public class UserService {
     }
 
     public String getToken() {
+        String token = request.getHeader("token");
+
+        Claims claims = jwtTokenUtil.getClaimsFromToken(token);
+        String newToken = jwtTokenUtil.generateToken(claims);
+
         UserVO user = UserInfoUtils.getUser();
-        user.setToken(user.getNewToken());
+        user.setToken(newToken);
 
         redisTemplate.opsForValue().set("user-" + user.getId(), user, expiration, TimeUnit.SECONDS);
-        return user.getToken();
+        return newToken;
     }
 }
