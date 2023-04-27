@@ -165,6 +165,7 @@ public class JwtTokenUtil {
         Date expiration = claims.getExpiration();
 
         Date date = new Date();
-        return expiration.getTime() - date.getTime() <= 60 * 60 * 24 * 1000;
+//        return expiration.getTime() - date.getTime() <= 60 * 60 * 24 * 1000;
+        return expiration.getTime() - date.getTime() <= 30 * 1000;
     }
 }
