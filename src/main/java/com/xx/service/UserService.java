@@ -76,9 +76,11 @@ public class UserService {
         UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
         UserVO userVO = userDetails.getUserVO();
 
+        String ip = IpUtils.getIpAddr(request);
+        String ipTerritory = AddressUtils.getRealAddressByIP(ip);
         userMapper.update(null, new LambdaUpdateWrapper<User>().
-                set(User::getIp, IpUtils.getIpAddr(request)).
-                set(User::getIpTerritory, AddressUtils.getRealAddressByIP(IpUtils.getIpAddr(request))).
+                set(User::getIp, ip).
+                set(User::getIpTerritory, ipTerritory).
                 eq(User::getId, userVO.getId()));
 
         Map<String, Object> map = new HashMap<>();
@@ -86,6 +88,8 @@ public class UserService {
         String token = jwtTokenUtil.generateToken(map);
 
         userVO.setToken(token);
+        userVO.setIp(ip);
+        userVO.setIpTerritory(ipTerritory);
 
         redisTemplate.opsForValue().set("user-" + userVO.getId(), userVO, expiration, TimeUnit.SECONDS);
         return token;

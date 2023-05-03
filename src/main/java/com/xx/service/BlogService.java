@@ -17,6 +17,7 @@ import com.xx.util.IpUtils;
 import com.xx.util.SaveFile;
 import com.xx.util.UserInfoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
@@ -42,6 +43,9 @@ public class BlogService {
 
     @Autowired
     private HttpServletRequest request;
+
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
 
     public List<BlogViewVO> getBlogList(BlogDTO dto) {
         dto.setUserId(UserInfoUtils.getUser().getId());
@@ -145,6 +149,8 @@ public class BlogService {
                             set(Blog::getCover, cover).
                             eq(Blog::getId, blog.getId()));
                 }
+
+
                 return blog.getId();
             }
         }
