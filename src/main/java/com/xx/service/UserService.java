@@ -2,6 +2,7 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.xx.config.SystemConfig;
@@ -11,8 +12,6 @@ import com.xx.pojo.entity.*;
 import com.xx.pojo.vo.UserVO;
 import com.xx.util.*;
 import io.jsonwebtoken.Claims;
-import org.apache.tomcat.websocket.AuthenticationException;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -23,14 +22,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.security.Principal;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -79,6 +75,11 @@ public class UserService {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authenticate.getPrincipal();
         UserVO userVO = userDetails.getUserVO();
+
+        userMapper.update(null, new LambdaUpdateWrapper<User>().
+                set(User::getIp, IpUtils.getIpAddr(request)).
+                set(User::getIpTerritory, AddressUtils.getRealAddressByIP(IpUtils.getIpAddr(request))).
+                eq(User::getId, userVO.getId()));
 
         Map<String, Object> map = new HashMap<>();
         map.put("id", userVO.getId());
