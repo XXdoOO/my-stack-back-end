@@ -110,7 +110,8 @@ public class UserService {
         if (disable != null && disable.getEndTime().getTime() > System.currentTimeMillis()) {
             return disable;
         } else { // 用户已解封
-
+            userMapper.update(null, new LambdaUpdateWrapper<User>().set(User::getEnabled, 1).
+                    eq(User::getId, id));
             return null;
         }
     }

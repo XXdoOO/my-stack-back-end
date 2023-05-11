@@ -5,6 +5,7 @@ import com.xx.util.MyResponse;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -35,6 +36,8 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
             response = MyResponse.fail("密码错误");
         } else if (e instanceof UsernameNotFoundException) {
             response = MyResponse.fail("账号不存在");
+        } else if (e instanceof DisabledException) {
+            response = MyResponse.fail(e.getMessage());
         } else if (e instanceof CredentialsExpiredException) {
             response = MyResponse.unauthorized(e.getMessage());
         } else {
