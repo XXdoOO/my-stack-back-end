@@ -99,23 +99,6 @@ public class UserService {
         return UserInfoUtils.getUser();
     }
 
-    public Disable getUserDisableInfo(long id) {
-        QueryWrapper<Disable> disableWrapper = new QueryWrapper<>();
-        Disable disable = disableMapper.selectOne(disableWrapper.
-                eq("user_id", id).
-                orderByDesc("end_time").
-                last("limit 1"));
-
-        // 确认用户被封禁
-        if (disable != null && disable.getEndTime().getTime() > System.currentTimeMillis()) {
-            return disable;
-        } else { // 用户已解封
-            userMapper.update(null, new LambdaUpdateWrapper<User>().set(User::getEnabled, 1).
-                    eq(User::getId, id));
-            return null;
-        }
-    }
-
     public boolean isExistUser(String email) {
         return userMapper.exists(new LambdaQueryWrapper<User>().eq(User::getEmail, email));
     }

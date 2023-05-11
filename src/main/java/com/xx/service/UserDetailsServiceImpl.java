@@ -2,6 +2,8 @@ package com.xx.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.xx.mapper.DisableMapper;
 import com.xx.mapper.UserMapper;
 import com.xx.pojo.entity.Disable;
 import com.xx.pojo.entity.User;
@@ -27,7 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private UserMapper userMapper;
 
     @Autowired
-    private UserService userService;
+    private DisableMapper disableMapper;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -36,12 +38,19 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("用户不存在");
         } else if (!user.getEnabled()) {
-            Disable disableInfo = userService.getUserDisableInfo(user.getId());
+            Disable disable = disableMapper.selectOne(new LambdaQueryWrapper<Disable>().
+                    eq(Disable::getUserId, user.getId()).
+                    orderByDesc(Disable::getEndTime).
+                    last("limit 1"));
 
-            if (disableInfo != null) {
+            // 确认用户被封禁
+            if (disable != null && disable.getEndTime().getTime() > System.currentTimeMillis()) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-                throw new DisabledException("用户因 " + disableInfo.getReason() + " 已被封禁至 " + dateFormat.format(disableInfo.getEndTime()));
+                throw new DisabledException("用户因 " + disable.getReason() + " 已被封禁至 " + dateFormat.format(disable.getEndTime()));
+            } else { // 用户已解封
+                userMapper.update(null, new LambdaUpdateWrapper<User>().set(User::getEnabled, 1).
+                        eq(User::getId, user.getId()));
             }
         }
         UserVO myInfo = userMapper.getUserInfo(null, user.getId());
