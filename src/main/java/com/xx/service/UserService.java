@@ -140,7 +140,7 @@ public class UserService {
 
         UserVO userVo = redisUtil.getUserVo();
         if (StringUtils.isNotBlank(dto.getNickname())) {
-            userVo.setAvatar(dto.getNickname());
+            userVo.setNickname(dto.getNickname());
         }
 
         String url = SaveFile.saveAvatar(dto.getAvatar());
