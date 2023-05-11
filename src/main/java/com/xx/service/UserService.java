@@ -62,11 +62,11 @@ public class UserService {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Value("${spring.mail.username}")
     private String from;
-
-    @Value("${jwt.expiration}")
-    private Integer expiration;
 
     public String login(String email, String password) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
@@ -91,7 +91,7 @@ public class UserService {
         userVO.setIp(ip);
         userVO.setIpTerritory(ipTerritory);
 
-        redisTemplate.opsForValue().set("user-" + userVO.getId(), userVO, expiration, TimeUnit.SECONDS);
+        redisUtil.setUserVo(userVO);
         return token;
     }
 
@@ -138,10 +138,18 @@ public class UserService {
         user.setId(id);
         user.setNickname(dto.getNickname());
 
+        UserVO userVo = redisUtil.getUserVo();
+        if (StringUtils.isNotBlank(dto.getNickname())) {
+            userVo.setAvatar(dto.getNickname());
+        }
+
         String url = SaveFile.saveAvatar(dto.getAvatar());
         if (url != null) {
             user.setAvatar(url);
+
+            userVo.setAvatar(url);
         }
+        redisUtil.setUserVo(userVo);
         return userMapper.updateById(user) == 1;
     }
 
@@ -236,7 +244,7 @@ public class UserService {
         UserVO user = UserInfoUtils.getUser();
         user.setToken(newToken);
 
-        redisTemplate.opsForValue().set("user-" + user.getId(), user, expiration, TimeUnit.SECONDS);
+        redisUtil.setUserVo(user);
         return newToken;
     }
 }
